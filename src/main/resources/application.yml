@@ -1,0 +1,39 @@
+spring:
+  profiles:
+    active: dev
+  application:
+    name: job-finder-backend
+  datasource:
+    username: ${USER_NAME}
+    password: ${PASSWORD}
+    url: ${URL}
+    driver-class-name: ${DRIVER}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: ${DIALECT}
+        event:
+          merge:
+            entity_copy_observer: allow
+
+  jackson:
+    date-format: yyyy-MM-dd
+    time-zone: Asia/Ho_Chi_Minh
+server:
+  port: 8088
+
+app:
+  cors:
+    allowOrigins: ${FRONT_END_URL}
+secret:
+  secretPath: ${SECRET_PATH}
+  accessTokenExpireTime: ${ACCESS_TOKEN_EXPIRE_TIME}
+  refreshTokenExpireTime: ${REFRESH_TOKEN_EXPIRE_TIME}
+
+cloudinary:
+  cloud-name: ${CLOUDINARY_CLOUD_NAME}
+  api-key: ${CLOUDINARY_API_KEY}
+  api-secret: ${CLOUDINARY_API_SECRET}
+
