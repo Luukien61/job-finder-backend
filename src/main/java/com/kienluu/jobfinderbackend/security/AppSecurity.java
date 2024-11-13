@@ -27,8 +27,7 @@ public class AppSecurity {
                 .authorizeHttpRequests((request) -> request
                         .requestMatchers(HttpMethod.POST,"/chat/all").permitAll()
                         .requestMatchers("/**").permitAll()
-                )
-        ;
+                );
         return http.build();
     }
 }

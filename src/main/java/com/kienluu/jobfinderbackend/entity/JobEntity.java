@@ -12,6 +12,7 @@ public class JobEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String jobId;
+    private String companyId;
     private String title;
     private String location;
     private String description;

@@ -12,6 +12,7 @@ public class CompanyEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String companyId;
+    private String userId;
     private String name;
     private String logo;
     @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
