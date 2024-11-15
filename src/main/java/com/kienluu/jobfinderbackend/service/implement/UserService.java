@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @Service
 @AllArgsConstructor
 public class UserService implements IUserService{
-    @Autowired
+
     private UserRepository userRepository;
 
 //    @Autowired
@@ -23,7 +23,7 @@ public class UserService implements IUserService{
         if (userRepository.existsByEmail(user.getEmail())) {
             return "Email already exists!";
         }
-        user.setUserId("U"+generateCustomUserId());
+        user.setUserId("u_"+generateCustomUserId());
         // Mã hóa mật khẩu người dùng
 //        user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setPassword(user.getPassword());

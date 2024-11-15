@@ -1,16 +1,23 @@
 package com.kienluu.jobfinderbackend.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 @Getter
 @Table(name = "job")
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class JobEntity {
     @Id
-    private String jobId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long jobId;
     private String companyId;
     private String title;
     private String location;
@@ -22,8 +29,8 @@ public class JobEntity {
     private int minSalary;
     private int maxSalary;
     private int experience;
-    private Date updateAt;
-    private Date expireDate;
+    private LocalDate updateAt;
+    private LocalDate expireDate;
     private String gender;
-    private String type;
+    private String type; // part-time or full-time
 }

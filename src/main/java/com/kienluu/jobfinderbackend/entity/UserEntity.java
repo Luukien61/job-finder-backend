@@ -5,11 +5,13 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 @Entity
-@Setter
 @Getter
+@Setter
+@Table(name = "user_entity")
 public class UserEntity {
     @Id
     private String userId;
@@ -25,5 +27,16 @@ public class UserEntity {
     private Set<JobEntity> savedJobs;
     @ManyToMany
     private Set<JobEntity> appliedJobs;
+
+    private String university;
+    private String location;
+    private LocalDate dateOfBirth;
+
+    @ManyToMany
+    @JoinTable(name = "user_interest",
+            joinColumns = @JoinColumn(referencedColumnName = "userId"),
+            inverseJoinColumns = @JoinColumn(referencedColumnName = "id"))
+    private Set<Field> interestingFields;
+
 
 }
