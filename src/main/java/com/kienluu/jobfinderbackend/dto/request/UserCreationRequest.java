@@ -3,13 +3,15 @@ package com.kienluu.jobfinderbackend.dto.request;
 import com.kienluu.jobfinderbackend.model.UserRole;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Setter
 @Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserCreationRequest {
-    private String fullName;
+    private String name;
     private String avatar;
     private String email;
     private String address;

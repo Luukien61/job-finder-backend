@@ -1,26 +1,49 @@
 package com.kienluu.jobfinderbackend.service.implement;
 
-import com.kienluu.jobfinderbackend.dto.request.UserCreationRequest;
 import com.kienluu.jobfinderbackend.entity.UserEntity;
-import com.kienluu.jobfinderbackend.respository.UserRespository;
+import com.kienluu.jobfinderbackend.model.UserRole;
+import com.kienluu.jobfinderbackend.repository.UserRepository;
 import com.kienluu.jobfinderbackend.service.IUserService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@AllArgsConstructor
 public class UserService implements IUserService{
     @Autowired
-    private UserRespository userRespository;
+    private UserRepository userRepository;
 
-    public UserEntity createUser(UserCreationRequest request){
-        UserEntity user = new UserEntity();
-        user.setFullName(request.getFullName());
-        user.setEmail(request.getEmail());
-        user.setAddress(request.getAddress());
-        user.setPassword(request.getPassword());
+//    @Autowired
+//    private BCryptPasswordEncoder passwordEncoder;
 
-        return userRespository.save(user);
+    public String registerUser(UserEntity user, UserRole role) {
+        // Kiểm tra xem email có tồn tại không
+        if (userRepository.existsByEmail(user.getEmail())) {
+            return "Email already exists!";
+        }
+        user.setUserId("U"+generateCustomUserId());
+        // Mã hóa mật khẩu người dùng
+//        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setPassword(user.getPassword());
+
+
+        if (role == UserRole.EMPLOYER || role == UserRole.USER) {
+            user.setRole(role);
+        } else {
+            return "Invalid role!";
+        }
+
+        // Lưu người dùng vào cơ sở dữ liệu
+        userRepository.save(user);
+        return "Registration successful!";
     }
+
+    private Long generateCustomUserId() {
+        // Logic để tạo giá trị userId của bạn (có thể dựa trên thời gian, UUID, v.v.)
+        return System.currentTimeMillis();  // Ví dụ sử dụng thời gian hiện tại
+    }
+
+
 }

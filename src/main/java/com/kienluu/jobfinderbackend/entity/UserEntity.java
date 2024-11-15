@@ -10,13 +10,10 @@ import java.util.Set;
 @Entity
 @Setter
 @Getter
-@Table(name = "user")
 public class UserEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    // kieu string khong tu gen duoc len de kieu long hoa, nhung
-    private long userId;
-    private String fullName;
+    private String userId;
+    private String name;
     private String avatar;
     private String email;
     private String address;

@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -23,11 +24,22 @@ public class AppSecurity {
         http
                 .cors(corsConfigurer -> corsConfigurer.configurationSource(configurationSource))
                 .csrf(AbstractHttpConfigurer::disable) // (1)
+                .formLogin(form -> form
+                        .loginPage("/login")  // Định nghĩa trang đăng nhập tùy chỉnh
+                        .permitAll()  // Cho phép tất cả truy cập trang đăng nhập
+                )
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((request) -> request
                         .requestMatchers(HttpMethod.POST,"/chat/all").permitAll()
                         .requestMatchers("/**").permitAll()
+                        .requestMatchers("/user/home").hasRole("USER")  // Chỉ USER được truy cập trang chủ user
+                        .requestMatchers("/admin/home").hasRole("ADMIN")  // Chỉ ADMIN được truy cập trang chủ admin
+                        .requestMatchers("/employer/home").hasRole("EMPLOYER")
+                        .anyRequest().authenticated()  // Yêu cầu đăng nhập cho tất cả yêu cầu khác
+                )
+                .logout(LogoutConfigurer::permitAll  // Cho phép logout cho tất cả người dùng
                 );
+
         return http.build();
     }
 }
