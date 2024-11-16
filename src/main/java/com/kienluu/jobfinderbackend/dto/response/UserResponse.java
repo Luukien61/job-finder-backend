@@ -1,5 +1,4 @@
-package com.kienluu.jobfinderbackend.dto.request;
-
+package com.kienluu.jobfinderbackend.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,9 +9,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Builder
-public class UserCreationRequest {
+public class UserResponse {
+    private String userId;
     private String name;
+    private String avatar;
     private String email;
-    private String password;
-    private String phone;
+    private String role;
 }

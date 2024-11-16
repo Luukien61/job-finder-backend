@@ -32,10 +32,10 @@ public class AppSecurity {
                 .authorizeHttpRequests((request) -> request
                         .requestMatchers(HttpMethod.POST,"/chat/all").permitAll()
                         .requestMatchers("/**").permitAll()
-                        .requestMatchers("/user/home").hasRole("USER")  // Chỉ USER được truy cập trang chủ user
-                        .requestMatchers("/admin/home").hasRole("ADMIN")  // Chỉ ADMIN được truy cập trang chủ admin
-                        .requestMatchers("/employer/home").hasRole("EMPLOYER")
-                        .anyRequest().authenticated()  // Yêu cầu đăng nhập cho tất cả yêu cầu khác
+//                        .requestMatchers("/user/home").hasRole("USER")
+//                        .requestMatchers("/admin/home").hasRole("ADMIN")
+//                        .requestMatchers("/employer/home").hasRole("EMPLOYER")
+                        .anyRequest().authenticated()
                 )
                 .logout(LogoutConfigurer::permitAll  // Cho phép logout cho tất cả người dùng
                 );

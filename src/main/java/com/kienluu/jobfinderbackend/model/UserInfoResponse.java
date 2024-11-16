@@ -1,4 +1,4 @@
-package com.kienluu.jobfinderbackend.websocket.model;
+package com.kienluu.jobfinderbackend.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,10 +6,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class LoginRequest {
+public class UserInfoResponse {
+    private String id;
     private String email;
-    private String password;
+    private String name;
 }

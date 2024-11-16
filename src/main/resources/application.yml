@@ -36,3 +36,19 @@ cloudinary:
   api-key: ${CLOUDINARY_API_KEY}
   api-secret: ${CLOUDINARY_API_SECRET}
 
+google:
+  mail:
+    port: ${MAIL_PORT}
+    username: ${USERMAIL}
+  credential-path: ${CREDENTIAL_PATH}
+  tokenPath: ${TOKEN_PATH}
+  hostIP: ${HOST_IP}
+
+oauth:
+  google:
+    client-id: ${CLIENT_ID}
+    client-secret: ${CLIEN_SECRET}
+    token-uri: https://oauth2.googleapis.com/token
+    grantType: authorization_code
+    redirect-uri: http://localhost:5173/login/oauth2/code/google
+
