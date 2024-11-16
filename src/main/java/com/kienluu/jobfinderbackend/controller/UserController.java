@@ -81,5 +81,15 @@ public class UserController {
         }
     }
 
+    @GetMapping("/user/info/{id}")
+    public ResponseEntity<Object> getUserChat(@PathVariable String id) {
+        try{
+            UserResponse userResponse = userService.getUserInfoById(id);
+            return ResponseEntity.ok(userResponse);
+        }catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 }
 

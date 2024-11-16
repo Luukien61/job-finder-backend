@@ -1,7 +1,7 @@
 package com.kienluu.jobfinderbackend.service.implement;//package com.kienluu.jobfinderbackend.websocket.service;
 
-import com.kienluu.jobfinderbackend.websocket.model.GoogleTokenResponse;
-import com.kienluu.jobfinderbackend.websocket.model.GoogleUserInfo;
+import com.kienluu.jobfinderbackend.model.GoogleTokenResponse;
+import com.kienluu.jobfinderbackend.model.GoogleUserInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

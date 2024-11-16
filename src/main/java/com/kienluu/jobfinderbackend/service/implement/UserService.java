@@ -12,7 +12,7 @@ import com.kienluu.jobfinderbackend.model.UserRole;
 import com.kienluu.jobfinderbackend.repository.UserRepository;
 import com.kienluu.jobfinderbackend.service.IUserService;
 import com.kienluu.jobfinderbackend.util.AppUtil;
-import com.kienluu.jobfinderbackend.websocket.model.GoogleUserInfo;
+import com.kienluu.jobfinderbackend.model.GoogleUserInfo;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -114,5 +114,12 @@ public class UserService implements IUserService {
         UserEntity user = userRepository.findById(id.trim())
                 .orElseThrow(() -> new RuntimeException("This email has not been registered!"));
         return mapper.toUserDTO(user);
+    }
+
+    @Override
+    public UserResponse getUserInfoById(String id) {
+        UserEntity user = userRepository.findById(id.trim())
+                .orElseThrow(() -> new RuntimeException("This email has not been registered!"));
+        return mapper.toUserResponse(user);
     }
 }

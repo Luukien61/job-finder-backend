@@ -1,7 +1,5 @@
 package com.kienluu.jobfinderbackend.websocket.entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.kienluu.jobfinderbackend.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,12 +15,11 @@ import java.util.Set;
 @Table(name = "conversations")
 public class Conversation {
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JsonManagedReference
-    private Set<UserEntity> users;
+    @ElementCollection(fetch = FetchType.EAGER, targetClass = String.class)
+    private Set<String> users;
 
     private String lastMessage;
 
