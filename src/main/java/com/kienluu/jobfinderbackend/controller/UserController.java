@@ -1,5 +1,6 @@
 package com.kienluu.jobfinderbackend.controller;
 
+import com.kienluu.jobfinderbackend.dto.UserDTO;
 import com.kienluu.jobfinderbackend.dto.request.LoginRequest;
 import com.kienluu.jobfinderbackend.dto.request.UserCreationRequest;
 import com.kienluu.jobfinderbackend.dto.response.UserResponse;
@@ -8,10 +9,7 @@ import com.kienluu.jobfinderbackend.model.MailTemplate;
 import com.kienluu.jobfinderbackend.service.IUserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @AllArgsConstructor
@@ -72,5 +70,16 @@ public class UserController {
             return ResponseEntity.badRequest().body(e.getLocalizedMessage());
         }
     }
+
+    @GetMapping("/user/{id}")
+    public ResponseEntity<Object> getUserProfile(@PathVariable String id) {
+        try {
+            UserDTO user = userService.getUserById(id);
+            return ResponseEntity.ok(user);
+        }catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 }
 

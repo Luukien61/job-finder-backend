@@ -33,7 +33,7 @@ public class UserService implements IUserService {
 
     @Override
     public String sendSignupCode(MailTemplate template) throws MessagingException, GeneralSecurityException, IOException {
-        userRepository.findByEmail(template.getTo())
+        userRepository.findByEmail(template.getTo().trim())
                 .ifPresent(user -> {
                     throw new RuntimeException("This email already exists!");
                 });
@@ -46,7 +46,7 @@ public class UserService implements IUserService {
 
     @Override
     public UserResponse registerUser(UserCreationRequest request) {
-        userRepository.findByEmail(request.getEmail())
+        userRepository.findByEmail(request.getEmail().trim())
                 .ifPresent(user -> {
                     throw new RuntimeException("This email already exists!");
                 });
@@ -73,10 +73,10 @@ public class UserService implements IUserService {
     @Override
     public UserResponse loginWithGoogle(CodeExchange codeExchange) {
         GoogleUserInfo userInfo = googleCodeExchange.exchange(codeExchange.getCode());
-        UserEntity userEntity = userRepository.findByEmail(userInfo.getEmail())
+        UserEntity userEntity = userRepository.findByEmail(userInfo.getEmail().trim())
                 .orElseThrow(() ->
                         new RuntimeException("This email has not been registered! Please sign up first!"));
-        if(!userEntity.getUserId().startsWith("google_")) {
+        if (!userEntity.getUserId().startsWith("google_")) {
             throw new RuntimeException("This email is not an google account!");
         }
         return mapper.toUserResponse(userEntity);
@@ -85,7 +85,7 @@ public class UserService implements IUserService {
     @Override
     public UserResponse sigUpWithGoogle(CodeExchange codeExchange) {
         GoogleUserInfo userInfo = googleCodeExchange.exchange(codeExchange.getCode());
-        Optional<UserEntity> userEntity = userRepository.findByEmail(userInfo.getEmail());
+        Optional<UserEntity> userEntity = userRepository.findByEmail(userInfo.getEmail().trim());
         if (userEntity.isPresent()) throw new RuntimeException("This email has already been registered!");
         UserEntity user = UserEntity.builder()
                 .email(userInfo.getEmail())
@@ -100,12 +100,19 @@ public class UserService implements IUserService {
     }
 
     public boolean isGoogleAccount(String email) {
-        UserEntity user = userRepository.findByEmail(email).orElse(null);
+        UserEntity user = userRepository.findByEmail(email.trim()).orElse(null);
         if (user == null) {
             return false;
         } else {
             String id = user.getUserId();
             return id.startsWith("google");
         }
+    }
+
+    @Override
+    public UserDTO getUserById(String id) {
+        UserEntity user = userRepository.findById(id.trim())
+                .orElseThrow(() -> new RuntimeException("This email has not been registered!"));
+        return mapper.toUserDTO(user);
     }
 }

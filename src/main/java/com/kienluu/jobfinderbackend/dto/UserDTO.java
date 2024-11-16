@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -23,4 +25,8 @@ public class UserDTO {
     private LocalDate dateOfBirth;
     private String gender;
     private String role;
+    private List<String> cv;
+    private Set<Long> savedJobs;
+    private Set<Long> appliedJobs;
+    private List<String> searchHistory;
 }

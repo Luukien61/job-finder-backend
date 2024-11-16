@@ -19,5 +19,5 @@ public interface IUserService {
     UserResponse updateUser(UserDTO userDTO);
     UserResponse loginWithGoogle(CodeExchange codeExchange);
     UserResponse sigUpWithGoogle(CodeExchange codeExchange);
-
+    UserDTO getUserById(String id);
 }

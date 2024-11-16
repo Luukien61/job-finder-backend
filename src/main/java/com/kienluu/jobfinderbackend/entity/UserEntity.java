@@ -47,5 +47,6 @@ public class UserEntity {
     private Set<Conversation> conversations;
     @ElementCollection(targetClass = String.class, fetch = FetchType.LAZY)
     private List<String> searchHistory;
-
+    @ElementCollection(targetClass = String.class, fetch = FetchType.LAZY)
+    private List<String> cv;
 }
