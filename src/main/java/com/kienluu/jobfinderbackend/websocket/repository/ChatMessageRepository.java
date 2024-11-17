@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ChatMessageRepository extends JpaRepository<ChatMessage, String> {
-    Page<ChatMessage> findChatMessageByConversationId(String id, Pageable pageable);
-    List<ChatMessage> findChatMessageByConversationIdOrderByTimestampDesc(String id);
+public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
+    Page<ChatMessage> findChatMessageByConversationId(Long id, Pageable pageable);
+    List<ChatMessage> findChatMessageByConversationIdOrderByTimestampDesc(Long id);
 }

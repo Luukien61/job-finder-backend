@@ -42,9 +42,7 @@ public class UserEntity {
     @ElementCollection(targetClass = String.class, fetch = FetchType.LAZY)
     private List<String> interestingFields;
 
-    @ManyToMany(mappedBy = "users")
-    @JsonBackReference
-    private Set<Conversation> conversations;
+
     @ElementCollection(targetClass = String.class, fetch = FetchType.LAZY)
     private List<String> searchHistory;
     @ElementCollection(targetClass = String.class, fetch = FetchType.LAZY)

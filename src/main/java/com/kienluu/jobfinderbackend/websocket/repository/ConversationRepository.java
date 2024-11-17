@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface ConversationRepository extends JpaRepository<Conversation, Long> {
 
     @Query("SELECT c FROM Conversation c WHERE :userId MEMBER OF c.users")
-    List<Conversation> findByUserIdInUsers(@Param("userId") String userId);
+    List<Conversation> findConversationByUserId(@Param("userId") String userId);
 
     Conversation findConversationById(Long id);
 
