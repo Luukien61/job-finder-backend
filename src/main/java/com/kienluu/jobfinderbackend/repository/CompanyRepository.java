@@ -9,4 +9,6 @@ import java.util.Optional;
 @Repository
 public interface CompanyRepository extends JpaRepository<CompanyEntity, String> {
     Optional<CompanyEntity> findByCompanyId(String id);
+    Optional<Integer> countByCompanyId(String id);
+    Optional<Integer>
 }
