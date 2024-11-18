@@ -20,10 +20,12 @@ public class CompanyEntity {
     private List<String> images;
     private String website;
     private String field;
+
     private String description;
     private String address;
     private String phone;
     private String email;
     @Column(columnDefinition = "INT DEFAULT 15")
     private int monthlyPost;
+
 }

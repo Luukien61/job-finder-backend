@@ -11,8 +11,6 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 public class UserCreationRequest {
-    private String name;
     private String email;
     private String password;
-    private String phone;
 }

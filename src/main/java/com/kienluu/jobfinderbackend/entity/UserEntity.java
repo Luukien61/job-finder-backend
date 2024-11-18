@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.kienluu.jobfinderbackend.model.UserRole;
 import com.kienluu.jobfinderbackend.websocket.entity.Conversation;
 import jakarta.persistence.*;
+import jakarta.transaction.Transactional;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -35,6 +36,9 @@ public class UserEntity {
     @ManyToMany(fetch = FetchType.LAZY)
     @JsonManagedReference
     private Set<JobEntity> appliedJobs;
+
+    private String educationLevel;
+    private String gender;
 
     private String university;
     private LocalDate dateOfBirth;

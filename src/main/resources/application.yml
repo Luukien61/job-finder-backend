@@ -44,6 +44,8 @@ google:
   tokenPath: ${TOKEN_PATH}
   hostIP: ${HOST_IP}
 
+default-avatar: https://media.istockphoto.com/id/1300845620/vector/user-icon-flat-isolated-on-white-background-user-symbol-vector-illustration.jpg?s=612x612&w=0&k=20&c=yBeyba0hUkh14_jgv1OKqIH0CCSWU_4ckRkAoy2p73o=
+
 oauth:
   google:
     client-id: ${CLIENT_ID}
@@ -52,3 +54,8 @@ oauth:
     grantType: authorization_code
     redirect-uri: http://localhost:5173/login/oauth2/code/google
 
+aws:
+  access-key: ${AWS_ACCESS_KEY}
+  secret-key: ${AWS_SECRET_KEY}
+  bucket-name: ${BUCKET_NAME}
+  region: ${AWS_REGION}
