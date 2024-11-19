@@ -30,6 +30,7 @@ public class JobSearchService {
         try {
             JobEntity job = event.getJob();
             EvenType action = event.getAction();
+            String salary = job.getMinSalary() + " - " + job.getMaxSalary() + " triệu";
             switch (action) {
                 case EvenType.CREATED:
                 case EvenType.UPDATED:
@@ -37,6 +38,12 @@ public class JobSearchService {
                             .title(job.getTitle())
                             .id(job.getJobId().toString())
                             .location(job.getLocation())
+                            .companyId(job.getCompany().getCompanyId())
+                            .companyName(job.getCompany().getName())
+                            .logo(job.getCompany().getLogo())
+                            .experience(job.getExperience())
+                            .expiryDate(job.getExpireDate())
+                            .salary(salary)
                             .build();
                     jobSearchRepository.save(jobDocument);
                     log.info("Elasticsearch synchronized for job ID: {} - Action: {}", job.getJobId(), action);

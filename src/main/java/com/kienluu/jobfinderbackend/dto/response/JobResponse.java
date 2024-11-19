@@ -16,7 +16,7 @@ import java.time.LocalDate;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class JobResponse implements Serializable {
     Long jobId;
-    String companyCompanyId;
+    String companyId;
     String companyName;
     String title;
     String location;
@@ -28,6 +28,9 @@ public class JobResponse implements Serializable {
     int minSalary;
     int maxSalary;
     int experience;
+    int quantity;
+    String salary;
+    LocalDate createdAt;
     LocalDate updateAt;
     LocalDate expireDate;
     String gender;

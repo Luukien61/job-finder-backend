@@ -1,5 +1,7 @@
 package com.kienluu.jobfinderbackend.controller;
 
+import com.kienluu.jobfinderbackend.dto.request.JobCreateRequest;
+import com.kienluu.jobfinderbackend.dto.response.JobResponse;
 import com.kienluu.jobfinderbackend.elasticsearch.document.JobDocument;
 import com.kienluu.jobfinderbackend.elasticsearch.service.JobSearchService;
 import com.kienluu.jobfinderbackend.entity.JobEntity;
@@ -21,9 +23,9 @@ public class JobController {
 
 
     @PostMapping("")
-    public ResponseEntity<Object> createJob(@RequestBody JobEntity job) {
+    public ResponseEntity<Object> createJob(@RequestBody JobCreateRequest job) {
         try {
-            JobEntity saveJob = jobService.saveJob(job);
+            JobResponse saveJob = jobService.saveJob(job);
             return new ResponseEntity<>(saveJob, HttpStatus.CREATED);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -31,7 +33,7 @@ public class JobController {
     }
 
     @PostMapping("/bulk")
-    public ResponseEntity<Object> bulkJob(@RequestBody List<JobEntity> jobs) {
+    public ResponseEntity<Object> bulkJob(@RequestBody List<JobCreateRequest> jobs) {
         try{
             jobs.forEach(jobService::saveJob);
             return new ResponseEntity<>(HttpStatus.CREATED);
@@ -39,16 +41,16 @@ public class JobController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
-    @PutMapping("/")
-    public ResponseEntity<Object> updateJob(@RequestBody JobEntity job) {
-        try {
-            JobEntity updateJob = jobService.updateJob(job);
-            return new ResponseEntity<>(updateJob, HttpStatus.OK);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
+//
+//    @PutMapping("/")
+//    public ResponseEntity<Object> updateJob(@RequestBody JobEntity job) {
+//        try {
+//            JobEntity updateJob = jobService.updateJob(job);
+//            return new ResponseEntity<>(updateJob, HttpStatus.OK);
+//        } catch (Exception e) {
+//            return ResponseEntity.badRequest().body(e.getMessage());
+//        }
+//    }
 
     @DeleteMapping("/")
     public ResponseEntity<Object> deleteJob(@RequestBody JobEntity job) {

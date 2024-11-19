@@ -40,9 +40,6 @@ public class UserEntity {
     private String university;
     private LocalDate dateOfBirth;
 
-    @ElementCollection(targetClass = String.class, fetch = FetchType.LAZY)
-    private List<String> interestingFields;
-
 
     @ElementCollection(targetClass = String.class, fetch = FetchType.LAZY)
     private List<String> searchHistory;

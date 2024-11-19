@@ -26,6 +26,7 @@ public class JobCreateRequest {
     private int experience;
     private LocalDate updateAt;
     private LocalDate expireDate;
+    private LocalDate createdAt;
     private String gender;
     private String type; // part-time or full-time
     private String field;

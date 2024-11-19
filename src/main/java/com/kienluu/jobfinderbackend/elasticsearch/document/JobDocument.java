@@ -2,9 +2,12 @@ package com.kienluu.jobfinderbackend.elasticsearch.document;
 
 import jakarta.persistence.Id;
 import lombok.*;
+import org.springframework.data.elasticsearch.annotations.DateFormat;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
+
+import java.time.LocalDate;
 
 
 @Getter
@@ -37,5 +40,8 @@ public class JobDocument {
 
     @Field(type = FieldType.Keyword, index = false)
     private String salary;
+
+    @Field(type = FieldType.Date, format = DateFormat.date, index = false)
+    private LocalDate expiryDate;
 
 }

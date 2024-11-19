@@ -2,10 +2,7 @@ package com.kienluu.jobfinderbackend.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -13,6 +10,7 @@ import java.time.LocalDate;
 @Getter
 @Table(name = "job")
 @Builder
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class JobEntity {
@@ -34,6 +32,7 @@ public class JobEntity {
     private int maxSalary;
     private int quantity;
     private int experience;
+    private LocalDate createdAt;
     private LocalDate updateAt;
     private LocalDate expireDate;
     private String gender;

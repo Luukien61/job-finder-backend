@@ -1,12 +1,12 @@
 package com.kienluu.jobfinderbackend.service;
 
+import com.kienluu.jobfinderbackend.dto.request.JobCreateRequest;
+import com.kienluu.jobfinderbackend.dto.response.JobResponse;
 import com.kienluu.jobfinderbackend.entity.JobEntity;
 
-import java.util.List;
-
 public interface IJobService {
-    JobEntity saveJob(JobEntity job);
-    JobEntity updateJob(JobEntity job);
+    JobResponse saveJob(JobCreateRequest job);
+    JobResponse updateJob(JobCreateRequest job);
     void deleteJob(JobEntity job);
 
 }

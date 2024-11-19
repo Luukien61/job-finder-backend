@@ -1,5 +1,7 @@
 package com.kienluu.jobfinderbackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import org.hibernate.annotations.ColumnDefault;
@@ -28,6 +30,8 @@ public class CompanyEntity {
     private String email;
 
     @OneToMany(mappedBy = "company")
+    @JsonIgnore
+    @JsonBackReference
     private Set<JobEntity> jobs;
 
 }
