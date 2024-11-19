@@ -1,5 +1,6 @@
 package com.kienluu.jobfinderbackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,7 +17,10 @@ public class JobEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long jobId;
-    private String companyId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JsonManagedReference
+    @JoinColumn(name = "company_id")
+    private CompanyEntity company;
     private String title;
     private String location;
     private String description;
@@ -26,13 +30,11 @@ public class JobEntity {
     private String role;
     private int minSalary;
     private int maxSalary;
+    private int quantity;
     private int experience;
     private LocalDate updateAt;
     private LocalDate expireDate;
     private String gender;
     private String type; // part-time or full-time
-
-    @ManyToOne
-    @JoinColumn(name = "company_id", referencedColumnName = "compay_id")
-    private CompanyEntity company;
+    private String field;
 }

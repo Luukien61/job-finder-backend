@@ -3,14 +3,13 @@
 //import com.kienluu.jobfinderbackend.websocket.entity.ChatMessage;
 //import com.kienluu.jobfinderbackend.websocket.entity.Conversation;
 //import com.kienluu.jobfinderbackend.websocket.entity.RTCSignal;
-//import com.kienluu.jobfinderbackend.websocket.entity.User;
 //import com.kienluu.jobfinderbackend.websocket.model.ConversationCreateRequest;
 //import com.kienluu.jobfinderbackend.websocket.model.ConversationResponse;
 //import com.kienluu.jobfinderbackend.websocket.model.Participant;
 //import com.kienluu.jobfinderbackend.websocket.repository.ChatMessageRepository;
 //import com.kienluu.jobfinderbackend.websocket.repository.ConversationRepository;
 //import com.kienluu.jobfinderbackend.websocket.service.ConversationService;
-//import com.kienluu.jobfinderbackend.websocket.service.UserService;
+//import com.kienluu.jobfinderbackend.websocket.service.ParticipantService;
 //import lombok.AllArgsConstructor;
 //import lombok.extern.slf4j.Slf4j;
 //import org.springframework.http.ResponseEntity;
@@ -21,7 +20,6 @@
 //import org.springframework.web.bind.annotation.*;
 //
 //import java.time.LocalDateTime;
-//import java.util.ArrayList;
 //import java.util.List;
 //
 //@Slf4j
@@ -32,7 +30,7 @@
 //    private ConversationRepository conversationRepository;
 //    private ChatMessageRepository chatMessageRepository;
 //    private ConversationService conversationService;
-//    private UserService userService;
+//    private ParticipantService participantService;
 //
 //    @MessageMapping("/sendMessage")
 //    @SendTo("/topic/public")
@@ -69,12 +67,7 @@
 //    @GetMapping("/participant/{id}")
 //    public ResponseEntity<Object> getParticipant(@PathVariable String id) {
 //        try {
-//            User user = userService.findById(id);
-//            Participant participant = Participant.builder()
-//                    .avatar(user.getAvatar())
-//                    .id(user.getId())
-//                    .name(user.getUserName())
-//                    .build();
+//            Participant participant = participantService.findParticipantById(id);
 //            return ResponseEntity.ok(participant);
 //        } catch (Exception e) {
 //            return ResponseEntity.badRequest().body("The user id does not exist");
@@ -82,7 +75,7 @@
 //    }
 //
 //    @GetMapping("/message/{conversationId}")
-//    public ResponseEntity<List<ChatMessage>> getMessage(@PathVariable String conversationId) {
+//    public ResponseEntity<List<ChatMessage>> getMessage(@PathVariable Long conversationId) {
 //        var messages = chatMessageRepository.findChatMessageByConversationIdOrderByTimestampDesc(conversationId);
 //        return ResponseEntity.ok(messages);
 //    }
@@ -91,10 +84,7 @@
 //    @GetMapping("/conversation")
 //    public ResponseEntity<Object> getConversations(@RequestParam("user1") String user1, @RequestParam("user2") String user2) {
 //        try {
-//            List<String> userIds = new ArrayList<>();
-//            userIds.add(user1);
-//            userIds.add(user2);
-//            ConversationResponse conversation = conversationService.findConversationByExactTwoUsers(userIds);
+//            ConversationResponse conversation = conversationService.findConversationByExactTwoUsers(user1, user2);
 //            return ResponseEntity.ok(conversation);
 //        } catch (Exception e) {
 //            return ResponseEntity.badRequest().body("The conversation id does not exist");

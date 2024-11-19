@@ -43,6 +43,7 @@ dependencies {
     implementation 'com.google.apis:google-api-services-gmail:v1-rev20220404-2.0.0'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'javax.mail:mail:1.4.7'
+    implementation 'software.amazon.awssdk:s3:2.29.10'
 }
 
 tasks.named('test') {

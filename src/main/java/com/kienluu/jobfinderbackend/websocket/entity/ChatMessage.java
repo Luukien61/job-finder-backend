@@ -18,7 +18,7 @@ public class ChatMessage {
     private String id;
     private String senderId;
     private String recipientId;
-    private String conversationId;
+    private Long conversationId;
     @Column(columnDefinition = "TEXT")
     private String content;
     private Date timestamp;

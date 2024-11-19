@@ -7,28 +7,31 @@ import com.kienluu.jobfinderbackend.dto.response.UserResponse;
 import com.kienluu.jobfinderbackend.entity.UserEntity;
 import com.kienluu.jobfinderbackend.mapper.CustomMapper;
 import com.kienluu.jobfinderbackend.model.CodeExchange;
+import com.kienluu.jobfinderbackend.model.GoogleUserInfo;
 import com.kienluu.jobfinderbackend.model.MailTemplate;
 import com.kienluu.jobfinderbackend.model.UserRole;
 import com.kienluu.jobfinderbackend.repository.UserRepository;
 import com.kienluu.jobfinderbackend.service.IUserService;
 import com.kienluu.jobfinderbackend.util.AppUtil;
-import com.kienluu.jobfinderbackend.model.GoogleUserInfo;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.MessagingException;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.List;
 import java.util.Optional;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserService implements IUserService {
 
     private final GoogleCodeExchange googleCodeExchange;
     private final UserRepository userRepository;
     private final CustomMapper mapper;
     private final MailService mailService;
+    private final S3Service s3Service;
 
 
     @Override
@@ -121,5 +124,46 @@ public class UserService implements IUserService {
         UserEntity user = userRepository.findById(id.trim())
                 .orElseThrow(() -> new RuntimeException("This email has not been registered!"));
         return mapper.toUserResponse(user);
+    }
+
+    @Override
+    public UserResponse userCompleted(UserDTO userDTO) {
+        UserEntity user = userRepository.findById(userDTO.getUserId())
+                .orElseThrow(() -> new RuntimeException("Invalid user id!"));
+        user.setEmail(userDTO.getEmail());
+        user.setName(userDTO.getName());
+        user.setPhone(userDTO.getPhone());
+        user.setAvatar(userDTO.getAvatar());
+        user.setAddress(userDTO.getAddress());
+        user.setUniversity(userDTO.getUniversity());
+        user.setDateOfBirth(userDTO.getDateOfBirth());
+        user.setEducationLevel(userDTO.getEducationLevel());
+        user.setGender(userDTO.getGender());
+        user = userRepository.save(user);
+        return mapper.toUserResponse(user);
+    }
+
+    @Override
+    public void uploadCv(String userId, MultipartFile file) {
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Invalid user id!"));
+        List<String> cv = user.getCv();
+        String url = s3Service.uploadFile(file);
+        cv.add(url);
+        user.setCv(cv);
+        userRepository.save(user);
+    }
+
+    @Override
+    public void deleteCvById(String userId, String cvUrl) {
+        UserEntity user = userRepository.findById(userId.trim())
+                .orElseThrow(() -> new RuntimeException("Invalid user id!"));
+        var cvs = user.getCv();
+        if (cvs.contains(cvUrl)) {
+            s3Service.deleteFileFromS3ByUrl(cvUrl);
+            cvs.remove(cvUrl);
+            user.setCv(cvs);
+            userRepository.save(user);
+        }
     }
 }

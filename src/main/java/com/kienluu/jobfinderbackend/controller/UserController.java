@@ -6,10 +6,12 @@ import com.kienluu.jobfinderbackend.dto.request.UserCreationRequest;
 import com.kienluu.jobfinderbackend.dto.response.UserResponse;
 import com.kienluu.jobfinderbackend.model.CodeExchange;
 import com.kienluu.jobfinderbackend.model.MailTemplate;
+import com.kienluu.jobfinderbackend.model.StringElement;
 import com.kienluu.jobfinderbackend.service.IUserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @AllArgsConstructor
@@ -29,6 +31,27 @@ public class UserController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @PostMapping("/user/complete")
+    public ResponseEntity<Object> userCompletion(@RequestBody UserDTO userDTO) {
+        try{
+            UserResponse userResponse = userService.userCompleted(userDTO);
+            return ResponseEntity.ok(userResponse);
+        }catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/user/{id}/cv")
+    public ResponseEntity<Object> uploadCv(@PathVariable String id, @RequestParam("file") MultipartFile file) {
+        try{
+            userService.uploadCv(id, file);
+            return ResponseEntity.ok().build();
+        }catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 
     @PostMapping("/signup/code")
     public ResponseEntity<Object> authenticatedSuccess(@RequestBody MailTemplate mailTemplate) {
@@ -86,6 +109,16 @@ public class UserController {
         try{
             UserResponse userResponse = userService.getUserInfoById(id);
             return ResponseEntity.ok(userResponse);
+        }catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/user/{id}/cv")
+    public ResponseEntity<Object> deleteCv(@PathVariable String id, @RequestBody StringElement element) {
+        try{
+            userService.deleteCvById(id, element.getValue());
+            return ResponseEntity.ok().build();
         }catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
