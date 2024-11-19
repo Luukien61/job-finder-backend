@@ -27,7 +27,7 @@ public class CompanyEntity {
     private String phone;
     private String email;
 
-    @OneToMany(mappedBy = "companyId")
+    @OneToMany(mappedBy = "company")
     private Set<JobEntity> jobs;
 
 }

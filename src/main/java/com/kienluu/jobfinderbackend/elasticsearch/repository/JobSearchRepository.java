@@ -17,7 +17,7 @@ public interface JobSearchRepository extends ElasticsearchRepository<JobDocument
                        {
                          "multi_match": {
                            "query": "#{#title}",
-                           "fields": ["title", "location"]
+                           "fields": ["title", "location", "companyName"]
                          }
                        }
                      ]
