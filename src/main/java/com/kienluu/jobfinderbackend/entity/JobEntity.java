@@ -32,9 +32,11 @@ public class JobEntity {
     private String role;
     private int minSalary;
     private int maxSalary;
+    private int quantity;
     private int experience;
     private LocalDate updateAt;
     private LocalDate expireDate;
     private String gender;
     private String type; // part-time or full-time
+    private String field;
 }
