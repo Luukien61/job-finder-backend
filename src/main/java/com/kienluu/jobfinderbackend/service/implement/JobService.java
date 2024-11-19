@@ -53,4 +53,5 @@ public class JobService implements IJobService {
         jobRepository.delete(jobEntity);
         eventPublisher.publishEvent(new JobChangedEvent(jobEntity, EvenType.DELETED));
     }
+
 }

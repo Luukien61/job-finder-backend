@@ -2,6 +2,7 @@ package com.kienluu.jobfinderbackend.repository;
 
 import com.kienluu.jobfinderbackend.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import java.util.Optional;
 @Repository
@@ -10,5 +11,7 @@ public interface UserRepository extends JpaRepository<UserEntity, String> {
     Optional<UserEntity> findByEmail(String email);
     boolean existsByEmail(String email);
     Optional<UserEntity> findByEmailAndPassword(String email, String password);
+    @Query("select count(p) from UserEntity p")
+    Optional<Integer> countAllUser();
 
 }

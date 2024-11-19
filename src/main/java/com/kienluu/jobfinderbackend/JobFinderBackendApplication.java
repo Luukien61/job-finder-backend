@@ -12,26 +12,4 @@ public class JobFinderBackendApplication {
         SpringApplication.run(JobFinderBackendApplication.class, args);
     }
 
-//    @EventListener(ApplicationReadyEvent.class)
-//    public void init() {
-//        JobEntity jobEntity = JobEntity.builder()
-//                .jobId(0L)
-//                .companyId("1")
-//                .title("Tuyển kỹ sư Java Developer tại Hà Nội")
-//                .location("Hà Nội")
-//                .description("Tuyển kỹ sư Java SpringBoot")
-//                .requirements("Ít nhất 2 năm kinh nghiệm")
-//                .benefits("Lương 20 triệu")
-//                .workTime("8-17h")
-//                .role("Nhân viên")
-//                .minSalary(15)
-//                .maxSalary(20)
-//                .expireDate(LocalDate.parse("2024-11-11"))
-//                .experience(2)
-//                .updateAt(LocalDate.parse("2024-11-11"))
-//                .gender("Male")
-//                .type("Full time")
-//                .build();
-//        log.info(jobEntity.getExpireDate().toString());
-//    }
 }

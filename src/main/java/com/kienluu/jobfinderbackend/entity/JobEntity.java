@@ -37,4 +37,7 @@ public class JobEntity {
     private LocalDate expireDate;
     private String gender;
     private String type; // part-time or full-time
+
+
+
 }

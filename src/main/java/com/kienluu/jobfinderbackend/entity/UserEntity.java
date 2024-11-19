@@ -49,4 +49,12 @@ public class UserEntity {
     @ElementCollection(targetClass = String.class, fetch = FetchType.LAZY)
     @Column(columnDefinition = "TEXT")
     private List<String> cv;
+    private Boolean activeState = true;
+
+    @PrePersist
+    public void setDefaultActiveState() {
+        if (activeState == null) {
+            this.activeState = true;
+        }
+    }
 }
