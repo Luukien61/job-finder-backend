@@ -1,14 +1,12 @@
 package com.kienluu.jobfinderbackend.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 
 @Entity
+@Setter
 @Getter
 @Table(name = "job")
 @Builder
@@ -33,4 +31,8 @@ public class JobEntity {
     private LocalDate expireDate;
     private String gender;
     private String type; // part-time or full-time
+
+    @ManyToOne
+    @JoinColumn(name = "company_id", referencedColumnName = "compay_id")
+    private CompanyEntity company;
 }

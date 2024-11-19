@@ -1,7 +1,7 @@
 package com.kienluu.jobfinderbackend.controller;
 
-import com.kienluu.jobfinderbackend.elasticsearch.document.JobDocument;
-import com.kienluu.jobfinderbackend.elasticsearch.service.JobSearchService;
+//import com.kienluu.jobfinderbackend.elasticsearch.document.JobDocument;
+//import com.kienluu.jobfinderbackend.elasticsearch.service.JobSearchService;
 import com.kienluu.jobfinderbackend.entity.JobEntity;
 import com.kienluu.jobfinderbackend.service.implement.JobService;
 import lombok.AllArgsConstructor;
@@ -17,7 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 public class JobController {
     private final JobService jobService;
-    private final JobSearchService jobSearchService;
+   // private final JobSearchService jobSearchService;
 
 
     @PostMapping("")
@@ -70,19 +70,30 @@ public class JobController {
         }
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<Object> searchJob(
-            @RequestParam String query,
-            @RequestParam int page,
-            @RequestParam int size)
-    {
+//    @GetMapping("/search")
+//    public ResponseEntity<Object> searchJob(
+//            @RequestParam String query,
+//            @RequestParam int page,
+//            @RequestParam int size)
+//    {
+//        try {
+//            Page<JobDocument> documents = jobSearchService.searchJobs(query, page, size);
+//            return new ResponseEntity<>(documents, HttpStatus.OK);
+//        }catch (Exception e) {
+//            return ResponseEntity.badRequest().body(e.getMessage());
+//        }
+//    }
+
+
+    @PostMapping("/job-postings")
+    public ResponseEntity<String> createJobPosting(@RequestBody JobEntity jobPosting,
+                                                   @RequestParam String companyId) {
         try {
-            Page<JobDocument> documents = jobSearchService.searchJobs(query, page, size);
-            return new ResponseEntity<>(documents, HttpStatus.OK);
-        }catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            jobService.createJobPosting(companyId, jobPosting);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Job posting created successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
-
 
 }

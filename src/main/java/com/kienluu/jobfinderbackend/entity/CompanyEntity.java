@@ -2,11 +2,14 @@ package com.kienluu.jobfinderbackend.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Setter
 @Getter
 @Table(name = "company")
 public class CompanyEntity {
@@ -26,4 +29,8 @@ public class CompanyEntity {
     private String email;
     @Column(columnDefinition = "INT DEFAULT 15")
     private int monthlyPost;
+
+    @OneToMany(mappedBy = "company")
+    private List<JobEntity> jobs;
+
 }

@@ -8,4 +8,5 @@ public interface IJobService {
     void deleteJob(JobEntity job);
 
 
+
 }
