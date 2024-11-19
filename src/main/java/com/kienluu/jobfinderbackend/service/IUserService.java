@@ -24,4 +24,5 @@ public interface IUserService {
     UserResponse getUserInfoById(String id);
     UserResponse userCompleted(UserDTO userDTO);
     void uploadCv(String userId, MultipartFile file);
+    void deleteCvById(String userId, String cvUrl);
 }

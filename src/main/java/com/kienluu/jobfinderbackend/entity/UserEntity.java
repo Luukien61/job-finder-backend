@@ -1,11 +1,8 @@
 package com.kienluu.jobfinderbackend.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.kienluu.jobfinderbackend.model.UserRole;
-import com.kienluu.jobfinderbackend.websocket.entity.Conversation;
 import jakarta.persistence.*;
-import jakarta.transaction.Transactional;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -50,5 +47,6 @@ public class UserEntity {
     @ElementCollection(targetClass = String.class, fetch = FetchType.LAZY)
     private List<String> searchHistory;
     @ElementCollection(targetClass = String.class, fetch = FetchType.LAZY)
+    @Column(columnDefinition = "TEXT")
     private List<String> cv;
 }

@@ -31,7 +31,7 @@ public class UserService implements IUserService {
     private final UserRepository userRepository;
     private final CustomMapper mapper;
     private final MailService mailService;
-    private final S3UploadService s3UploadService;
+    private final S3Service s3Service;
 
 
     @Override
@@ -148,9 +148,22 @@ public class UserService implements IUserService {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Invalid user id!"));
         List<String> cv = user.getCv();
-        String url = s3UploadService.uploadFile(file);
+        String url = s3Service.uploadFile(file);
         cv.add(url);
         user.setCv(cv);
         userRepository.save(user);
+    }
+
+    @Override
+    public void deleteCvById(String userId, String cvUrl) {
+        UserEntity user = userRepository.findById(userId.trim())
+                .orElseThrow(() -> new RuntimeException("Invalid user id!"));
+        var cvs = user.getCv();
+        if (cvs.contains(cvUrl)) {
+            s3Service.deleteFileFromS3ByUrl(cvUrl);
+            cvs.remove(cvUrl);
+            user.setCv(cvs);
+            userRepository.save(user);
+        }
     }
 }

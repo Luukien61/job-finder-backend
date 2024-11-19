@@ -52,6 +52,7 @@ public class UserController {
         }
     }
 
+
     @PostMapping("/signup/code")
     public ResponseEntity<Object> authenticatedSuccess(@RequestBody MailTemplate mailTemplate) {
         try {
@@ -108,6 +109,16 @@ public class UserController {
         try{
             UserResponse userResponse = userService.getUserInfoById(id);
             return ResponseEntity.ok(userResponse);
+        }catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/user/{id}/cv")
+    public ResponseEntity<Object> deleteCv(@PathVariable String id, @RequestBody StringElement element) {
+        try{
+            userService.deleteCvById(id, element.getValue());
+            return ResponseEntity.ok().build();
         }catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

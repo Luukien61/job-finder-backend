@@ -5,6 +5,7 @@ import lombok.Getter;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -25,7 +26,8 @@ public class CompanyEntity {
     private String address;
     private String phone;
     private String email;
-    @Column(columnDefinition = "INT DEFAULT 15")
-    private int monthlyPost;
+
+    @OneToMany(mappedBy = "companyId")
+    private Set<JobEntity> jobs;
 
 }
