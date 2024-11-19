@@ -153,4 +153,20 @@ public class UserService implements IUserService {
         user.setCv(cv);
         userRepository.save(user);
     }
+
+    @Override
+    public UserEntity inActiveUser(String userId) {
+        UserEntity userEntity = userRepository.findByUserId(userId).orElseThrow(()
+                -> new RuntimeException("Invalid user id!"));
+        userEntity.setActiveState(false);
+        userRepository.save(userEntity);
+        return userEntity;
+    }
+
+    @Override
+    public void deleteUser(String id) {
+        UserEntity userEntity = userRepository.findByUserId(id).orElseThrow(()
+                -> new RuntimeException("Invalid user id!"));
+        userRepository.delete(userEntity);
+    }
 }

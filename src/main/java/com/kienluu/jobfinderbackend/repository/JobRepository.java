@@ -13,4 +13,5 @@ public interface JobRepository extends JpaRepository<JobEntity, Long> {
     Optional<Integer> countByJobId(Long id);
 
     Optional<Integer> countAllByJobIdAndExpireDateBefore(Long jobId, LocalDate expireDate);
+
 }
