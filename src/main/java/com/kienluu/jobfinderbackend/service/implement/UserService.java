@@ -131,18 +131,7 @@ public class UserService implements IUserService {
 
     @Override
     public UserResponse userCompleted(UserDTO userDTO) {
-        UserEntity user = userRepository.findById(userDTO.getUserId())
-                .orElseThrow(() -> new RuntimeException("Invalid user id!"));
-        user.setEmail(userDTO.getEmail());
-        user.setName(userDTO.getName());
-        user.setPhone(userDTO.getPhone());
-        user.setAvatar(userDTO.getAvatar());
-        user.setAddress(userDTO.getAddress());
-        user.setUniversity(userDTO.getUniversity());
-        user.setDateOfBirth(userDTO.getDateOfBirth());
-        user.setEducationLevel(userDTO.getEducationLevel());
-        user.setGender(userDTO.getGender());
-        user = userRepository.save(user);
+        UserEntity user = updateInfo(userDTO);
         return mapper.toUserResponse(user);
     }
 
@@ -215,5 +204,26 @@ public class UserService implements IUserService {
                 .useCase("Thay đổi thông tin tài khoản")
                 .build();
         return sendEmailCode(template);
+    }
+
+    @Override
+    public UserDTO updateProfile(UserDTO userDTO) {
+        UserEntity updatedUser = updateInfo(userDTO);
+        return mapper.toUserDTO(updatedUser);
+    }
+
+    private UserEntity updateInfo(UserDTO userDTO) {
+        UserEntity user = userRepository.findById(userDTO.getUserId())
+                .orElseThrow(() -> new RuntimeException("Invalid user id!"));
+        user.setEmail(userDTO.getEmail());
+        user.setName(userDTO.getName());
+        user.setPhone(userDTO.getPhone());
+        user.setAvatar(userDTO.getAvatar());
+        user.setAddress(userDTO.getAddress());
+        user.setUniversity(userDTO.getUniversity());
+        user.setDateOfBirth(userDTO.getDateOfBirth());
+        user.setEducationLevel(userDTO.getEducationLevel());
+        user.setGender(userDTO.getGender());
+        return userRepository.save(user);
     }
 }

@@ -33,4 +33,5 @@ public interface IUserService {
     List<JobResponse> findAllAppliedJobs(String userId);
     UserResponse updateUserAccount(UserAccountUpdateRequest request) ;
     String sendVerificationEmail(UserAccountUpdateRequest request) throws MessagingException, GeneralSecurityException, IOException;
+    UserDTO updateProfile(UserDTO userDTO);
 }

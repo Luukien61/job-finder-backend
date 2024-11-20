@@ -15,9 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.mail.MessagingException;
-import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.List;
 
 
@@ -45,6 +42,16 @@ public class UserController {
             UserResponse userResponse = userService.userCompleted(userDTO);
             return ResponseEntity.ok(userResponse);
         } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/user/profile")
+    public ResponseEntity<Object> updateProfile(@RequestBody UserDTO userDTO) {
+        try{
+            UserDTO updateProfile = userService.updateProfile(userDTO);
+            return ResponseEntity.ok(updateProfile);
+        }catch (Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

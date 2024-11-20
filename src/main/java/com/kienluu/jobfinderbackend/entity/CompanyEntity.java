@@ -2,6 +2,7 @@ package com.kienluu.jobfinderbackend.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.kienluu.jobfinderbackend.model.CompanyState;
 import jakarta.persistence.*;
 import lombok.Getter;
 import org.hibernate.annotations.ColumnDefault;
@@ -33,5 +34,8 @@ public class CompanyEntity {
     @JsonIgnore
     @JsonBackReference
     private Set<JobEntity> jobs;
+
+    @Enumerated(EnumType.STRING)
+    private CompanyState state;
 
 }

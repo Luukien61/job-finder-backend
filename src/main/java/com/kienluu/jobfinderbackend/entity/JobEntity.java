@@ -1,6 +1,7 @@
 package com.kienluu.jobfinderbackend.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.kienluu.jobfinderbackend.model.JobState;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -38,4 +39,6 @@ public class JobEntity {
     private String gender;
     private String type; // part-time or full-time
     private String field;
+    @Enumerated(EnumType.STRING)
+    private JobState state;
 }
