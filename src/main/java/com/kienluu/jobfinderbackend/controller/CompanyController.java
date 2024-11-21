@@ -3,7 +3,9 @@ package com.kienluu.jobfinderbackend.controller;
 import com.kienluu.jobfinderbackend.dto.request.UpdateCompanyRequest;
 import com.kienluu.jobfinderbackend.dto.response.CompanyResponse;
 import com.kienluu.jobfinderbackend.entity.CompanyEntity;
+import com.kienluu.jobfinderbackend.service.ICompanyService;
 import com.kienluu.jobfinderbackend.service.implement.CompanyService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,10 +14,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/companies")
+@AllArgsConstructor(onConstructor_ = {@Autowired})
 public class CompanyController {
 
-    @Autowired
-    private CompanyService companyService;
+    private ICompanyService companyService;
 
     @GetMapping()
     List<CompanyEntity> getCompanies(){

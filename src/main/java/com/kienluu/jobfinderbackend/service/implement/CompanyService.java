@@ -5,19 +5,21 @@ import com.kienluu.jobfinderbackend.dto.response.CompanyResponse;
 import com.kienluu.jobfinderbackend.entity.CompanyEntity;
 import com.kienluu.jobfinderbackend.repository.CompanyRepository;
 import com.kienluu.jobfinderbackend.service.ICompanyService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@AllArgsConstructor(onConstructor = @__(@Autowired))
 public class CompanyService implements ICompanyService {
 
-    @Autowired
     private CompanyRepository companyRepository;
 
     private static final int MAX_POSTS_PER_MONTH = 5;
 
+    @Override
     public List<CompanyEntity> getCompanies(){
         return companyRepository.findAll();
     }
