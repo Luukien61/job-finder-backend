@@ -9,4 +9,5 @@ public interface IJobService {
     JobResponse updateJob(JobCreateRequest job);
     void deleteJob(JobEntity job);
 
+
 }
