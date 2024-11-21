@@ -36,27 +36,27 @@ public class JobService implements IJobService {
         }
     }
 
-    public JobEntity createJobPosting(String companyId, JobEntity jobPosting) throws Exception {
-        // Kiểm tra xem công ty có thể đăng bài không
-        if (!companyService.canPostJob(companyId)) {
-            throw new Exception("You have reached the maximum number of job postings for this month.");
-        }
-
-        // Tạo bài đăng
-
-        CompanyEntity company = new CompanyEntity();
-        company.setCompanyId(companyId);
-        jobPosting.setCompany(company);
-        jobPosting.setUpdateAt(LocalDate.now());
-
-        // Lưu bài đăng
-        JobEntity savedJob = jobRepository.save(jobPosting);
-
-        // Cập nhật số lượng bài đăng trong tháng của công ty
-        companyService.incrementMonthlyPost(companyId);
-
-        return savedJob;
-    }
+//    public JobEntity createJobPosting(String companyId, JobEntity jobPosting) throws Exception {
+//        // Kiểm tra xem công ty có thể đăng bài không
+//        if (!companyService.canPostJob(companyId)) {
+//            throw new Exception("You have reached the maximum number of job postings for this month.");
+//        }
+//
+//        // Tạo bài đăng
+//
+//        CompanyEntity company = new CompanyEntity();
+//        company.setCompanyId(companyId);
+//        jobPosting.setCompany(company);
+//        jobPosting.setUpdateAt(LocalDate.now());
+//
+//        // Lưu bài đăng
+//        JobEntity savedJob = jobRepository.save(jobPosting);
+//
+//        // Cập nhật số lượng bài đăng trong tháng của công ty
+//        companyService.incrementMonthlyPost(companyId);
+//
+//        return savedJob;
+//    }
 
     @Override
     public JobEntity updateJob(JobEntity job) {

@@ -21,4 +21,6 @@ public interface CompanyRepository extends JpaRepository<CompanyEntity, String> 
 //    @Query("UPDATE CompanyEntity c SET c.monthlyPost = c.monthlyPost + 1 WHERE c.companyId = :companyId")
 //    void incrementMonthlyPost(@Param("companyId") String companyId);
     Optional<CompanyEntity> findByCompanyId(String id);
+    boolean existsByEmail(String email);
+    
 }

@@ -85,15 +85,15 @@ public class JobController {
 //    }
 
 
-    @PostMapping("/job-postings")
-    public ResponseEntity<String> createJobPosting(@RequestBody JobEntity jobPosting,
-                                                   @RequestParam String companyId) {
-        try {
-            jobService.createJobPosting(companyId, jobPosting);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Job posting created successfully");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
-    }
+//    @PostMapping("/job-postings")
+//    public ResponseEntity<String> createJobPosting(@RequestBody JobEntity jobPosting,
+//                                                   @RequestParam String companyId) {
+//        try {
+//            jobService.createJobPosting(companyId, jobPosting);
+//            return ResponseEntity.status(HttpStatus.CREATED).body("Job posting created successfully");
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+//        }
+//    }
 
 }

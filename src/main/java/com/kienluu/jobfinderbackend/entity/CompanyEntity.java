@@ -26,6 +26,7 @@ public class CompanyEntity {
     private String website;
     private String field;
 
+    private String password;
     private String description;
     private String address;
     private String phone;
