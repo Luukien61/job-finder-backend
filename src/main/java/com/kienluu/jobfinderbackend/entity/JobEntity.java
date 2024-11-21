@@ -12,7 +12,6 @@ import java.time.LocalDate;
 @Getter
 @Table(name = "job")
 @Builder
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class JobEntity {

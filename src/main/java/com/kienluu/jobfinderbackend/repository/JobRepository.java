@@ -13,7 +13,7 @@ public interface JobRepository extends JpaRepository<JobEntity, Long> {
     Optional<JobEntity> findByJobId(Long id);
 
     @Query("SELECT COUNT(j) FROM JobEntity j " +
-           "WHERE j.company.companyId = :companyId " +
+           "WHERE j.company.id = :companyId " +
            "AND FUNCTION('MONTH', j.createdAt) = :month " +
            "AND FUNCTION('YEAR', j.createdAt) = :year")
     long countJobsByCompanyId(@Param("companyId") Long companyId,

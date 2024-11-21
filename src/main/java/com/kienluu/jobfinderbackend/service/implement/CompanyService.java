@@ -1,26 +1,38 @@
 package com.kienluu.jobfinderbackend.service.implement;
 
+import com.kienluu.jobfinderbackend.dto.CompanyDto;
 import com.kienluu.jobfinderbackend.dto.request.UpdateCompanyRequest;
+import com.kienluu.jobfinderbackend.dto.response.CompanyCreateResponse;
 import com.kienluu.jobfinderbackend.dto.response.CompanyResponse;
+import com.kienluu.jobfinderbackend.dto.response.LoginResponse;
 import com.kienluu.jobfinderbackend.entity.CompanyEntity;
+import com.kienluu.jobfinderbackend.mapper.CustomMapper;
+import com.kienluu.jobfinderbackend.model.MailTemplate;
+import com.kienluu.jobfinderbackend.model.UserRole;
 import com.kienluu.jobfinderbackend.repository.CompanyRepository;
 import com.kienluu.jobfinderbackend.service.ICompanyService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.List;
+import java.util.Optional;
 
 @Service
-@AllArgsConstructor(onConstructor = @__(@Autowired))
+@AllArgsConstructor
 public class CompanyService implements ICompanyService {
 
     private CompanyRepository companyRepository;
+    private final CustomMapper mapper;
+    private final MailService mailService;
 
     private static final int MAX_POSTS_PER_MONTH = 5;
 
     @Override
-    public List<CompanyEntity> getCompanies(){
+    public List<CompanyEntity> getCompanies() {
         return companyRepository.findAll();
     }
 
@@ -39,51 +51,32 @@ public class CompanyService implements ICompanyService {
         company.setWebsite(request.getWebsite());
         company.setField(request.getField());
 
-        // Lưu vào database
         company = companyRepository.save(company);
 
-        // Chuyển đổi sang DTO CompanyResponse
-        return CompanyResponse.builder()
-                .companyId(company.getCompanyId())
-                .address(company.getAddress())
-                .description(company.getDescription())
-                .name(company.getName())
-                .logo(company.getLogo())
-                .website(company.getWebsite())
-                .email(company.getEmail())
-                .field(company.getField())
-                .build();
+        return mapper.toCompanyResponse(company);
     }
 
+    @Override
+    public CompanyCreateResponse createCompany(CompanyDto request) {
+        Optional<CompanyEntity> optionalCompany = companyRepository.findByEmail(request.getEmail());
+        if(optionalCompany.isPresent()) {
+            throw new RuntimeException("Company already exists");
+        }
+        CompanyEntity company = mapper.toCompanyEntity(request);
+        company.setRole(UserRole.EMPLOYER);
+        company = companyRepository.save(company);
+        return mapper.toCompanyCreateResponse(company);
+    }
 
+    @Override
+    public String sendVerificationCode(MailTemplate mailTemplate) throws MessagingException, GeneralSecurityException, IOException {
+        return mailService.send(mailTemplate);
+    }
 
-//    @Override
-//    public boolean canPostJob(String companyId) {
-////        CompanyEntity company = companyRepository.findById(companyId)
-////                .orElseThrow(() -> new RuntimeException("Company not found"));
-////
-////        // Kiểm tra số lượng bài đăng trong tháng
-////        return company.getMonthlyPost() < MAX_POSTS_PER_MONTH;
-//        return false;
-//    }
-//
-//    @Override
-//    public void incrementMonthlyPost(String companyId) {
-////        CompanyEntity company = companyRepository.findById(companyId)
-////                .orElseThrow(() -> new RuntimeException("Company not found"));
-////
-////        company.setMonthlyPost(company.getMonthlyPost() + 1);
-////        companyRepository.save(company);
-//    }
-//
-//    @Override
-//    public void resetMonthlyPost(String companyId) {
-////        CompanyEntity company = companyRepository.findById(companyId)
-////                .orElseThrow(() -> new RuntimeException("Company not found"));
-////
-////        company.setMonthlyPost(0);
-////        companyRepository.save(company);
-//    }
-
-
+    @Override
+    public LoginResponse login(String email, String password) {
+        CompanyEntity companyEntity = companyRepository.findCompanyEntityByEmailAndPassword(email, password)
+                .orElseThrow(() -> new RuntimeException("Company not found"));
+        return mapper.toLoginResponse(companyEntity);
+    }
 }

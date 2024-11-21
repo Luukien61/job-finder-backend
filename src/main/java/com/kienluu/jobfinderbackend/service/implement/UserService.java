@@ -57,7 +57,7 @@ public class UserService implements IUserService {
                     throw new RuntimeException("This email already exists!");
                 });
         UserEntity user = mapper.toUserEntity(request);
-        user.setUserId("u_" + AppUtil.generateCustomUserId());
+        user.setId("u_" + AppUtil.generateCustomUserId());
         user.setRole(UserRole.EMPLOYEE);
         user = userRepository.save(user);
         return mapper.toUserResponse(user);
@@ -82,7 +82,7 @@ public class UserService implements IUserService {
         UserEntity userEntity = userRepository.findByEmail(userInfo.getEmail().trim())
                 .orElseThrow(() ->
                         new RuntimeException("This email has not been registered! Please sign up first!"));
-        if (!userEntity.getUserId().startsWith("google_")) {
+        if (!userEntity.getId().startsWith("google_")) {
             throw new RuntimeException("This email is not an google account!");
         }
         return mapper.toUserResponse(userEntity);
@@ -98,7 +98,7 @@ public class UserService implements IUserService {
                 .name(userInfo.getName())
                 .avatar(userInfo.getPicture())
                 .role(UserRole.EMPLOYEE)
-                .userId("google_" + AppUtil.generateCustomUserId())
+                .id("google_" + AppUtil.generateCustomUserId())
                 .address(userInfo.getLocale())
                 .build();
         user = userRepository.save(user);
@@ -110,7 +110,7 @@ public class UserService implements IUserService {
         if (user == null) {
             return false;
         } else {
-            String id = user.getUserId();
+            String id = user.getId();
             return id.startsWith("google");
         }
     }
@@ -178,7 +178,7 @@ public class UserService implements IUserService {
 
     @Override
     public UserResponse updateUserAccount(UserAccountUpdateRequest request)  {
-        UserEntity user = userRepository.findById(request.getUserId().trim())
+        UserEntity user = userRepository.findById(request.getId().trim())
                 .orElseThrow(() -> new RuntimeException("Invalid user id!"));
         user.setEmail(request.getEmail().trim());
         user.setPassword(request.getNewPassword());
@@ -188,14 +188,14 @@ public class UserService implements IUserService {
 
     @Override
     public String sendVerificationEmail(UserAccountUpdateRequest request) throws MessagingException, GeneralSecurityException, IOException {
-        UserEntity user = userRepository.findById(request.getUserId().trim())
+        UserEntity user = userRepository.findById(request.getId().trim())
                 .orElseThrow(() -> new RuntimeException("Invalid user id!"));
         if(!Objects.equals(user.getPassword(), request.getOldPassword())){
             throw new RuntimeException("Old password does not match!");
         }
         Optional<UserEntity> optionalUser = userRepository.findByEmail(request.getEmail().trim());
         if (optionalUser.isPresent()) {
-            if (!optionalUser.get().getUserId().equals(request.getUserId().trim())) {
+            if (!optionalUser.get().getId().equals(request.getId().trim())) {
                 throw new RuntimeException("This email has been registered!");
             }
         }
@@ -213,7 +213,7 @@ public class UserService implements IUserService {
     }
 
     private UserEntity updateInfo(UserDTO userDTO) {
-        UserEntity user = userRepository.findById(userDTO.getUserId())
+        UserEntity user = userRepository.findById(userDTO.getId())
                 .orElseThrow(() -> new RuntimeException("Invalid user id!"));
         user.setEmail(userDTO.getEmail());
         user.setName(userDTO.getName());

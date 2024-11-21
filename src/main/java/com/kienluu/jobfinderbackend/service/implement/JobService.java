@@ -28,7 +28,7 @@ public class JobService implements IJobService {
 
     @Override
     public JobResponse saveJob(JobCreateRequest job) {
-        CompanyEntity companyEntity = companyRepository.findByCompanyId(job.getCompanyId())
+        CompanyEntity companyEntity = companyRepository.findCompanyById(job.getCompanyId())
                 .orElseThrow(() -> new RuntimeException("Company not found"));
         JobEntity jobEntity = mapper.toJobEntity(job);
         jobEntity.setCompany(companyEntity);

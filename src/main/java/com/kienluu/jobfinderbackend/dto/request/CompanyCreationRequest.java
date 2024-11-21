@@ -1,16 +1,19 @@
 package com.kienluu.jobfinderbackend.dto.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-
+@Builder
 public class CompanyCreationRequest {
-    private String email;
+    private String name;
+    private String logo;
+    private String website;
     private String password;
+    private String address;
+    private String phone;
+    private String email;
+
 }

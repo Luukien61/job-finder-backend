@@ -11,16 +11,12 @@ import java.util.Optional;
 
 @Repository
 public interface CompanyRepository extends JpaRepository<CompanyEntity, String> {
-//
-//
-//    @Query("SELECT c.monthlyPost FROM CompanyEntity c WHERE c.companyId = :companyId")
-//    Integer findMonthlyPostByCompanyId(@Param("companyId") String companyId);
-//
-//    // Tăng số lượng bài đăng trong tháng sau mỗi lần đăng
-//    @Modifying
-//    @Query("UPDATE CompanyEntity c SET c.monthlyPost = c.monthlyPost + 1 WHERE c.companyId = :companyId")
-//    void incrementMonthlyPost(@Param("companyId") String companyId);
-    Optional<CompanyEntity> findByCompanyId(String id);
+    Optional<CompanyEntity> findCompanyById(String id);
     boolean existsByEmail(String email);
-    
+
+    Optional<CompanyEntity> findByEmail(String email);
+    Optional<CompanyEntity> findByName(String name);
+    Optional<CompanyEntity> findCompanyEntityByEmailAndPassword(String email, String password);
+
+
 }

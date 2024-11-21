@@ -10,6 +10,7 @@ import com.kienluu.jobfinderbackend.model.CodeExchange;
 import com.kienluu.jobfinderbackend.model.MailTemplate;
 import com.kienluu.jobfinderbackend.model.StringElement;
 import com.kienluu.jobfinderbackend.service.IUserService;
+import com.kienluu.jobfinderbackend.service.implement.MailService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,7 @@ import java.util.List;
 public class UserController {
 
     private IUserService userService;
+    private MailService mailService;
 
 
     @PostMapping("/user/signup")
@@ -73,6 +75,16 @@ public class UserController {
             String code = userService.sendSignupCode(mailTemplate);
             return ResponseEntity.ok(code);
         } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/code")
+    public ResponseEntity<Object> sendVerificationCode(@RequestBody MailTemplate mailTemplate) {
+        try{
+            String code = mailService.send(mailTemplate);
+            return ResponseEntity.ok(code);
+        }catch (Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

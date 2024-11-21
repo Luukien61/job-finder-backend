@@ -1,5 +1,6 @@
 package com.kienluu.jobfinderbackend.dto.response;
 
+import com.kienluu.jobfinderbackend.model.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,10 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Builder
-public class UserResponse {
+public class CompanyCreateResponse {
     private String id;
-    private String name;
-    private String avatar;
-    private String email;
-    private String role;
+    private UserRole role;
 }

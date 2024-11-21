@@ -1,25 +1,29 @@
 package com.kienluu.jobfinderbackend.mapper;
 
 
+import com.kienluu.jobfinderbackend.dto.CompanyDto;
 import com.kienluu.jobfinderbackend.dto.UserDTO;
 import com.kienluu.jobfinderbackend.dto.request.JobCreateRequest;
 import com.kienluu.jobfinderbackend.dto.request.UserCreationRequest;
-import com.kienluu.jobfinderbackend.dto.response.JobResponse;
-import com.kienluu.jobfinderbackend.dto.response.UserResponse;
+import com.kienluu.jobfinderbackend.dto.response.*;
+import com.kienluu.jobfinderbackend.entity.BaseUserEntity;
+import com.kienluu.jobfinderbackend.entity.CompanyEntity;
 import com.kienluu.jobfinderbackend.entity.JobEntity;
 import com.kienluu.jobfinderbackend.entity.UserEntity;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.mapstruct.*;
 
 @Mapper(uses = MapperHelper.class)
 public interface CustomMapper {
-;
-    @Mapping(source = "role",target = "role", qualifiedByName = "userDtoRoleToEntity")
+    ;
+
+    @Mapping(source = "role", target = "role", qualifiedByName = "userDtoRoleToEntity")
     @Mapping(target = "savedJobs", ignore = true)
     @Mapping(target = "appliedJobs", ignore = true)
     UserEntity userDtoToUserEntity(UserDTO userDTO);
-    @Mapping(source = "role", target = "role", qualifiedByName = "userEntityRoleToDto" )
+
+    @Mapping(source = "role", target = "role", qualifiedByName = "userEntityRoleToDto")
     UserResponse toUserResponse(UserEntity user);
+
     UserEntity toUserEntity(UserCreationRequest request);
 
     @Mapping(target = "role", expression = "java(user.getRole().toString())")
@@ -31,7 +35,21 @@ public interface CustomMapper {
     JobEntity toJobEntity(JobCreateRequest request);
 
     @Mapping(target = "companyName", expression = "java(job.getCompany().getName())")
-    @Mapping(target = "companyId", expression = "java(job.getCompany().getCompanyId())")
+    @Mapping(target = "companyId", expression = "java(job.getCompany().getId())")
     @Mapping(target = "salary", expression = "java(job.getMinSalary() + \" - \" + job.getMaxSalary() + \" triệu\")")
     JobResponse toJobResponse(JobEntity job);
+
+    CompanyResponse toCompanyResponse(CompanyEntity company);
+
+    CompanyEntity toCompanyEntity(CompanyDto companyDto);
+
+    CompanyDto toCompanyDto(CompanyEntity companyEntity);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    CompanyEntity partialUpdate(CompanyDto companyDto, @MappingTarget CompanyEntity companyEntity);
+
+
+    CompanyCreateResponse toCompanyCreateResponse(CompanyEntity companyEntity);
+    @Mapping(target = "role", expression = "java(baseUserEntity.getRole().toString())")
+    LoginResponse toLoginResponse(BaseUserEntity baseUserEntity);
 }

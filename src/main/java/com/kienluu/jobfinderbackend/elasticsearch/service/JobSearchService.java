@@ -13,10 +13,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.data.elasticsearch.core.SearchHits;
-
-
-import java.util.List;
 
 @Service
 @Slf4j
@@ -38,7 +34,7 @@ public class JobSearchService {
                             .title(job.getTitle())
                             .id(job.getJobId().toString())
                             .location(job.getLocation())
-                            .companyId(job.getCompany().getCompanyId())
+                            .companyId(job.getCompany().getId())
                             .companyName(job.getCompany().getName())
                             .logo(job.getCompany().getLogo())
                             .experience(job.getExperience())
