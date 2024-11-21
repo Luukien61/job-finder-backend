@@ -26,8 +26,5 @@ public interface IUserService {
     UserResponse userCompleted(UserDTO userDTO);
     void uploadCv(String userId, MultipartFile file);
 
-    UserEntity inActiveUser(String userId);
 
-
-    void deleteUser(String userId);
 }

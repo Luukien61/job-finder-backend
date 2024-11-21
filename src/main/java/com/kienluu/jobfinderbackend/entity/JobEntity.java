@@ -1,5 +1,6 @@
 package com.kienluu.jobfinderbackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Getter
@@ -33,7 +35,14 @@ public class JobEntity {
     private LocalDate expireDate;
     private String gender;
     private String type; // part-time or full-time
+    private String field;
 
+    @OneToMany(mappedBy = "job", cascade = CascadeType.MERGE)
+    @JsonBackReference
+    List<ReportEntity> reports;
 
+    @OneToMany(mappedBy = "job" , cascade = CascadeType.MERGE)
+    @JsonBackReference
+    List<JobApplicationEntity> jobApplications;
 
 }

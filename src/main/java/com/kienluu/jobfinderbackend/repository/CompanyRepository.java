@@ -11,11 +11,17 @@ import java.util.Optional;
 @Repository
 public interface CompanyRepository extends JpaRepository<CompanyEntity, String> {
     Optional<CompanyEntity> findByCompanyId(String id);
+
     @Query("select count(p) from CompanyEntity p")
-    Optional<Integer> countAllCompany();
+    Integer countAllCompany();
+
+
+
     @Query("select count(p) from CompanyEntity p join JobEntity j on p.companyId = j.companyId and p.companyId = :companyId and j.expireDate >= CURRENT_DATE " )
-    Optional<Integer> countJobNotExpireByCompanyId(@Param("companyId") String companyId);
+    Integer countJobNotExpireByCompanyId(@Param("companyId") String companyId);
+
     @Query("select  count(distinct p.companyId) from CompanyEntity p join JobEntity j on p.companyId = j.companyId and j.expireDate >= CURRENT_DATE ")
-    Optional<Integer> countCompanyByJobNotExpired();
+    Integer countCompanyByJobNotExpired();
+
 
 }

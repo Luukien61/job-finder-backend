@@ -1,39 +1,40 @@
 package com.kienluu.jobfinderbackend.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.kienluu.jobfinderbackend.model.ReportStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Entity
-@Getter
-@Setter
-@Table(name = "report")
+@Table(name = "job_application")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ReportEntity {
+@Getter
+@Setter
+public class JobApplicationEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long reportId;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     @JsonManagedReference
-    UserEntity user;
+    private UserEntity user;
+
 
     @ManyToOne
     @JoinColumn(name = "job_id")
     @JsonManagedReference
-    JobEntity job;
+    private JobEntity job;
 
-    private String companyId;
+    @Column(columnDefinition = "TEXT", nullable = false)
+    private String cvUrl;
 
-    @Column(name = "reason", columnDefinition = "TEXT", nullable = false)
-    private String rpReason;
+    private String state;
 
-    @Enumerated(EnumType.STRING)
-    private ReportStatus status;
-
-
+    @Column(columnDefinition = "TEXT")
+    private String referenceLetter;
+    private LocalDate createdDate;
 }
