@@ -2,13 +2,13 @@ package com.kienluu.jobfinderbackend.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
-@Setter
 @Table(name = "company")
 public class CompanyEntity {
     @Id
@@ -26,14 +26,8 @@ public class CompanyEntity {
     private String address;
     private String phone;
     private String email;
-    @Column(columnDefinition = "INT DEFAULT 15")
-    private int monthlyPost;
-    private Boolean activeState= true;
 
-    @PrePersist
-    public void setDefaultStates(){
-        if(activeState==null){
-            this.activeState=true;
-        }
-    }
+    @OneToMany(mappedBy = "companyId")
+    private Set<JobEntity> jobs;
+
 }
