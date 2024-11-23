@@ -4,7 +4,7 @@ import com.kienluu.jobfinderbackend.dto.UserDTO;
 import com.kienluu.jobfinderbackend.dto.request.LoginRequest;
 import com.kienluu.jobfinderbackend.dto.request.UserAccountUpdateRequest;
 import com.kienluu.jobfinderbackend.dto.request.UserCreationRequest;
-import com.kienluu.jobfinderbackend.dto.response.JobResponse;
+import com.kienluu.jobfinderbackend.dto.JobDto;
 import com.kienluu.jobfinderbackend.dto.response.UserResponse;
 import com.kienluu.jobfinderbackend.model.CodeExchange;
 import com.kienluu.jobfinderbackend.model.MailTemplate;
@@ -154,7 +154,7 @@ public class UserController {
     @GetMapping("/user/{id}/saved")
     public ResponseEntity<Object> getSavedJobs(@PathVariable String id) {
         try {
-            List<JobResponse> allSavedJobs = userService.findAllSavedJobs(id);
+            List<JobDto> allSavedJobs = userService.findAllSavedJobs(id);
             return ResponseEntity.ok(allSavedJobs);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -164,7 +164,7 @@ public class UserController {
     @GetMapping("/user/{id}/applied")
     public ResponseEntity<Object> getAppliedJobs(@PathVariable String id) {
         try {
-            List<JobResponse> allSavedJobs = userService.findAllAppliedJobs(id);
+            List<JobDto> allSavedJobs = userService.findAllAppliedJobs(id);
             return ResponseEntity.ok(allSavedJobs);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

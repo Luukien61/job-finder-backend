@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Setter
@@ -45,4 +46,6 @@ public class JobEntity {
     private String field;
     @Enumerated(EnumType.STRING)
     private JobState state;
+    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.REMOVE)
+    private List<JobApplicationEntity> applications;
 }

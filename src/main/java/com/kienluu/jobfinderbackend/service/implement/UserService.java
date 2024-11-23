@@ -4,7 +4,7 @@ import com.kienluu.jobfinderbackend.dto.UserDTO;
 import com.kienluu.jobfinderbackend.dto.request.LoginRequest;
 import com.kienluu.jobfinderbackend.dto.request.UserAccountUpdateRequest;
 import com.kienluu.jobfinderbackend.dto.request.UserCreationRequest;
-import com.kienluu.jobfinderbackend.dto.response.JobResponse;
+import com.kienluu.jobfinderbackend.dto.JobDto;
 import com.kienluu.jobfinderbackend.dto.response.UserResponse;
 import com.kienluu.jobfinderbackend.entity.JobEntity;
 import com.kienluu.jobfinderbackend.entity.UserEntity;
@@ -161,7 +161,7 @@ public class UserService implements IUserService {
 
     @Override
     @Transactional
-    public List<JobResponse> findAllSavedJobs(String userId) {
+    public List<JobDto> findAllSavedJobs(String userId) {
         UserEntity user = userRepository.findById(userId.trim())
                 .orElseThrow(() -> new RuntimeException("Invalid user id!"));
         Set<JobEntity> savedJobs = user.getSavedJobs();
@@ -169,7 +169,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public List<JobResponse> findAllAppliedJobs(String userId) {
+    public List<JobDto> findAllAppliedJobs(String userId) {
         UserEntity user = userRepository.findById(userId.trim())
                 .orElseThrow(() -> new RuntimeException("Invalid user id!"));
         Set<JobEntity> savedJobs = user.getAppliedJobs();

@@ -1,4 +1,4 @@
-package com.kienluu.jobfinderbackend.dto.response;
+package com.kienluu.jobfinderbackend.dto;
 
 import com.kienluu.jobfinderbackend.entity.JobEntity;
 import lombok.*;
@@ -14,7 +14,7 @@ import java.time.LocalDate;
 @Builder
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class JobResponse implements Serializable {
+public class JobDto implements Serializable {
     Long jobId;
     String companyId;
     String companyName;

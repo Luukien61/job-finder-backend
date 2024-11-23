@@ -1,11 +1,12 @@
 package com.kienluu.jobfinderbackend.controller;
 
+import com.kienluu.jobfinderbackend.dto.JobDto;
 import com.kienluu.jobfinderbackend.dto.request.JobCreateRequest;
-import com.kienluu.jobfinderbackend.dto.response.JobResponse;
+import com.kienluu.jobfinderbackend.dto.response.JobEmployerCard;
 import com.kienluu.jobfinderbackend.elasticsearch.document.JobDocument;
 import com.kienluu.jobfinderbackend.elasticsearch.service.JobSearchService;
 import com.kienluu.jobfinderbackend.entity.JobEntity;
-import com.kienluu.jobfinderbackend.service.implement.JobService;
+import com.kienluu.jobfinderbackend.service.IJobService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -18,14 +19,14 @@ import java.util.List;
 @RequestMapping("/job")
 @AllArgsConstructor
 public class JobController {
-    private final JobService jobService;
+    private final IJobService jobService;
     private final JobSearchService jobSearchService;
 
 
     @PostMapping("/{companyId}")
     public ResponseEntity<Object> createJob(@PathVariable String companyId,@RequestBody JobCreateRequest job) {
         try {
-            JobResponse saveJob = jobService.saveJob(job);
+            JobDto saveJob = jobService.saveJob(job);
             return new ResponseEntity<>(saveJob, HttpStatus.CREATED);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -85,6 +86,26 @@ public class JobController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @GetMapping("/company/{companyId}")
+    public ResponseEntity<Object> searchJobByCompany(
+            @PathVariable String companyId,
+            @RequestParam( "page") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size
+    ) {
+        try{
+            Page<JobEmployerCard> cards = jobService.getJobCardsByCompanyId(companyId,page ,size);
+            return new ResponseEntity<>(cards, HttpStatus.OK);
+        }catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+
+//    @PostMapping("/{jobId}/apply")
+//    public ResponseEntity<Object> applyJob(@PathVariable Long jobId) {
+//
+//    }
 
 
 }
