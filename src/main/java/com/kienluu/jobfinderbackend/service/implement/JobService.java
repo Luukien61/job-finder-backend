@@ -7,12 +7,15 @@ import com.kienluu.jobfinderbackend.elasticsearch.event.JobChangedEvent;
 import com.kienluu.jobfinderbackend.entity.CompanyEntity;
 import com.kienluu.jobfinderbackend.entity.JobEntity;
 import com.kienluu.jobfinderbackend.mapper.CustomMapper;
+import com.kienluu.jobfinderbackend.model.JobState;
 import com.kienluu.jobfinderbackend.repository.CompanyRepository;
 import com.kienluu.jobfinderbackend.repository.JobRepository;
 import com.kienluu.jobfinderbackend.service.IJobService;
 import lombok.AllArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 
 @Service
 @AllArgsConstructor
@@ -32,6 +35,10 @@ public class JobService implements IJobService {
                 .orElseThrow(() -> new RuntimeException("Company not found"));
         JobEntity jobEntity = mapper.toJobEntity(job);
         jobEntity.setCompany(companyEntity);
+        var now = LocalDate.now();
+        jobEntity.setCreatedAt(now);
+        jobEntity.setUpdateAt(now);
+        jobEntity.setState(JobState.PENDING);
         jobEntity = jobRepository.save(jobEntity);
         eventPublisher.publishEvent(new JobChangedEvent(jobEntity, EvenType.CREATED));
         return mapper.toJobResponse(jobEntity);

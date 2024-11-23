@@ -25,10 +25,22 @@ public class CompanyController {
 
     private ICompanyService companyService;
 
-    @GetMapping()
+    @GetMapping("/all")
     List<CompanyEntity> getCompanies(){
         return companyService.getCompanies();
     }
+
+
+    @GetMapping("/{companyId}")
+    public ResponseEntity<Object> getCompany(@PathVariable String companyId){
+        try{
+            CompanyResponse response = companyService.getCompanyById(companyId);
+            return ResponseEntity.ok(response);
+        }catch (Exception e){
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 
 
     @PutMapping("/{companyId}")

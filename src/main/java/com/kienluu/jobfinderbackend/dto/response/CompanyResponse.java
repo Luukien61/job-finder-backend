@@ -16,6 +16,8 @@ public class CompanyResponse {
     private String description;
     private String name;
     private String logo;
+    private String phone;
+    private String wallpaper;
     private String website;
     private String email;
     private String field;

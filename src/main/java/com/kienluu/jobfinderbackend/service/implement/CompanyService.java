@@ -37,6 +37,13 @@ public class CompanyService implements ICompanyService {
     }
 
     @Override
+    public CompanyResponse getCompanyById(String id) {
+        CompanyEntity companyEntity = companyRepository.findCompanyById(id)
+                .orElseThrow(() -> new RuntimeException("Company not found"));
+        return mapper.toCompanyResponse(companyEntity);
+    }
+
+    @Override
     public CompanyResponse updateCompany(String companyId, UpdateCompanyRequest request) {
         CompanyEntity company = companyRepository.findById(companyId)
                 .orElseThrow(() -> new RuntimeException("Company not found"));

@@ -22,8 +22,8 @@ public class JobController {
     private final JobSearchService jobSearchService;
 
 
-    @PostMapping("")
-    public ResponseEntity<Object> createJob(@RequestBody JobCreateRequest job) {
+    @PostMapping("/{companyId}")
+    public ResponseEntity<Object> createJob(@PathVariable String companyId,@RequestBody JobCreateRequest job) {
         try {
             JobResponse saveJob = jobService.saveJob(job);
             return new ResponseEntity<>(saveJob, HttpStatus.CREATED);

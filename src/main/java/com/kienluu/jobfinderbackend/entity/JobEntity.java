@@ -22,10 +22,14 @@ public class JobEntity {
     @JsonManagedReference
     @JoinColumn(name = "company_id")
     private CompanyEntity company;
+    @Column(columnDefinition = "TEXT")
     private String title;
     private String location;
+    @Column(columnDefinition = "TEXT")
     private String description;
+    @Column(columnDefinition = "TEXT")
     private String requirements;
+    @Column(columnDefinition = "TEXT")
     private String benefits;
     private String workTime;
     private String role;

@@ -19,7 +19,7 @@ public class CompanyDto implements Serializable {
     String id;
     String name;
     String logo;
-    List<String> images;
+    String wallpaper;
     String website;
     String field;
     String password;

@@ -24,10 +24,7 @@ import java.util.Set;
 public class CompanyEntity extends BaseUserEntity {
     private String name;
     private String logo;
-    @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
-    @CollectionTable(name = "company_images", joinColumns = @JoinColumn(name = "company_company_id"))
-    @Column(name = "image_url")
-    private List<String> images;
+    private String wallpaper;
     private String website;
     private String field;
 

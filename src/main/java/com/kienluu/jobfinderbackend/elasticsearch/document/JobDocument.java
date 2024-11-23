@@ -44,4 +44,7 @@ public class JobDocument {
     @Field(type = FieldType.Date, format = DateFormat.date, index = false)
     private LocalDate expiryDate;
 
+    @Field(type = FieldType.Date, format = DateFormat.date, index = false)
+    private LocalDate createDate;
+
 }

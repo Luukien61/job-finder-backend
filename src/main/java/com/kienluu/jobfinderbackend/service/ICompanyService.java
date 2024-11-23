@@ -17,6 +17,8 @@ public interface ICompanyService {
 
     List<CompanyEntity> getCompanies();
 
+    CompanyResponse getCompanyById(String id);
+
     CompanyResponse updateCompany(String companyId, UpdateCompanyRequest request);
 
     CompanyCreateResponse createCompany(CompanyDto request);
