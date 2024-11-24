@@ -35,7 +35,7 @@ public interface CustomMapper {
 
     @Mapping(target = "companyName", expression = "java(job.getCompany().getName())")
     @Mapping(target = "companyId", expression = "java(job.getCompany().getId())")
-    @Mapping(target = "salary", expression = "java(job.getMinSalary() + \" - \" + job.getMaxSalary() + \" triệu\")")
+//    @Mapping(target = "salary", expression = "java(job.getMinSalary() + \" - \" + job.getMaxSalary() + \" triệu\")")
     JobDto toJobResponse(JobEntity job);
 
     CompanyResponse toCompanyResponse(CompanyEntity company);

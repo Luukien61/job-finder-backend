@@ -42,16 +42,16 @@ public class JobController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-//
-//    @PutMapping("/")
-//    public ResponseEntity<Object> updateJob(@RequestBody JobEntity job) {
-//        try {
-//            JobEntity updateJob = jobService.updateJob(job);
-//            return new ResponseEntity<>(updateJob, HttpStatus.OK);
-//        } catch (Exception e) {
-//            return ResponseEntity.badRequest().body(e.getMessage());
-//        }
-//    }
+
+    @GetMapping("/{jobId}")
+    public ResponseEntity<Object> getJob(@PathVariable Long jobId) {
+        try{
+            JobDto job = jobService.getJobById(jobId);
+            return new ResponseEntity<>(job, HttpStatus.OK);
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
     @DeleteMapping("/")
     public ResponseEntity<Object> deleteJob(@RequestBody JobEntity job) {

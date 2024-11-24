@@ -75,15 +75,23 @@ public class JobService implements IJobService {
     }
 
     @Override
+    public JobDto getJobById(Long jobId) {
+        JobEntity jobEntity = jobRepository.findByJobId(jobId)
+                .orElseThrow(() -> new RuntimeException("Job not found"));
+        return mapper.toJobResponse(jobEntity);
+
+    }
+
+    @Override
     @Transactional
     public Page<JobEmployerCard> getJobCardsByCompanyId(String companyId, int page, int size) {
+        Sort sort1= Sort.by(Sort.Order.desc("createdAt"), Sort.Order.asc("expireDate"));
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
-        Pageable pageable = PageRequest.of(page, size, sort);
+        Pageable pageable = PageRequest.of(page, size, sort1);
         Page<JobEntity> jobs = jobRepository.findByCompanyId(companyId, pageable);
         return jobs.map(this::toJobEmployerCard);
     }
 
-    @Transactional
     protected JobEmployerCard toJobEmployerCard(JobEntity jobEntity) {
         List<JobApplicationEntity> jobApplicationEntity = jobEntity.getApplications();
         List<JobApplicationDto> applicationDtos = jobApplicationEntity.stream().map(mapper::toJobApplicationEntityDto).toList();

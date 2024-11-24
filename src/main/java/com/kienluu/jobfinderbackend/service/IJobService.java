@@ -15,5 +15,7 @@ public interface IJobService {
 
     Page<JobEmployerCard> getJobCardsByCompanyId(String companyId, int page, int size);
 
+    JobDto getJobById(Long jobId);
+
 
 }

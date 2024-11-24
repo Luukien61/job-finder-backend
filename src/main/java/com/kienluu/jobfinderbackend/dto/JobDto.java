@@ -29,7 +29,6 @@ public class JobDto implements Serializable {
     int maxSalary;
     int experience;
     int quantity;
-    String salary;
     LocalDate createdAt;
     LocalDate updateAt;
     LocalDate expireDate;
