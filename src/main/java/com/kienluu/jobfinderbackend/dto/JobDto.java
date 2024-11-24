@@ -13,11 +13,13 @@ import java.time.LocalDate;
 @Value
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor(force = true)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class JobDto implements Serializable {
     Long jobId;
     String companyId;
     String companyName;
+    String logo;
     String title;
     String location;
     String description;

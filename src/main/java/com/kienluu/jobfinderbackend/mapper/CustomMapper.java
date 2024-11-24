@@ -7,7 +7,10 @@ import com.kienluu.jobfinderbackend.dto.JobDto;
 import com.kienluu.jobfinderbackend.dto.UserDTO;
 import com.kienluu.jobfinderbackend.dto.request.JobCreateRequest;
 import com.kienluu.jobfinderbackend.dto.request.UserCreationRequest;
-import com.kienluu.jobfinderbackend.dto.response.*;
+import com.kienluu.jobfinderbackend.dto.response.CompanyCreateResponse;
+import com.kienluu.jobfinderbackend.dto.response.CompanyResponse;
+import com.kienluu.jobfinderbackend.dto.response.LoginResponse;
+import com.kienluu.jobfinderbackend.dto.response.UserResponse;
 import com.kienluu.jobfinderbackend.entity.*;
 import org.mapstruct.*;
 
@@ -35,6 +38,7 @@ public interface CustomMapper {
 
     @Mapping(target = "companyName", expression = "java(job.getCompany().getName())")
     @Mapping(target = "companyId", expression = "java(job.getCompany().getId())")
+    @Mapping(target = "logo", expression = "java(job.getCompany().getLogo())")
 //    @Mapping(target = "salary", expression = "java(job.getMinSalary() + \" - \" + job.getMaxSalary() + \" triệu\")")
     JobDto toJobResponse(JobEntity job);
 
@@ -49,11 +53,16 @@ public interface CustomMapper {
 
 
     CompanyCreateResponse toCompanyCreateResponse(CompanyEntity companyEntity);
+
     @Mapping(target = "role", expression = "java(baseUserEntity.getRole().toString())")
     LoginResponse toLoginResponse(BaseUserEntity baseUserEntity);
 
     @Mapping(target = "userName", expression = "java(entity.getUser().getName())")
     @Mapping(target = "userAvatar", expression = "java(entity.getUser().getAvatar())")
     @Mapping(target = "jobId", expression = "java(entity.getJob().getJobId())")
-    JobApplicationDto toJobApplicationEntityDto(JobApplicationEntity entity);
+    JobApplicationDto toJobApplicationDto(JobApplicationEntity entity);
+
+    @Mapping(target = "user", ignore = true)
+    @Mapping(target = "job", ignore = true)
+    JobApplicationEntity toJobApplicationEntity(JobApplicationDto app);
 }

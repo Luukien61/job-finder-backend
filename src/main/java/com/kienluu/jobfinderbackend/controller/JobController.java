@@ -102,10 +102,5 @@ public class JobController {
     }
 
 
-//    @PostMapping("/{jobId}/apply")
-//    public ResponseEntity<Object> applyJob(@PathVariable Long jobId) {
-//
-//    }
-
 
 }

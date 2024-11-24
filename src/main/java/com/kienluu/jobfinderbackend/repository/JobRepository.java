@@ -1,6 +1,7 @@
 package com.kienluu.jobfinderbackend.repository;
 
 import com.kienluu.jobfinderbackend.entity.JobEntity;
+import com.kienluu.jobfinderbackend.model.JobState;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,4 +36,9 @@ public interface JobRepository extends JpaRepository<JobEntity, Long> {
 
 
     Page<JobEntity> findByCompanyId(@Param("companyId") String companyId, Pageable pageable);
+
+    @Query("select job from JobEntity job where job.jobId= :jobId and job.expireDate >=CURRENT_DATE")
+    Optional<JobEntity> findJobByidAndNotExpiry(@Param("jobId") Long jobId);
+
+
 }

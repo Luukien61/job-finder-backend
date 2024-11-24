@@ -94,7 +94,7 @@ public class JobService implements IJobService {
 
     protected JobEmployerCard toJobEmployerCard(JobEntity jobEntity) {
         List<JobApplicationEntity> jobApplicationEntity = jobEntity.getApplications();
-        List<JobApplicationDto> applicationDtos = jobApplicationEntity.stream().map(mapper::toJobApplicationEntityDto).toList();
+        List<JobApplicationDto> applicationDtos = jobApplicationEntity.stream().map(mapper::toJobApplicationDto).toList();
         return JobEmployerCard.builder()
                 .jobId(jobEntity.getJobId())
                 .title(jobEntity.getTitle())

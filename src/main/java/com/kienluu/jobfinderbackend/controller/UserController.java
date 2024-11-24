@@ -192,5 +192,25 @@ public class UserController {
     }
 
 
+    @PostMapping("/user/{userId}/save")
+    public ResponseEntity<Object> saveJob(@PathVariable String userId, @RequestParam("jobId") Long jobId){
+        try{
+            boolean saved = userService.saveJob(userId, jobId);
+            return ResponseEntity.ok().body(saved);
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/user/{userId}/save")
+    public ResponseEntity<Object> getJob(@PathVariable String userId,@RequestParam("jobId") Long jobId){
+        try{
+            boolean isSaved = userService.isJobSaved(userId, jobId);
+            return ResponseEntity.ok(isSaved);
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 }
 

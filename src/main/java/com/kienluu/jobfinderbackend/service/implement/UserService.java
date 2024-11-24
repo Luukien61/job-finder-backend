@@ -1,15 +1,19 @@
 package com.kienluu.jobfinderbackend.service.implement;
 
+import com.kienluu.jobfinderbackend.dto.JobDto;
 import com.kienluu.jobfinderbackend.dto.UserDTO;
 import com.kienluu.jobfinderbackend.dto.request.LoginRequest;
 import com.kienluu.jobfinderbackend.dto.request.UserAccountUpdateRequest;
 import com.kienluu.jobfinderbackend.dto.request.UserCreationRequest;
-import com.kienluu.jobfinderbackend.dto.JobDto;
 import com.kienluu.jobfinderbackend.dto.response.UserResponse;
 import com.kienluu.jobfinderbackend.entity.JobEntity;
 import com.kienluu.jobfinderbackend.entity.UserEntity;
 import com.kienluu.jobfinderbackend.mapper.CustomMapper;
-import com.kienluu.jobfinderbackend.model.*;
+import com.kienluu.jobfinderbackend.model.CodeExchange;
+import com.kienluu.jobfinderbackend.model.GoogleUserInfo;
+import com.kienluu.jobfinderbackend.model.MailTemplate;
+import com.kienluu.jobfinderbackend.model.UserRole;
+import com.kienluu.jobfinderbackend.repository.JobRepository;
 import com.kienluu.jobfinderbackend.repository.UserRepository;
 import com.kienluu.jobfinderbackend.service.IUserService;
 import com.kienluu.jobfinderbackend.util.AppUtil;
@@ -35,6 +39,7 @@ public class UserService implements IUserService {
     private final CustomMapper mapper;
     private final MailService mailService;
     private final S3Service s3Service;
+    private final JobRepository jobRepository;
 
 
     @Override
@@ -177,7 +182,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public UserResponse updateUserAccount(UserAccountUpdateRequest request)  {
+    public UserResponse updateUserAccount(UserAccountUpdateRequest request) {
         UserEntity user = userRepository.findById(request.getId().trim())
                 .orElseThrow(() -> new RuntimeException("Invalid user id!"));
         user.setEmail(request.getEmail().trim());
@@ -190,7 +195,7 @@ public class UserService implements IUserService {
     public String sendVerificationEmail(UserAccountUpdateRequest request) throws MessagingException, GeneralSecurityException, IOException {
         UserEntity user = userRepository.findById(request.getId().trim())
                 .orElseThrow(() -> new RuntimeException("Invalid user id!"));
-        if(!Objects.equals(user.getPassword(), request.getOldPassword())){
+        if (!Objects.equals(user.getPassword(), request.getOldPassword())) {
             throw new RuntimeException("Old password does not match!");
         }
         Optional<UserEntity> optionalUser = userRepository.findByEmail(request.getEmail().trim());
@@ -225,5 +230,21 @@ public class UserService implements IUserService {
         user.setEducationLevel(userDTO.getEducationLevel());
         user.setGender(userDTO.getGender());
         return userRepository.save(user);
+    }
+
+    @Override
+    public boolean saveJob(String userId, Long jobId) {
+        UserEntity user = userRepository.findById(userId.trim())
+                .orElseThrow(() -> new RuntimeException("Invalid user id!"));
+        JobEntity jobEntity = jobRepository.findById(jobId)
+                .orElseThrow(() -> new RuntimeException("Invalid job id!"));
+        user.getSavedJobs().add(jobEntity);
+        userRepository.save(user);
+        return true;
+    }
+
+    @Override
+    public boolean isJobSaved(String userId, Long jobId) {
+        return userRepository.isJobSaved(userId.trim(), jobId);
     }
 }
