@@ -244,6 +244,17 @@ public class UserService implements IUserService {
     }
 
     @Override
+    public boolean unsaveJob(String userId, Long jobId) {
+        UserEntity user = userRepository.findById(userId.trim())
+                .orElseThrow(() -> new RuntimeException("Invalid user id!"));
+        JobEntity jobEntity = jobRepository.findById(jobId)
+                .orElseThrow(() -> new RuntimeException("Invalid job id!"));
+        user.getSavedJobs().remove(jobEntity);
+        userRepository.save(user);
+        return false;
+    }
+
+    @Override
     public boolean isJobSaved(String userId, Long jobId) {
         return userRepository.isJobSaved(userId.trim(), jobId);
     }

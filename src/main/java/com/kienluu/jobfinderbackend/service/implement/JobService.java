@@ -10,6 +10,7 @@ import com.kienluu.jobfinderbackend.entity.CompanyEntity;
 import com.kienluu.jobfinderbackend.entity.JobApplicationEntity;
 import com.kienluu.jobfinderbackend.entity.JobEntity;
 import com.kienluu.jobfinderbackend.mapper.CustomMapper;
+import com.kienluu.jobfinderbackend.mapper.UserContext;
 import com.kienluu.jobfinderbackend.model.JobState;
 import com.kienluu.jobfinderbackend.repository.CompanyRepository;
 import com.kienluu.jobfinderbackend.repository.JobRepository;
@@ -85,7 +86,7 @@ public class JobService implements IJobService {
     @Override
     @Transactional
     public Page<JobEmployerCard> getJobCardsByCompanyId(String companyId, int page, int size) {
-        Sort sort1= Sort.by(Sort.Order.desc("createdAt"), Sort.Order.asc("expireDate"));
+        Sort sort1 = Sort.by(Sort.Order.desc("createdAt"), Sort.Order.asc("expireDate"));
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
         Pageable pageable = PageRequest.of(page, size, sort1);
         Page<JobEntity> jobs = jobRepository.findByCompanyId(companyId, pageable);
@@ -94,7 +95,9 @@ public class JobService implements IJobService {
 
     protected JobEmployerCard toJobEmployerCard(JobEntity jobEntity) {
         List<JobApplicationEntity> jobApplicationEntity = jobEntity.getApplications();
-        List<JobApplicationDto> applicationDtos = jobApplicationEntity.stream().map(mapper::toJobApplicationDto).toList();
+        List<JobApplicationDto> applicationDtos = jobApplicationEntity.stream()
+                .map(item -> mapper.toJobApplicationDto(item, new UserContext(item.getUser())))
+                .toList();
         return JobEmployerCard.builder()
                 .jobId(jobEntity.getJobId())
                 .title(jobEntity.getTitle())

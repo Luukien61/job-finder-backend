@@ -57,10 +57,11 @@ public interface CustomMapper {
     @Mapping(target = "role", expression = "java(baseUserEntity.getRole().toString())")
     LoginResponse toLoginResponse(BaseUserEntity baseUserEntity);
 
-    @Mapping(target = "userName", expression = "java(entity.getUser().getName())")
-    @Mapping(target = "userAvatar", expression = "java(entity.getUser().getAvatar())")
+    @Mapping(target = "userName", expression = "java(userContext.getUser().getName())")
+    @Mapping(target = "userAvatar", expression = "java(userContext.getUser().getAvatar())")
     @Mapping(target = "jobId", expression = "java(entity.getJob().getJobId())")
-    JobApplicationDto toJobApplicationDto(JobApplicationEntity entity);
+    @Mapping(target = "userId", expression = "java(userContext.getUser().getId())")
+    JobApplicationDto toJobApplicationDto(JobApplicationEntity entity, @Context UserContext userContext);
 
     @Mapping(target = "user", ignore = true)
     @Mapping(target = "job", ignore = true)

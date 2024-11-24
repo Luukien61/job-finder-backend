@@ -202,6 +202,16 @@ public class UserController {
         }
     }
 
+    @PostMapping("/user/{userId}/unsave")
+    public ResponseEntity<Object> unSaveJob(@PathVariable String userId, @RequestParam("jobId") Long jobId){
+        try{
+            boolean saved = userService.unsaveJob(userId, jobId);
+            return ResponseEntity.ok().body(saved);
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @GetMapping("/user/{userId}/save")
     public ResponseEntity<Object> getJob(@PathVariable String userId,@RequestParam("jobId") Long jobId){
         try{

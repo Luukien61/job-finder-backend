@@ -34,5 +34,6 @@ public interface IUserService {
     String sendVerificationEmail(UserAccountUpdateRequest request) throws MessagingException, GeneralSecurityException, IOException;
     UserDTO updateProfile(UserDTO userDTO);
     boolean saveJob(String userId, Long jobId);
+    boolean unsaveJob(String userId, Long jobId);
     boolean isJobSaved(String userId, Long jobId);
 }

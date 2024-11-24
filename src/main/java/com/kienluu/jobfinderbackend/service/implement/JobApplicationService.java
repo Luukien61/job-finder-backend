@@ -5,11 +5,13 @@ import com.kienluu.jobfinderbackend.entity.JobApplicationEntity;
 import com.kienluu.jobfinderbackend.entity.JobEntity;
 import com.kienluu.jobfinderbackend.entity.UserEntity;
 import com.kienluu.jobfinderbackend.mapper.CustomMapper;
+import com.kienluu.jobfinderbackend.mapper.UserContext;
 import com.kienluu.jobfinderbackend.model.JobApplicationState;
 import com.kienluu.jobfinderbackend.repository.JobApplicationRepository;
 import com.kienluu.jobfinderbackend.repository.JobRepository;
 import com.kienluu.jobfinderbackend.repository.UserRepository;
 import com.kienluu.jobfinderbackend.service.IJobApplicationService;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +27,7 @@ public class JobApplicationService implements IJobApplicationService {
     private final CustomMapper mapper;
 
     @Override
+    @Transactional
     public void applyJob(JobApplicationDto job) {
         Optional<JobApplicationEntity> optionalJobApplication = jobApplicationRepository.findByUserAndJob(job.getUserId(), job.getJobId());
         if (optionalJobApplication.isPresent()) {
@@ -42,14 +45,17 @@ public class JobApplicationService implements IJobApplicationService {
         Set<JobEntity> appliedJobs = user.getAppliedJobs();
         appliedJobs.add(jobEntity);
         user.setAppliedJobs(appliedJobs);
+        jobEntity.getApplications().add(entity);
         jobApplicationRepository.save(entity);
         userRepository.save(user);
+        jobRepository.save(jobEntity);
     }
 
     @Override
     public JobApplicationDto getJobById(Long id) {
         JobApplicationEntity entity = jobApplicationRepository.findById(id).orElseThrow(() -> new RuntimeException("Job not found"));
-        return mapper.toJobApplicationDto(entity);
+        UserContext userContext = new UserContext(entity.getUser());
+        return mapper.toJobApplicationDto(entity,userContext);
     }
 
     @Override
