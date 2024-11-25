@@ -1,6 +1,7 @@
 package com.kienluu.jobfinderbackend.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.kienluu.jobfinderbackend.model.JobApplicationState;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,22 +20,22 @@ public class JobApplicationEntity {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
     @JsonManagedReference
     private UserEntity user;
 
 
     @ManyToOne
-    @JoinColumn(name = "job_id")
     @JsonManagedReference
     private JobEntity job;
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String cvUrl;
 
-    private String state;
+    @Enumerated(EnumType.STRING)
+    private JobApplicationState state;
 
     @Column(columnDefinition = "TEXT")
     private String referenceLetter;
     private LocalDate createdDate;
 }
+

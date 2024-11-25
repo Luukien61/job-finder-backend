@@ -26,7 +26,7 @@ public class ParticipantService {
         return Participant.builder()
                 .name(user.getName())
                 .avatar(user.getAvatar())
-                .id(user.getUserId())
+                .id(user.getId())
                 .build();
     }
     private Participant findCompanyById(String id) {
@@ -34,7 +34,7 @@ public class ParticipantService {
                 .orElseThrow(() -> new RuntimeException("Company Not Found"));
         return Participant.builder()
                 .name(company.getName())
-                .id(company.getCompanyId())
+                .id(company.getId())
                 .avatar(company.getLogo())
                 .build();
     }

@@ -102,11 +102,11 @@ public class AdminController {
         }
     }
 
-    @GetMapping("/report/list")
-    public ResponseEntity<List> getReportedJobs(){
-        try {
-            List<String> jobs = adminService.
-        }
-    }
+//    @GetMapping("/report/list")
+//    public ResponseEntity<List> getReportedJobs(){
+//        try {
+//            List<String> jobs = adminService.
+//        }
+//    }
 
 }

@@ -14,7 +14,7 @@ import java.util.Set;
 @Data
 @Builder
 public class UserDTO {
-    private String userId;
+    private String id;
     private String name;
     private String avatar;
     private String email;

@@ -2,9 +2,10 @@ package com.kienluu.jobfinderbackend.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.kienluu.jobfinderbackend.model.UserRole;
+import com.kienluu.jobfinderbackend.util.AppUtil;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -14,12 +15,10 @@ import java.util.Set;
 @Getter
 @Setter
 @Table(name = "user_entity")
-@Builder
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserEntity {
-    @Id
-    private String userId;
+public class UserEntity extends BaseUserEntity{
 
     @OneToMany(mappedBy = "user" , cascade = CascadeType.MERGE)
     @JsonBackReference
@@ -36,8 +35,6 @@ public class UserEntity {
     private String address;
     private String password;
     private String phone;
-
-
     @Enumerated(EnumType.STRING)
     private UserRole role;
     @ManyToMany(fetch = FetchType.LAZY)
@@ -53,21 +50,18 @@ public class UserEntity {
     private String university;
     private LocalDate dateOfBirth;
 
-    @ElementCollection(targetClass = String.class, fetch = FetchType.LAZY)
-    private List<String> interestingFields;
-
 
     @ElementCollection(targetClass = String.class, fetch = FetchType.LAZY)
     private List<String> searchHistory;
     @ElementCollection(targetClass = String.class, fetch = FetchType.LAZY)
     @Column(columnDefinition = "TEXT")
     private List<String> cv;
-    private Boolean activeState = true;
 
     @PrePersist
-    public void setDefaultActiveState() {
-        if (activeState == null) {
-            this.activeState = true;
+    public void generateUniqueId() {
+        if (this.getId() == null) {
+            this.setId("u_" + AppUtil.generateCustomUserId());
         }
     }
+
 }

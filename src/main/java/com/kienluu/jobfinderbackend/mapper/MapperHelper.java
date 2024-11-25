@@ -5,9 +5,7 @@ import com.kienluu.jobfinderbackend.model.UserRole;
 import org.mapstruct.Named;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Component
@@ -29,5 +27,15 @@ public class MapperHelper {
             jobIds.add(job.getJobId());
         }
         return jobIds;
+    }
+
+    @Named("getCompanyName")
+    public String getCompanyName(JobEntity job) {
+        return job.getCompany().getName();
+    }
+
+    @Named("getCompanyId")
+    public String getCompanyId(JobEntity job) {
+        return job.getCompany().getId();
     }
 }

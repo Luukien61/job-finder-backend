@@ -4,6 +4,7 @@ import com.kienluu.jobfinderbackend.dto.ReportDTO;
 import com.kienluu.jobfinderbackend.entity.CompanyEntity;
 import com.kienluu.jobfinderbackend.entity.ReportEntity;
 import com.kienluu.jobfinderbackend.entity.UserEntity;
+import com.kienluu.jobfinderbackend.model.CompanyState;
 import com.kienluu.jobfinderbackend.model.ReportStatus;
 import com.kienluu.jobfinderbackend.repository.CompanyRepository;
 import com.kienluu.jobfinderbackend.repository.JobRepository;
@@ -29,7 +30,7 @@ public class AdminService implements IAdminService {
     public void inActiveCompany(String companyId) {
         CompanyEntity companyEntity = companyRepository.findByCompanyId(companyId).orElseThrow(
                 ()-> new RuntimeException("Invalid company id"));
-        companyEntity.setActiveState(false);
+        companyEntity.setState(CompanyState.BAN);
         companyRepository.save(companyEntity);
     }
 //    @Override
@@ -39,13 +40,13 @@ public class AdminService implements IAdminService {
 //        companyRepository.delete(companyEntity);}
 
 
-        @Override
-    public void inActiveUser(String userId) {
-        UserEntity userEntity = userRepository.findByUserId(userId).orElseThrow(()
-                -> new RuntimeException("Invalid user id!"));
-        userEntity.setActiveState(false);
-        userRepository.save(userEntity);
-    }
+//        @Override
+//    public void inActiveUser(String userId) {
+//        UserEntity userEntity = userRepository.findByUserId(userId).orElseThrow(()
+//                -> new RuntimeException("Invalid user id!"));
+//        userEntity.setActiveState(false);
+//        userRepository.save(userEntity);
+//    }
 
     @Override
     public int countAllUser() {

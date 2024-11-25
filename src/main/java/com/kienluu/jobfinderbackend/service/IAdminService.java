@@ -10,7 +10,7 @@ public interface IAdminService {
 
         void inActiveCompany(String companyId);
         //    void delete(String companyId);
-        void inActiveUser(String userId);
+//        void inActiveUser(String userId);
 
         //    void deleteUser(String userId);
         int countAllUser();

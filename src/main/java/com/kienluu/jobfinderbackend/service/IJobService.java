@@ -1,11 +1,21 @@
 package com.kienluu.jobfinderbackend.service;
 
+import com.kienluu.jobfinderbackend.dto.request.JobCreateRequest;
+import com.kienluu.jobfinderbackend.dto.JobDto;
+import com.kienluu.jobfinderbackend.dto.response.JobEmployerCard;
 import com.kienluu.jobfinderbackend.entity.JobEntity;
+import org.springframework.data.domain.Page;
 
 public interface IJobService {
-    JobEntity saveJob(JobEntity job);
-    JobEntity updateJob(JobEntity job);
+    JobDto saveJob(JobCreateRequest job);
+    JobDto updateJob(JobCreateRequest job);
     void deleteJob(JobEntity job);
+
+    void deleteJobById(Long jobId);
+
+    Page<JobEmployerCard> getJobCardsByCompanyId(String companyId, int page, int size);
+
+    JobDto getJobById(Long jobId);
 
 
 }
