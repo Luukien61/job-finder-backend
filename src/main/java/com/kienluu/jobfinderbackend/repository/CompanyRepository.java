@@ -21,12 +21,11 @@ public interface CompanyRepository extends JpaRepository<CompanyEntity, String> 
     Optional<CompanyEntity> findCompanyEntityByEmailAndPassword(String email, String password);
 
 
-    Optional<CompanyEntity> findByCompanyId(String id);
 
     @Query("select count(p) from CompanyEntity p")
     Integer countAllCompany();
 
-    @Query("select  count(distinct p.companyId) from CompanyEntity p join JobEntity j on p.companyId = j.company.companyId and j.expireDate >= CURRENT_DATE ")
+    @Query("select  count(distinct p.id) from CompanyEntity p join JobEntity j on p.id = j.company.id and j.expireDate >= CURRENT_DATE ")
     Integer countCompanyByJobNotExpired();
 
 }

@@ -28,7 +28,7 @@ public class AdminService implements IAdminService {
 
     @Override
     public void inActiveCompany(String companyId) {
-        CompanyEntity companyEntity = companyRepository.findByCompanyId(companyId).orElseThrow(
+        CompanyEntity companyEntity = companyRepository.findById(companyId).orElseThrow(
                 ()-> new RuntimeException("Invalid company id"));
         companyEntity.setState(CompanyState.BAN);
         companyRepository.save(companyEntity);

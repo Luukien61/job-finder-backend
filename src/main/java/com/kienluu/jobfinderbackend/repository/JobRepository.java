@@ -52,9 +52,9 @@ public interface JobRepository extends JpaRepository<JobEntity, Long> {
     @Query("select count(p) from  JobEntity p where p.field = :field and p.expireDate >= CURRENT_DATE ")
     Integer countAllByFieldAndNotExpried(@Param("field") String field);
 
-    @Query("select count(j) from JobEntity j where j.company.companyId = :companyId" )
+    @Query("select count(j) from JobEntity j where j.company.id = :companyId" )
     Integer countJobByCompanyId(@Param("companyId") String companyId);
 
-    @Query("select count(p) from CompanyEntity p join JobEntity j on p.companyId = j.company.companyId and p.companyId = :companyId and j.expireDate >= CURRENT_DATE " )
+    @Query("select count(p) from CompanyEntity p join JobEntity j on p.id = j.company.id and p.id = :companyId and j.expireDate >= CURRENT_DATE " )
     Integer countJobNotExpireByCompanyId(@Param("companyId") String companyId);
 }

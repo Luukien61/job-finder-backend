@@ -2,6 +2,7 @@ package com.kienluu.jobfinderbackend.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.kienluu.jobfinderbackend.model.UserRole;
 import com.kienluu.jobfinderbackend.util.AppUtil;
 import jakarta.persistence.*;
 import lombok.*;
