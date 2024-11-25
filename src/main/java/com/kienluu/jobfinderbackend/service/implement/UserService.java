@@ -258,4 +258,18 @@ public class UserService implements IUserService {
     public boolean isJobSaved(String userId, Long jobId) {
         return userRepository.isJobSaved(userId.trim(), jobId);
     }
+
+    @Override
+    public UserDTO getUserBasicInfo(String userId) {
+        UserEntity user = userRepository.findById(userId.trim())
+                .orElseThrow(() -> new RuntimeException("This email has not been registered!"));
+        return UserDTO.builder()
+                .email(user.getEmail())
+                .name(user.getName())
+                .phone(user.getPhone())
+                .avatar(user.getAvatar())
+                .address(user.getAddress())
+                .university(user.getUniversity())
+                .build();
+    }
 }

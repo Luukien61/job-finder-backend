@@ -15,6 +15,7 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -62,5 +63,31 @@ public class JobApplicationService implements IJobApplicationService {
     public boolean isApplied(Long jobId, String userId) {
         Optional<JobApplicationEntity> job = jobApplicationRepository.findByUserAndJob(userId, jobId);
         return job.isPresent();
+    }
+
+    @Override
+    public List<JobApplicationDto> getApplicationsByJobId(Long jobId) {
+        return jobApplicationRepository.findAllByJobId(jobId)
+                .stream().map(
+                        entity -> mapper.toJobApplicationDto(entity, new UserContext(entity.getUser()))).toList();
+    }
+
+    @Override
+    public void acceptApplication(Long applicationId) {
+        JobApplicationEntity entity = findJobApplicationEntityById(applicationId);
+        entity.setState(JobApplicationState.ACCEPTED);
+        jobApplicationRepository.save(entity);
+    }
+
+    @Override
+    public void declineApplication(Long applicationId) {
+        JobApplicationEntity entity = findJobApplicationEntityById(applicationId);
+        entity.setState(JobApplicationState.REJECTED);
+        jobApplicationRepository.save(entity);
+    }
+
+    private JobApplicationEntity findJobApplicationEntityById(Long id) {
+        return jobApplicationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Job not found"));
     }
 }

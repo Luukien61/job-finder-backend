@@ -16,4 +16,6 @@ public interface JobApplicationRepository extends JpaRepository<JobApplicationEn
     Optional<JobApplicationEntity> findByUserAndJob(@Param("userId") String userId,@Param("jobId") Long jobId);
 
 
+    @Query("select app from JobApplicationEntity app where app.job.jobId= :jobId")
+    List<JobApplicationEntity> findAllByJobId(Long jobId);
 }
