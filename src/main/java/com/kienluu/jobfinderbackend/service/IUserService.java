@@ -37,4 +37,5 @@ public interface IUserService {
     boolean saveJob(String userId, Long jobId);
     boolean unsaveJob(String userId, Long jobId);
     boolean isJobSaved(String userId, Long jobId);
+    UserDTO getUserBasicInfo(String userId);
 }

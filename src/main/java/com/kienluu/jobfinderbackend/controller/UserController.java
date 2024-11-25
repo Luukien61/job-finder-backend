@@ -222,5 +222,16 @@ public class UserController {
         }
     }
 
+
+    @GetMapping("/user/{userId}/basic")
+    public ResponseEntity<Object> getBasicInfo(@PathVariable String userId){
+        try{
+            UserDTO userBasicInfo = userService.getUserBasicInfo(userId);
+            return ResponseEntity.ok(userBasicInfo);
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 }
 
