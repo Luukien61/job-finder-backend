@@ -1,10 +1,11 @@
 package com.kienluu.jobfinderbackend.websocket.entity;
 
+import com.kienluu.jobfinderbackend.entity.CompanyEntity;
+import com.kienluu.jobfinderbackend.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 
 @Entity
 @Getter
@@ -18,8 +19,11 @@ public class Conversation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ElementCollection(fetch = FetchType.EAGER, targetClass = String.class)
-    private Set<String> users;
+    @ManyToOne(fetch = FetchType.EAGER)
+    private CompanyEntity sender;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    private UserEntity receiver;
 
     private String lastMessage;
 

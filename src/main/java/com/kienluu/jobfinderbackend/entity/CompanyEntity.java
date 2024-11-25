@@ -2,8 +2,10 @@ package com.kienluu.jobfinderbackend.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.kienluu.jobfinderbackend.model.CompanyState;
 import com.kienluu.jobfinderbackend.util.AppUtil;
+import com.kienluu.jobfinderbackend.websocket.entity.Conversation;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -41,6 +43,10 @@ public class CompanyEntity extends BaseUserEntity {
 
     @Enumerated(EnumType.STRING)
     private CompanyState state;
+
+    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true,mappedBy = "sender", cascade = CascadeType.REMOVE)
+    @JsonManagedReference
+    private List<Conversation> conversations;
 
     @PrePersist
     public void generateUniqueId() {

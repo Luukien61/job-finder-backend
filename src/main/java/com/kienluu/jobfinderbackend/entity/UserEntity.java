@@ -2,6 +2,7 @@ package com.kienluu.jobfinderbackend.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.kienluu.jobfinderbackend.util.AppUtil;
+import com.kienluu.jobfinderbackend.websocket.entity.Conversation;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -43,6 +44,10 @@ public class UserEntity extends BaseUserEntity{
     @ElementCollection(targetClass = String.class, fetch = FetchType.LAZY)
     @Column(columnDefinition = "TEXT")
     private List<String> cv;
+
+    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true,mappedBy = "receiver", cascade = CascadeType.REMOVE)
+    @JsonManagedReference
+    private List<Conversation> conversations;
 
     @PrePersist
     public void generateUniqueId() {
