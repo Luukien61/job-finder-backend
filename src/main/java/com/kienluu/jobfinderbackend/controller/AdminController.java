@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/admin")
 @AllArgsConstructor
@@ -50,7 +52,7 @@ public class AdminController {
     }
 
     @GetMapping("/job/{field}")
-    public ResponseEntity<Long> getTotalJobsExpiredByField(@PathVariable("field") String field) {
+    public ResponseEntity<Long> getTotalJobsNotExpiredByField(@PathVariable("field") String field) {
         try{
             long count = adminService.countJobNotExpiredByField(field);
             return ResponseEntity.ok(count);
@@ -64,6 +66,16 @@ public class AdminController {
     public ResponseEntity<Long> getTotalJobsByCompany(@PathVariable("companyid") String companyId) {
         try{
             long count = adminService.countJobByCompany(companyId);
+            return ResponseEntity.ok(count);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/company/quantityjobnotexpired")
+    public ResponseEntity<Long> getTotalJobsNotExpiredByCompany(@Param("companyId") String companyId) {
+        try{
+            long count = adminService.countJobNotExpiredByCompany(companyId);
             return ResponseEntity.ok(count);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -90,5 +102,11 @@ public class AdminController {
         }
     }
 
+    @GetMapping("/report/list")
+    public ResponseEntity<List> getReportedJobs(){
+        try {
+            List<String> jobs = adminService.
+        }
+    }
 
 }

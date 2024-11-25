@@ -83,7 +83,14 @@ public class AdminService implements IAdminService {
     }
 
     @Override
+    public int countJobNotExpiredByCompany(String companyId) {
+        return jobRepository.countJobNotExpireByCompanyId(companyId);
+    }
+
+    @Override
     public List<ReportEntity> findReportPending(String status) {
         return reportRepository.findByStatus(ReportStatus.fromString(status))  ;
     }
+
+
 }

@@ -1,6 +1,7 @@
 package com.kienluu.jobfinderbackend.service;
 
 import com.kienluu.jobfinderbackend.dto.ReportDTO;
+import com.kienluu.jobfinderbackend.entity.JobEntity;
 import com.kienluu.jobfinderbackend.entity.ReportEntity;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public interface IAdminService {
         int countJobNotExpired();
         int countJobNotExpiredByField(String field);
         int countJobByCompany(String companyId);
-
+        int countJobNotExpiredByCompany(String companyId);
         List<ReportEntity> findReportPending(String status);
 
 
