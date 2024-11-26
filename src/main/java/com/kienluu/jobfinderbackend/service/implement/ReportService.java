@@ -1,6 +1,6 @@
 package com.kienluu.jobfinderbackend.service.implement;
 
-import com.kienluu.jobfinderbackend.dto.response.ReportDto;
+import com.kienluu.jobfinderbackend.dto.ReportDTO;
 import com.kienluu.jobfinderbackend.entity.JobEntity;
 import com.kienluu.jobfinderbackend.entity.ReportEntity;
 import com.kienluu.jobfinderbackend.mapper.CustomMapper;
@@ -19,21 +19,22 @@ public class ReportService implements IReportService {
     private final JobRepository jobRepository;
     private final CustomMapper mapper;
 
-    public ReportDto createReport(String userId, Long jobId, String reason) {
-        // Kiểm tra bài đăng có tồn tại không
+    public ReportDTO createReport(ReportDTO reportDTO) {
+        Long jobId = reportDTO.getJobId();
+        String userId = reportDTO.getUserId();
+
         JobEntity job = jobRepository.findById(jobId)
                 .orElseThrow(() -> new IllegalArgumentException("Job not found"));
 
-        // Kiểm tra xem user đã tố cáo bài đăng này chưa
         if (reportRepository.existsByJobIdAndUserId(jobId, userId)) {
             throw new IllegalStateException("Bạn đã tố cáo bài đăng này rồi.");
         }
 
-        // Tạo report
         ReportEntity report = ReportEntity.builder()
                 .userId(userId)
                 .job(job)
-                .rpReason(reason)
+                .companyId(reportDTO.getCompanyId())
+                .rpReason(reportDTO.getRpReason())
                 .status(ReportStatus.PENDING)
                 .build();
         report = reportRepository.save(report);

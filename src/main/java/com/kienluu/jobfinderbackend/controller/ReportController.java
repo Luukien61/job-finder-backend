@@ -1,6 +1,6 @@
 package com.kienluu.jobfinderbackend.controller;
 
-import com.kienluu.jobfinderbackend.dto.response.ReportDto;
+import com.kienluu.jobfinderbackend.dto.ReportDTO;
 import com.kienluu.jobfinderbackend.service.implement.ReportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,10 +15,10 @@ public class ReportController {
     private final ReportService reportService;
 
     @PostMapping("/{jobId}")
-    public ResponseEntity<?> reportJob(@RequestBody ReportDto reportDto) {
+    public ResponseEntity<?> reportJob(@RequestBody ReportDTO reportDto) {
         try {
             // Xử lý tạo report
-            ReportDto report = reportService.createReport(reportDto.getUserId(), reportDto.getJobId(), reportDto.getRpReason());
+            ReportDTO report = reportService.createReport(reportDto);
             return ResponseEntity.ok(report);
         } catch (IllegalStateException ex) {
             // Xử lý lỗi do ứng viên đã tố cáo bài đăng này

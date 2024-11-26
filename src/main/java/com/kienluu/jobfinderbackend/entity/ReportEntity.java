@@ -31,6 +31,7 @@ public class ReportEntity {
     private String rpReason;
 
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     private ReportStatus status = ReportStatus.PENDING;
 
 }
