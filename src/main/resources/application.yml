@@ -10,7 +10,7 @@ spring:
     driver-class-name: ${DRIVER}
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
         dialect: ${DIALECT}

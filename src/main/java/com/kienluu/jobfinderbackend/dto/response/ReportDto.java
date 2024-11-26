@@ -10,11 +10,11 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 @NoArgsConstructor
-public class ReportResponse {
+public class ReportDto {
     private Long id;
     private String userId;
     private Long jobId;
-    private String reason;
+    private String rpReason;
     private ReportStatus status;
 
 }
