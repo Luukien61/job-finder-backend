@@ -21,9 +21,9 @@ import java.util.Set;
 @NoArgsConstructor
 public class UserEntity extends BaseUserEntity{
 
-    @OneToMany(mappedBy = "user" , cascade = CascadeType.MERGE)
-    @JsonBackReference
-    List<ReportEntity> reports;
+//    @OneToMany(mappedBy = "user" , cascade = CascadeType.MERGE)
+//    @JsonBackReference
+//    List<ReportEntity> reports;
 
     @OneToMany(mappedBy = "user" )
     @JsonBackReference

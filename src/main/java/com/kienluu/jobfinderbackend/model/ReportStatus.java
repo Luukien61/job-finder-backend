@@ -9,7 +9,8 @@ import lombok.NoArgsConstructor;
 @Getter
 public enum ReportStatus {
     PENDING("PENDING"),
-    DONE("DONE");
+    DONE("DONE"),
+    REJECT("REJECT");
 
     private String reportStatus;
 
