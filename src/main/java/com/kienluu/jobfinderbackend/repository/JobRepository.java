@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Repository
@@ -41,4 +42,19 @@ public interface JobRepository extends JpaRepository<JobEntity, Long> {
     Optional<JobEntity> findJobByidAndNotExpiry(@Param("jobId") Long jobId);
 
 
+
+    @Query("select count(p) from JobEntity p")
+    Integer countAllJob();
+
+    @Query("select count(p) from  JobEntity p where p.expireDate >= CURRENT_DATE ")
+    Integer countJobNotExpired();
+
+    @Query("select count(p) from  JobEntity p where p.field = :field and p.expireDate >= CURRENT_DATE ")
+    Integer countAllByFieldAndNotExpried(@Param("field") String field);
+
+    @Query("select count(j) from JobEntity j where j.company.id = :companyId" )
+    Integer countJobByCompanyId(@Param("companyId") String companyId);
+
+    @Query("select count(p) from CompanyEntity p join JobEntity j on p.id = j.company.id and p.id = :companyId and j.expireDate >= CURRENT_DATE " )
+    Integer countJobNotExpireByCompanyId(@Param("companyId") String companyId);
 }

@@ -1,6 +1,8 @@
 package com.kienluu.jobfinderbackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.kienluu.jobfinderbackend.model.UserRole;
 import com.kienluu.jobfinderbackend.util.AppUtil;
 import com.kienluu.jobfinderbackend.websocket.entity.Conversation;
 import jakarta.persistence.*;
@@ -19,12 +21,24 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserEntity extends BaseUserEntity{
+
+//    @OneToMany(mappedBy = "user" , cascade = CascadeType.MERGE)
+//    @JsonBackReference
+//    List<ReportEntity> reports;
+
+    @OneToMany(mappedBy = "user" )
+    @JsonBackReference
+    List<JobApplicationEntity> jobApplications;
+
+
     private String name;
     private String avatar;
     private String email;
     private String address;
     private String password;
     private String phone;
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
     @ManyToMany(fetch = FetchType.LAZY)
     @JsonManagedReference
     private Set<JobEntity> savedJobs;
@@ -55,4 +69,5 @@ public class UserEntity extends BaseUserEntity{
             this.setId("u_" + AppUtil.generateCustomUserId());
         }
     }
+
 }

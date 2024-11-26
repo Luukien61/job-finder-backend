@@ -6,6 +6,7 @@ import com.kienluu.jobfinderbackend.dto.request.UserAccountUpdateRequest;
 import com.kienluu.jobfinderbackend.dto.request.UserCreationRequest;
 import com.kienluu.jobfinderbackend.dto.JobDto;
 import com.kienluu.jobfinderbackend.dto.response.UserResponse;
+import com.kienluu.jobfinderbackend.entity.UserEntity;
 import com.kienluu.jobfinderbackend.model.CodeExchange;
 import com.kienluu.jobfinderbackend.model.MailTemplate;
 import org.springframework.web.multipart.MultipartFile;

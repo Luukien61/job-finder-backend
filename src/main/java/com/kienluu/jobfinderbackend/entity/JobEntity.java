@@ -2,6 +2,7 @@ package com.kienluu.jobfinderbackend.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.kienluu.jobfinderbackend.model.JobState;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -48,4 +49,12 @@ public class JobEntity {
     private JobState state;
     @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.REMOVE)
     private List<JobApplicationEntity> applications;
+
+
+    @OneToMany(mappedBy = "job", cascade = CascadeType.MERGE)
+    @JsonBackReference
+    List<ReportEntity> reports;
+
+
+
 }
