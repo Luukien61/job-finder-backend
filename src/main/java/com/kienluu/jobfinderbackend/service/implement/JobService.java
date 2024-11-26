@@ -86,7 +86,7 @@ public class JobService implements IJobService {
     @Override
     @Transactional
     public Page<JobEmployerCard> getJobCardsByCompanyId(String companyId, int page, int size) {
-        Sort sort1 = Sort.by(Sort.Order.desc("createdAt"), Sort.Order.asc("expireDate"));
+        Sort sort1 = Sort.by(Sort.Order.desc("expireDate"),Sort.Order.desc("createdAt") );
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
         Pageable pageable = PageRequest.of(page, size, sort1);
         Page<JobEntity> jobs = jobRepository.findByCompanyId(companyId, pageable);

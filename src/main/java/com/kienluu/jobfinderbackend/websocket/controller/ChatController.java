@@ -1,8 +1,8 @@
 package com.kienluu.jobfinderbackend.websocket.controller;
 
+import com.kienluu.jobfinderbackend.websocket.dto.ChatMessageDto;
 import com.kienluu.jobfinderbackend.websocket.dto.ConversationDto;
 import com.kienluu.jobfinderbackend.websocket.entity.ChatMessage;
-import com.kienluu.jobfinderbackend.websocket.entity.Conversation;
 import com.kienluu.jobfinderbackend.websocket.entity.RTCSignal;
 import com.kienluu.jobfinderbackend.websocket.model.ConversationCreateRequest;
 import com.kienluu.jobfinderbackend.websocket.model.Participant;
@@ -39,19 +39,14 @@ public class ChatController {
     }
 
     @MessageMapping("/private-message")
-    public ChatMessage recMessage(@Payload ChatMessage message) {
+    public ChatMessageDto recMessage(@Payload ChatMessageDto message) {
         simpMessagingTemplate.convertAndSendToUser(message.getRecipientId(), "/private", message);
-        var conversation = conversationRepository.findConversationById(message.getConversationId());
-        var content = message.getContent();
-        if (content.length() > 255) {
-            content = content.substring(0, 255);
+        try{
+            return conversationService.sendMessage(message);
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
         }
-        conversation.setLastMessage(content);
-        conversation.setModifiedAt(LocalDateTime.now());
-        conversation.setType(message.getType());
-        conversationRepository.save(conversation);
-        chatMessageRepository.save(message);
-        return message;
     }
 
     @GetMapping("/chat/all/{userId}")
@@ -82,9 +77,9 @@ public class ChatController {
 
 
     @GetMapping("/conversation")
-    public ResponseEntity<Object> getConversations(@RequestParam("user1") String user1, @RequestParam("user2") String user2) {
+    public ResponseEntity<Object> getConversations(@RequestParam("sender") String senderId, @RequestParam("receiver") String receiverId) {
         try {
-            ConversationDto conversation = conversationService.findConversationByExactTwoUsers(user1, user2);
+            ConversationDto conversation = conversationService.findConversationByExactTwoUsers(senderId, receiverId);
             return ResponseEntity.ok(conversation);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("The conversation id does not exist");

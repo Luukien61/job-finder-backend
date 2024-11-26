@@ -1,6 +1,8 @@
 package com.kienluu.jobfinderbackend.websocket.mapper;
 
+import com.kienluu.jobfinderbackend.websocket.dto.ChatMessageDto;
 import com.kienluu.jobfinderbackend.websocket.dto.ConversationDto;
+import com.kienluu.jobfinderbackend.websocket.entity.ChatMessage;
 import com.kienluu.jobfinderbackend.websocket.entity.Conversation;
 import org.mapstruct.*;
 
@@ -22,4 +24,11 @@ public interface MessageMapper {
     @InheritConfiguration(name = "toEntity")
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     Conversation partialUpdate(ConversationDto conversationDto, @MappingTarget Conversation conversation);
+
+    ChatMessage toEntity(ChatMessageDto chatMessageDto);
+
+    ChatMessageDto toDto(ChatMessage chatMessage);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    ChatMessage partialUpdate(ChatMessageDto chatMessageDto, @MappingTarget ChatMessage chatMessage);
 }
