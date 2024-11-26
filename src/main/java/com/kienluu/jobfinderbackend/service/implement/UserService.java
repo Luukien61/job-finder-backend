@@ -264,6 +264,7 @@ public class UserService implements IUserService {
         UserEntity user = userRepository.findById(userId.trim())
                 .orElseThrow(() -> new RuntimeException("This email has not been registered!"));
         return UserDTO.builder()
+                .id(user.getId())
                 .email(user.getEmail())
                 .name(user.getName())
                 .phone(user.getPhone())

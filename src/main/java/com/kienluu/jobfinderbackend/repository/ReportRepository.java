@@ -13,6 +13,9 @@ import java.util.List;
 public interface ReportRepository extends JpaRepository<ReportEntity, Long>{
     List<ReportEntity> findByStatus(ReportStatus status);
 
+    @Query("SELECT CASE WHEN COUNT(r) > 0 THEN true ELSE false END FROM ReportEntity r WHERE r.job.jobId= :jobId AND r.userId = :userId")
+    boolean existsByJobIdAndUserId(@Param("jobId") Long jobId, @Param("userId") String userId);
+
     @Query("select count(rp) from ReportEntity rp where rp.job.jobId = :jobId")
     Integer countByJobId(@Param("jobId") String jobId);
 

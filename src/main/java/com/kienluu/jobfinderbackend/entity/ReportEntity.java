@@ -15,17 +15,15 @@ import lombok.*;
 public class ReportEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long reportId;
+    private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @Column(name = "user_id", nullable = false)
+    private String userId;
+
+    @ManyToOne(fetch = FetchType.EAGER)
     @JsonManagedReference
-    UserEntity user;
-
-    @ManyToOne
     @JoinColumn(name = "job_id")
-    @JsonManagedReference
-    JobEntity job;
+    private JobEntity job;
 
     private String companyId;
 
@@ -33,7 +31,7 @@ public class ReportEntity {
     private String rpReason;
 
     @Enumerated(EnumType.STRING)
-    private ReportStatus status;
-
+    @Builder.Default
+    private ReportStatus status = ReportStatus.PENDING;
 
 }

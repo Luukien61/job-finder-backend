@@ -1,16 +1,10 @@
 package com.kienluu.jobfinderbackend.mapper;
 
 
-import com.kienluu.jobfinderbackend.dto.CompanyDto;
-import com.kienluu.jobfinderbackend.dto.JobApplicationDto;
-import com.kienluu.jobfinderbackend.dto.JobDto;
-import com.kienluu.jobfinderbackend.dto.UserDTO;
+import com.kienluu.jobfinderbackend.dto.*;
 import com.kienluu.jobfinderbackend.dto.request.JobCreateRequest;
 import com.kienluu.jobfinderbackend.dto.request.UserCreationRequest;
-import com.kienluu.jobfinderbackend.dto.response.CompanyCreateResponse;
-import com.kienluu.jobfinderbackend.dto.response.CompanyResponse;
-import com.kienluu.jobfinderbackend.dto.response.LoginResponse;
-import com.kienluu.jobfinderbackend.dto.response.UserResponse;
+import com.kienluu.jobfinderbackend.dto.response.*;
 import com.kienluu.jobfinderbackend.entity.*;
 import org.mapstruct.*;
 
@@ -66,4 +60,7 @@ public interface CustomMapper {
     @Mapping(target = "user", ignore = true)
     @Mapping(target = "job", ignore = true)
     JobApplicationEntity toJobApplicationEntity(JobApplicationDto app);
+
+    @Mapping(target = "jobId",expression = "java(reportEntity.getJob().getJobId())")
+    ReportDTO toReportResponse(ReportEntity reportEntity);
 }

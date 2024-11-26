@@ -12,12 +12,12 @@ import java.util.Optional;
 @Repository
 public interface ConversationRepository extends JpaRepository<Conversation, Long> {
 
-    @Query("SELECT c FROM Conversation c WHERE :userId MEMBER OF c.users")
+    @Query("SELECT c FROM Conversation c WHERE c.sender.id= :userId or c.receiver.id= :userId")
     List<Conversation> findConversationByUserId(@Param("userId") String userId);
 
     Conversation findConversationById(Long id);
 
-    @Query("SELECT c FROM Conversation c WHERE :userId1 MEMBER OF c.users AND :userId2 MEMBER OF c.users")
-    Optional<Conversation> findByTwoUsers(String userId1, String userId2);
+    @Query("SELECT c FROM Conversation c WHERE c.sender.id = :senderId and c.receiver.id= :receiverId ")
+    Optional<Conversation> findByTwoUsers(@Param("senderId") String senderId,@Param("receiverId") String receiverId);
 
 }

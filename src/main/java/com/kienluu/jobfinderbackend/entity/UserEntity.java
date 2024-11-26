@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.kienluu.jobfinderbackend.model.UserRole;
 import com.kienluu.jobfinderbackend.util.AppUtil;
+import com.kienluu.jobfinderbackend.websocket.entity.Conversation;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -21,9 +22,9 @@ import java.util.Set;
 @NoArgsConstructor
 public class UserEntity extends BaseUserEntity{
 
-    @OneToMany(mappedBy = "user" , cascade = CascadeType.MERGE)
-    @JsonBackReference
-    List<ReportEntity> reports;
+//    @OneToMany(mappedBy = "user" , cascade = CascadeType.MERGE)
+//    @JsonBackReference
+//    List<ReportEntity> reports;
 
     @OneToMany(mappedBy = "user" )
     @JsonBackReference
@@ -58,6 +59,10 @@ public class UserEntity extends BaseUserEntity{
     @ElementCollection(targetClass = String.class, fetch = FetchType.LAZY)
     @Column(columnDefinition = "TEXT")
     private List<String> cv;
+
+    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true,mappedBy = "receiver", cascade = CascadeType.REMOVE)
+    @JsonManagedReference
+    private List<Conversation> conversations;
 
     @PrePersist
     public void generateUniqueId() {

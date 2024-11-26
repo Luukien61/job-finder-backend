@@ -12,7 +12,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 public class ConversationCreateRequest {
-    private String senderId, recipientId, type, message, id;
+    private String senderId, recipientId, type, message;
+    private Long id;
     @Builder.Default
     private LocalDateTime createdAt= LocalDateTime.now();
 }

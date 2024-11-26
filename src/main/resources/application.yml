@@ -10,16 +10,16 @@ spring:
     driver-class-name: ${DRIVER}
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
         dialect: ${DIALECT}
         event:
           merge:
             entity_copy_observer: allow
-  jackson:
-    date-format: yyyy-MM-dd
-    time-zone: Asia/Ho_Chi_Minh
+#  jackson:
+#    date-format: yyyy-MM-dd
+#    time-zone: Asia/Ho_Chi_Minh
 server:
   port: 8088
 

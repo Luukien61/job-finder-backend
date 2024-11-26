@@ -2,7 +2,6 @@ package com.kienluu.jobfinderbackend.controller;
 
 import com.kienluu.jobfinderbackend.dto.JobApplicationDto;
 import com.kienluu.jobfinderbackend.service.IJobApplicationService;
-import com.kienluu.jobfinderbackend.service.implement.JobApplicationService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
