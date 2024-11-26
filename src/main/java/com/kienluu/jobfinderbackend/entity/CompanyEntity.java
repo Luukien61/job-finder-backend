@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -33,6 +34,7 @@ public class CompanyEntity extends BaseUserEntity {
     private String address;
     private String phone;
     private String email;
+    private LocalDate createdAt;
 
     @OneToMany(mappedBy = "company")
     @JsonIgnore

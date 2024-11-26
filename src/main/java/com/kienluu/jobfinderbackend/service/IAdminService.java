@@ -1,18 +1,14 @@
 package com.kienluu.jobfinderbackend.service;
 
-import com.kienluu.jobfinderbackend.dto.ReportDTO;
-import com.kienluu.jobfinderbackend.entity.JobEntity;
+import com.kienluu.jobfinderbackend.dto.JobDto;
 import com.kienluu.jobfinderbackend.entity.ReportEntity;
 
 import java.util.List;
 
 public interface IAdminService {
 
-        void inActiveCompany(String companyId);
-        //    void delete(String companyId);
-//        void inActiveUser(String userId);
+        void deActivateCompany(String companyId);
 
-        //    void deleteUser(String userId);
         int countAllUser();
 
         int countAllCompany();
@@ -24,6 +20,11 @@ public interface IAdminService {
         int countJobByCompany(String companyId);
         int countJobNotExpiredByCompany(String companyId);
         List<ReportEntity> findReportPending(String status);
-
-
+        List<JobDto> reportedJobs();
+        List<String> reportedDescription(Long jobId);
+        long countJobsByFieldAndMonthAndyYear(String field, int month, int year);
+        long countJobsByMonthAndYear(int month, int year);
+        long countJobsByYear(int year);
+        long countUserByYear(int year);
+        long countCompanyByYear(int year);
 }

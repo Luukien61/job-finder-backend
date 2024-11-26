@@ -50,6 +50,7 @@ public class UserEntity extends BaseUserEntity{
 
     private String university;
     private LocalDate dateOfBirth;
+    private LocalDate createdAt;
 
 
     @ElementCollection(targetClass = String.class, fetch = FetchType.LAZY)
