@@ -63,7 +63,7 @@ public class AdminController {
     }
 
     //so job theo thang, nam
-    @GetMapping("/job/")
+    @GetMapping("/job/quantity")
     public ResponseEntity<Long> getTotalJobsByMonthAndYear(@RequestParam("month") int month,
                                                            @RequestParam("year") int year) {
         try{
@@ -74,7 +74,7 @@ public class AdminController {
         }
     }
 
-    @GetMapping("/job/")
+    @GetMapping("/job")
     public ResponseEntity<Long> getTotalJobsByYear(@RequestParam("year") int year) {
         try{
             long count = adminService.countJobsByYear(year);
@@ -118,7 +118,7 @@ public class AdminController {
     }
 
     //so cong ty dang can tuyen nguoi
-    @GetMapping("/company/")
+    @GetMapping("/company/finding")
     public ResponseEntity<Long> getTotalCompanyFindingEmployee(){
         try{
             long count = adminService.countCompanyFindingEmployee();
@@ -128,7 +128,7 @@ public class AdminController {
         }
     }
 
-    @GetMapping("/company/")
+    @GetMapping("/company")
     public ResponseEntity<Long> getTotalCompanyByYear(@RequestParam("year") int year) {
         try{
             long count = adminService.countCompanyByYear(year);
