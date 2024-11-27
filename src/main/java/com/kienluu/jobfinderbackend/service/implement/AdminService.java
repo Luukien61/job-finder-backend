@@ -40,8 +40,7 @@ public class AdminService implements IAdminService {
     }
 
     public List<JobEntity> findJobsByCompanyId(String companyId) {
-        List<JobEntity> jobs = jobRepository.findAllByCompanyId(companyId);
-        return jobs;
+        return jobRepository.findAllByCompanyId(companyId);
     }
 //    @Override
 //    public void delete(String companyId) {

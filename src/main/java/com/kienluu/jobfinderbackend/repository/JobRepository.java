@@ -25,7 +25,6 @@ public interface JobRepository extends JpaRepository<JobEntity, Long> {
                               @Param("month") int month,
                               @Param("year") int year);
 
-
     @Query(value = "SELECT COUNT(*) FROM job " +
                    "WHERE company_id = :companyId " +
                    "AND EXTRACT(MONTH FROM created_at) = :month " +
@@ -42,7 +41,6 @@ public interface JobRepository extends JpaRepository<JobEntity, Long> {
     Optional<JobEntity> findJobByidAndNotExpiry(@Param("jobId") Long jobId);
 
 
-
     @Query("select count(p) from JobEntity p")
     Integer countAllJob();
 
@@ -52,21 +50,22 @@ public interface JobRepository extends JpaRepository<JobEntity, Long> {
     @Query("select count(p) from  JobEntity p where p.field = :field and p.expireDate >= CURRENT_DATE ")
     Integer countAllByFieldAndNotExpried(@Param("field") String field);
 
-    @Query("select count(j) from JobEntity j where j.company.id = :companyId" )
+    @Query("select count(j) from JobEntity j where j.company.id = :companyId")
     Integer countJobByCompanyId(@Param("companyId") String companyId);
 
-    @Query("select count(p) from CompanyEntity p join JobEntity j on p.id = j.company.id and p.id = :companyId and j.expireDate >= CURRENT_DATE " )
+    @Query("select count(p) from CompanyEntity p join JobEntity j on p.id = j.company.id and p.id = :companyId and j.expireDate >= CURRENT_DATE ")
     Integer countJobNotExpireByCompanyId(@Param("companyId") String companyId);
 
     //@Query("select job from ReportEntity rp join JobEntity job on rp.job.jobId = job.jobId where (select count(p) from ReportEntity p group by p.job.jobId) >=5")
-    @Query("select job from ReportEntity rp join JobEntity job on rp.job.jobId = job.jobId group by job.jobId having count(rp) >= 5")
+    @Query("select job from ReportEntity rp join JobEntity job on rp.job.jobId = job.jobId WHERE job.state='PENDING'" +
+            " group by job.jobId having count(rp) >= 5")
     List<JobEntity> findReportedJobs();
 
     @Query("SELECT COUNT(j) FROM JobEntity j " +
             "WHERE EXTRACT(MONTH FROM j.createdAt) = :month " +
             "AND EXTRACT(YEAR FROM j.createdAt) = :year")
     long countJobsByMonthAndYear(@Param("month") int month,
-                          @Param("year") int year);
+                                 @Param("year") int year);
 
 
     @Query("SELECT COUNT(j) FROM JobEntity j " +
@@ -87,5 +86,5 @@ public interface JobRepository extends JpaRepository<JobEntity, Long> {
     @Modifying
     @Query("UPDATE JobEntity j SET j.state = :state WHERE j.company.id = :companyId")
     void banJobsByCompanyId(@Param("state") JobState state,
-                                       @Param("companyId") String companyId);
+                            @Param("companyId") String companyId);
 }
