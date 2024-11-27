@@ -2,6 +2,8 @@ package com.kienluu.jobfinderbackend.controller;
 
 import com.kienluu.jobfinderbackend.dto.JobDto;
 import com.kienluu.jobfinderbackend.entity.JobEntity;
+import com.kienluu.jobfinderbackend.model.ReportStatus;
+import com.kienluu.jobfinderbackend.service.IAdminService;
 import com.kienluu.jobfinderbackend.service.implement.AdminService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,7 +19,7 @@ import java.util.List;
 @Getter
 @Setter
 public class AdminController {
-    private final AdminService adminService;
+    private final IAdminService adminService;
 
     //tinh tong so luong ung vien da tham gia
     @GetMapping("/user/total")
@@ -215,6 +217,16 @@ public class AdminController {
             return ResponseEntity.ok(jobs);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PutMapping("/report/rejection/{jobId}")
+    public ResponseEntity<Object> rejectReportsByJobId(@PathVariable("jobId") Long jobId) {
+        try{
+            adminService.rejectReports(ReportStatus.DONE, jobId);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 }

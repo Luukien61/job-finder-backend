@@ -42,25 +42,12 @@ public class AdminService implements IAdminService {
 //        jobRepository.saveAll(jobs);
 
         jobRepository.banJobsByCompanyId(JobState.BANNED, companyId);
+        reportRepository.updateReportStatusByCompanyId(ReportStatus.DONE, companyId);
     }
 
     public List<JobEntity> findJobsByCompanyId(String companyId) {
         return jobRepository.findAllByCompanyId(companyId);
     }
-//    @Override
-//    public void delete(String companyId) {
-//        CompanyEntity companyEntity = companyRepository.findByCompanyId(companyId).orElseThrow(
-//                ()-> new RuntimeException("Invalid company id"));
-//        companyRepository.delete(companyEntity);}
-
-
-//        @Override
-//    public void inActiveUser(String userId) {
-//        UserEntity userEntity = userRepository.findByUserId(userId).orElseThrow(()
-//                -> new RuntimeException("Invalid user id!"));
-//        userEntity.setActiveState(false);
-//        userRepository.save(userEntity);
-//    }
 
     @Override
     public int countAllUser() {
@@ -160,5 +147,12 @@ public class AdminService implements IAdminService {
     @Override
     public long countCompanyByMonthAndYear(int month, int year) {
         return companyRepository.countCompanyByMonthAndYear(month, year);
+    }
+
+
+    @Override
+    @Transactional
+    public void rejectReports(ReportStatus status, long jobId) {
+        reportRepository.updateReportStatusByJobId(status, jobId);
     }
 }

@@ -1,7 +1,9 @@
 package com.kienluu.jobfinderbackend.service;
 
 import com.kienluu.jobfinderbackend.dto.JobDto;
+import com.kienluu.jobfinderbackend.entity.JobEntity;
 import com.kienluu.jobfinderbackend.entity.ReportEntity;
+import com.kienluu.jobfinderbackend.model.ReportStatus;
 
 import java.util.List;
 
@@ -29,6 +31,7 @@ public interface IAdminService {
         long countCompanyByYear(int year);
         long countUserByMonthAndYear(int month, int year);
         long countCompanyByMonthAndYear(int month, int year);
-
+        List<JobEntity> findJobsByCompanyId(String companyId);
+        void rejectReports(ReportStatus status, long jobId);
 }
 
