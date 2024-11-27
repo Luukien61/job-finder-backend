@@ -26,4 +26,6 @@ public interface ICompanyService {
     LoginResponse login(String email, String password);
 
     String sendVerificationCode(MailTemplate mailTemplate) throws MessagingException, GeneralSecurityException, IOException;
+
+    boolean canPostJob(String companyId);
 }

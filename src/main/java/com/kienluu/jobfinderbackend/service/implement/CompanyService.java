@@ -10,26 +10,32 @@ import com.kienluu.jobfinderbackend.mapper.CustomMapper;
 import com.kienluu.jobfinderbackend.model.MailTemplate;
 import com.kienluu.jobfinderbackend.model.UserRole;
 import com.kienluu.jobfinderbackend.repository.CompanyRepository;
+import com.kienluu.jobfinderbackend.repository.JobRepository;
 import com.kienluu.jobfinderbackend.service.ICompanyService;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class CompanyService implements ICompanyService {
 
-    private CompanyRepository companyRepository;
+    private final CompanyRepository companyRepository;
     private final CustomMapper mapper;
     private final MailService mailService;
+    private final JobRepository jobRepository;
 
-    private static final int MAX_POSTS_PER_MONTH = 5;
+    @Value("${app.monthly-post}")
+    private int MONTHLY_POST;
 
     @Override
     public List<CompanyEntity> getCompanies() {
@@ -85,5 +91,13 @@ public class CompanyService implements ICompanyService {
         CompanyEntity companyEntity = companyRepository.findCompanyEntityByEmailAndPassword(email, password)
                 .orElseThrow(() -> new RuntimeException("Company not found"));
         return mapper.toLoginResponse(companyEntity);
+    }
+
+    @Override
+    public boolean canPostJob(String companyId) {
+        var now = LocalDate.now();
+        int month = now.getMonthValue();
+        int year = now.getYear();
+        return jobRepository.countJobsByCompanyId(companyId, month, year) < MONTHLY_POST;
     }
 }

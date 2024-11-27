@@ -18,4 +18,5 @@ public interface IJobService {
     JobDto getJobById(Long jobId);
 
 
+
 }

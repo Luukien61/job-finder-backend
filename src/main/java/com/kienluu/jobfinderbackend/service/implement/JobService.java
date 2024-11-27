@@ -17,6 +17,8 @@ import com.kienluu.jobfinderbackend.repository.JobRepository;
 import com.kienluu.jobfinderbackend.service.IJobService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,13 +30,15 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class JobService implements IJobService {
 
     private final JobRepository jobRepository;
     private final CompanyRepository companyRepository;
     private final ApplicationEventPublisher eventPublisher;
     private final CustomMapper mapper;
+    @Value("${app.monthly-post}")
+    private int MONTHLY_POST;
 
     //eventPublisher.publishEvent(new JobChangedEvent(savedJob, EvenType.CREATED));
 
@@ -43,9 +47,16 @@ public class JobService implements IJobService {
     public JobDto saveJob(JobCreateRequest job) {
         CompanyEntity companyEntity = companyRepository.findCompanyById(job.getCompanyId())
                 .orElseThrow(() -> new RuntimeException("Company not found"));
+        var now = LocalDate.now();
+        int month = now.getMonthValue();
+        int year = now.getYear();
+        long jobCount = jobRepository.countJobsByCompanyId(job.getCompanyId(), month, year);
+        if(jobCount>MONTHLY_POST){
+            throw new RuntimeException("Bạn đã sử dụng hết số bài đăng trong tháng");
+        }
         JobEntity jobEntity = mapper.toJobEntity(job);
         jobEntity.setCompany(companyEntity);
-        var now = LocalDate.now();
+
         jobEntity.setCreatedAt(now);
         jobEntity.setUpdateAt(now);
         jobEntity.setState(JobState.PENDING);

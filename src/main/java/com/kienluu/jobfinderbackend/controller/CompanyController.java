@@ -84,4 +84,14 @@ public class CompanyController {
             return ResponseEntity.badRequest().body(e.getLocalizedMessage());
         }
     }
+
+    @GetMapping("/{companyId}/possibility/job")
+    public ResponseEntity<Object> canPostJob(@PathVariable String companyId){
+        try{
+            boolean canPostJob = companyService.canPostJob(companyId);
+            return ResponseEntity.ok(canPostJob);
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getLocalizedMessage());
+        }
+    }
 }

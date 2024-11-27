@@ -26,6 +26,7 @@ server:
 app:
   cors:
     allowOrigins: ${FRONT_END_URL}
+  monthly-post: ${MONTHLY_POST}
 secret:
   secretPath: ${SECRET_PATH}
   accessTokenExpireTime: ${ACCESS_TOKEN_EXPIRE_TIME}

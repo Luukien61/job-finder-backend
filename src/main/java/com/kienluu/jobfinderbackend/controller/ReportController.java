@@ -14,8 +14,8 @@ public class ReportController {
 
     private final ReportService reportService;
 
-    @PostMapping("/{jobId}")
-    public ResponseEntity<?> reportJob(@RequestBody ReportDTO reportDto) {
+    @PostMapping("/job")
+    public ResponseEntity<?> reportJob(@RequestParam("id") Long jobId,@RequestBody ReportDTO reportDto) {
         try {
             // Xử lý tạo report
             ReportDTO report = reportService.createReport(reportDto);
