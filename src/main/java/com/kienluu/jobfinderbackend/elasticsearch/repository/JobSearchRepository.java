@@ -11,20 +11,30 @@ import org.springframework.stereotype.Repository;
 public interface JobSearchRepository extends ElasticsearchRepository<JobDocument, String> {
 
     @Query("""
-            {
-              "bool": {
-                     "should": [
-                       {
-                         "multi_match": {
-                           "query": "#{#title}",
-                           "fields": ["title^3", "location^2", "companyName"],
-                           "type": "best_fields"
-                         }
-                       }
-                     ]
-                   }
-            }
-            """)
+        {
+          "bool": {
+            "must": [
+              {
+                "range": {
+                  "expiryDate": {
+                    "gt": "now"
+                  }
+                }
+              }
+            ],
+            "should": [
+              {
+                "multi_match": {
+                  "query": "#{#title}",
+                  "fields": ["title^3", "companyName^2", "location"],
+                  "type": "best_fields"
+                }
+              }
+            ]
+          }
+        }
+        """)
+
     Page<JobDocument> findByTitleContainingOrLocationContaining(String title, String address,
                                                                 Pageable pageable);
 }

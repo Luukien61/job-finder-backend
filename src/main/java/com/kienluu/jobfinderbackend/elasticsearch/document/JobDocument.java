@@ -41,7 +41,7 @@ public class JobDocument {
     @Field(type = FieldType.Keyword, index = false)
     private String salary;
 
-    @Field(type = FieldType.Date, format = DateFormat.date, index = false)
+    @Field(type = FieldType.Date, format = DateFormat.date)
     private LocalDate expiryDate;
 
     @Field(type = FieldType.Date, format = DateFormat.date, index = false)

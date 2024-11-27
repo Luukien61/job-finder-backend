@@ -35,17 +35,8 @@ public class AdminService implements IAdminService {
                 ()-> new RuntimeException("Invalid company id"));
         companyEntity.setState(CompanyState.BAN);
         companyRepository.save(companyEntity);
-//        List<JobEntity> jobs = jobRepository.findAllByCompanyId(companyId);
-//        for (JobEntity job : jobs) {
-//            job.setState(JobState.BANNED);
-//        }
-//        jobRepository.saveAll(jobs);
+        jobRepository.banJobsByCompanyId(JobState.BANNED, companyId);
 
-        try{
-            jobRepository.banJobsByCompanyId(JobState.BANNED, companyId);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
     }
 
     public List<JobEntity> findJobsByCompanyId(String companyId) {
@@ -116,15 +107,13 @@ public class AdminService implements IAdminService {
     public List<JobDto> reportedJobs() {
         List<JobEntity> jobs = jobRepository.findReportedJobs();
         return jobs.stream()
-                .map(job -> {
-                    return JobDto.builder()
-                            .jobId(job.getJobId())
-                            .companyId(job.getCompany().getId())
-                            .companyName(job.getCompany().getName())
-                            .logo(job.getCompany().getLogo())
-                            .title(job.getTitle())
-                            .build();
-                }).toList();
+                .map(job -> JobDto.builder()
+                        .jobId(job.getJobId())
+                        .companyId(job.getCompany().getId())
+                        .companyName(job.getCompany().getName())
+                        .logo(job.getCompany().getLogo())
+                        .title(job.getTitle())
+                        .build()).toList();
     }
 
     @Override
