@@ -32,7 +32,7 @@ public class AdminService implements IAdminService {
     @Transactional
     public void deActivateCompany(String companyId) {
         CompanyEntity companyEntity = companyRepository.findById(companyId).orElseThrow(
-                ()-> new RuntimeException("Invalid company id"));
+                () -> new RuntimeException("Invalid company id"));
         companyEntity.setState(CompanyState.BAN);
         companyRepository.save(companyEntity);
 //        List<JobEntity> jobs = jobRepository.findAllByCompanyId(companyId);
@@ -41,16 +41,11 @@ public class AdminService implements IAdminService {
 //        }
 //        jobRepository.saveAll(jobs);
 
-        try{
-            jobRepository.banJobsByCompanyId(JobState.BANNED, companyId);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+        jobRepository.banJobsByCompanyId(JobState.BANNED, companyId);
     }
 
     public List<JobEntity> findJobsByCompanyId(String companyId) {
-        List<JobEntity> jobs = jobRepository.findAllByCompanyId(companyId);
-        return jobs;
+        return jobRepository.findAllByCompanyId(companyId);
     }
 //    @Override
 //    public void delete(String companyId) {
@@ -109,7 +104,7 @@ public class AdminService implements IAdminService {
 
     @Override
     public List<ReportEntity> findReportPending(String status) {
-        return reportRepository.findByStatus(ReportStatus.fromString(status))  ;
+        return reportRepository.findByStatus(ReportStatus.fromString(status));
     }
 
     @Override
