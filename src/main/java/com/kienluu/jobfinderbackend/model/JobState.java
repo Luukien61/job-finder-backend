@@ -6,6 +6,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum JobState {
+    BANNED("BANNED"),
     PENDING("PENDING"),
     DONE("DONE");
     private final String state;

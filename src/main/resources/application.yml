@@ -50,7 +50,7 @@ default-avatar: https://media.istockphoto.com/id/1300845620/vector/user-icon-fla
 oauth:
   google:
     client-id: ${CLIENT_ID}
-    client-secret: ${CLIEN_SECRET}
+    client-secret: ${CLIENT_SECRET}
     token-uri: https://oauth2.googleapis.com/token
     grantType: authorization_code
     redirect-uri: http://localhost:5173/login/oauth2/code/google

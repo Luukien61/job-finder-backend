@@ -19,7 +19,7 @@ public interface ReportRepository extends JpaRepository<ReportEntity, Long>{
     @Query("select count(rp) from ReportEntity rp where rp.job.jobId = :jobId")
     Integer countByJobId(@Param("jobId") String jobId);
 
-    @Query("select rp from ReportEntity rp where rp.job.jobId = :jobId")
-    List<ReportEntity> findAllByJobId(@Param("jobId") String jobId);
+    @Query("select rp.rpReason from ReportEntity rp where rp.job.jobId = :jobId")
+    List<String> findAllReportDescriptionByJobId(@Param("jobId") Long jobId);
 
 }

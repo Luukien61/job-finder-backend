@@ -1,21 +1,23 @@
 package com.kienluu.jobfinderbackend.service.implement;
 
-import com.kienluu.jobfinderbackend.dto.ReportDTO;
+import com.kienluu.jobfinderbackend.dto.JobDto;
 import com.kienluu.jobfinderbackend.entity.CompanyEntity;
+import com.kienluu.jobfinderbackend.entity.JobEntity;
 import com.kienluu.jobfinderbackend.entity.ReportEntity;
-import com.kienluu.jobfinderbackend.entity.UserEntity;
 import com.kienluu.jobfinderbackend.model.CompanyState;
+import com.kienluu.jobfinderbackend.model.JobState;
 import com.kienluu.jobfinderbackend.model.ReportStatus;
 import com.kienluu.jobfinderbackend.repository.CompanyRepository;
 import com.kienluu.jobfinderbackend.repository.JobRepository;
 import com.kienluu.jobfinderbackend.repository.ReportRepository;
 import com.kienluu.jobfinderbackend.repository.UserRepository;
 import com.kienluu.jobfinderbackend.service.IAdminService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
+
 
 @Service
 //@AllArgsConstructor
@@ -27,11 +29,28 @@ public class AdminService implements IAdminService {
     private final ReportRepository reportRepository;
 
     @Override
-    public void inActiveCompany(String companyId) {
+    @Transactional
+    public void deActivateCompany(String companyId) {
         CompanyEntity companyEntity = companyRepository.findById(companyId).orElseThrow(
                 ()-> new RuntimeException("Invalid company id"));
         companyEntity.setState(CompanyState.BAN);
         companyRepository.save(companyEntity);
+//        List<JobEntity> jobs = jobRepository.findAllByCompanyId(companyId);
+//        for (JobEntity job : jobs) {
+//            job.setState(JobState.BANNED);
+//        }
+//        jobRepository.saveAll(jobs);
+
+        try{
+            jobRepository.banJobsByCompanyId(JobState.BANNED, companyId);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public List<JobEntity> findJobsByCompanyId(String companyId) {
+        List<JobEntity> jobs = jobRepository.findAllByCompanyId(companyId);
+        return jobs;
     }
 //    @Override
 //    public void delete(String companyId) {
@@ -93,5 +112,58 @@ public class AdminService implements IAdminService {
         return reportRepository.findByStatus(ReportStatus.fromString(status))  ;
     }
 
+    @Override
+    public List<JobDto> reportedJobs() {
+        List<JobEntity> jobs = jobRepository.findReportedJobs();
+        return jobs.stream()
+                .map(job -> {
+                    return JobDto.builder()
+                            .jobId(job.getJobId())
+                            .companyId(job.getCompany().getId())
+                            .companyName(job.getCompany().getName())
+                            .logo(job.getCompany().getLogo())
+                            .title(job.getTitle())
+                            .build();
+                }).toList();
+    }
 
+    @Override
+    public List<String> reportedDescription(Long jobId) {
+        return reportRepository.findAllReportDescriptionByJobId(jobId);
+    }
+
+    @Override
+    public long countJobsByFieldAndMonthAndyYear(String field, int month, int year) {
+        return jobRepository.countJobsByFieldAndMonthAndYear(field, month, year);
+    }
+
+    @Override
+    public long countJobsByMonthAndYear(int month, int year) {
+        return jobRepository.countJobsByMonthAndYear(month, year);
+    }
+
+    @Override
+    public long countJobsByYear(int year) {
+        return jobRepository.countJobByYear(year);
+    }
+
+    @Override
+    public long countUserByYear(int year) {
+        return userRepository.countUserByYear(year);
+    }
+
+    @Override
+    public long countCompanyByYear(int year) {
+        return companyRepository.countCompanyByYear(year);
+    }
+
+    @Override
+    public long countUserByMonthAndYear(int month, int year) {
+        return userRepository.countUserByMonthAndYear(month, year);
+    }
+
+    @Override
+    public long countCompanyByMonthAndYear(int month, int year) {
+        return companyRepository.countCompanyByMonthAndYear(month, year);
+    }
 }

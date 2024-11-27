@@ -5,13 +5,12 @@ import com.kienluu.jobfinderbackend.model.JobState;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.time.LocalDate;
 import java.util.Optional;
 
 @Repository
@@ -58,4 +57,35 @@ public interface JobRepository extends JpaRepository<JobEntity, Long> {
 
     @Query("select count(p) from CompanyEntity p join JobEntity j on p.id = j.company.id and p.id = :companyId and j.expireDate >= CURRENT_DATE " )
     Integer countJobNotExpireByCompanyId(@Param("companyId") String companyId);
+
+    //@Query("select job from ReportEntity rp join JobEntity job on rp.job.jobId = job.jobId where (select count(p) from ReportEntity p group by p.job.jobId) >=5")
+    @Query("select job from ReportEntity rp join JobEntity job on rp.job.jobId = job.jobId group by job.jobId having count(rp) >= 5")
+    List<JobEntity> findReportedJobs();
+
+    @Query("SELECT COUNT(j) FROM JobEntity j " +
+            "WHERE EXTRACT(MONTH FROM j.createdAt) = :month " +
+            "AND EXTRACT(YEAR FROM j.createdAt) = :year")
+    long countJobsByMonthAndYear(@Param("month") int month,
+                          @Param("year") int year);
+
+
+    @Query("SELECT COUNT(j) FROM JobEntity j " +
+            "WHERE j.field = :field " +
+            "AND EXTRACT(MONTH FROM j.createdAt) = :month " +
+            "AND EXTRACT(YEAR FROM j.createdAt) = :year")
+    long countJobsByFieldAndMonthAndYear(@Param("field") String field,
+                                         @Param("month") int month,
+                                         @Param("year") int year);
+
+    @Query("SELECT COUNT(j) FROM JobEntity j " +
+            "WHERE EXTRACT(YEAR FROM j.createdAt) = :year")
+    long countJobByYear(@Param("year") int year);
+
+    @Query("SELECT j FROM JobEntity j WHERE j.company.id = :companyId")
+    List<JobEntity> findAllByCompanyId(@Param("companyId") String companyId);
+
+    @Modifying
+    @Query("UPDATE JobEntity j SET j.state = :state WHERE j.company.id = :companyId")
+    void banJobsByCompanyId(@Param("state") JobState state,
+                                       @Param("companyId") String companyId);
 }

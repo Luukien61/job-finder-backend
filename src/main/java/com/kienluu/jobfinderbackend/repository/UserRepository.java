@@ -18,4 +18,14 @@ public interface UserRepository extends JpaRepository<UserEntity, String> {
 
     @Query(value = "SELECT EXISTS(SELECT 1 FROM user_entity_saved_jobs t where t.user_entity_id= :userId and t.saved_jobs_job_id= :jobId)", nativeQuery = true)
     boolean isJobSaved(@Param("userId") String userId,@Param("jobId") Long jobId);
+
+    @Query("SELECT COUNT(j) FROM UserEntity j " +
+            "WHERE EXTRACT(MONTH FROM j.createdAt) = :month " +
+            "AND EXTRACT(YEAR FROM j.createdAt) = :year")
+    long countUserByMonthAndYear(@Param("month") int month,
+                                    @Param("year") int year);
+
+    @Query("SELECT COUNT(j) FROM UserEntity j " +
+            "WHERE EXTRACT(YEAR FROM j.createdAt) = :year")
+    long countUserByYear(@Param("year") int year);
 }
