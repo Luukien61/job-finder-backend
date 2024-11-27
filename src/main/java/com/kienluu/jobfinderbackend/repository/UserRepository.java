@@ -20,12 +20,12 @@ public interface UserRepository extends JpaRepository<UserEntity, String> {
     boolean isJobSaved(@Param("userId") String userId,@Param("jobId") Long jobId);
 
     @Query("SELECT COUNT(j) FROM UserEntity j " +
-            "WHERE FUNCTION('MONTH', j.createdAt) = :month " +
-            "AND FUNCTION('YEAR', j.createdAt) = :year")
+            "WHERE EXTRACT(MONTH FROM j.createdAt) = :month " +
+            "AND EXTRACT(YEAR FROM j.createdAt) = :year")
     long countUserByMonthAndYear(@Param("month") int month,
                                     @Param("year") int year);
 
     @Query("SELECT COUNT(j) FROM UserEntity j " +
-            "WHERE FUNCTION('YEAR', j.createdAt) = :year")
+            "WHERE EXTRACT(YEAR FROM j.createdAt) = :year")
     long countUserByYear(@Param("year") int year);
 }

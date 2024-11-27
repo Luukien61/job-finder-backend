@@ -29,12 +29,12 @@ public interface CompanyRepository extends JpaRepository<CompanyEntity, String> 
     Integer countCompanyByJobNotExpired();
 
     @Query("SELECT COUNT(j) FROM CompanyEntity j " +
-            "WHERE FUNCTION('MONTH', j.createdAt) = :month " +
-            "AND FUNCTION('YEAR', j.createdAt) = :year")
+            "WHERE EXTRACT(MONTH FROM j.createdAt) = :month " +
+            "AND EXTRACT(YEAR FROM j.createdAt) = :year")
     long countCompanyByMonthAndYear(@Param("month") int month,
                                     @Param("year") int year);
 
     @Query("SELECT COUNT(j) FROM CompanyEntity j " +
-            "WHERE FUNCTION('YEAR', j.createdAt) = :year")
+            "WHERE EXTRACT(YEAR FROM j.createdAt) = :year")
     long countCompanyByYear(@Param("year") int year);
 }

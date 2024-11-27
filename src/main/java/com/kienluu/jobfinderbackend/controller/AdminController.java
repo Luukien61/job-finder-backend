@@ -1,6 +1,7 @@
 package com.kienluu.jobfinderbackend.controller;
 
 import com.kienluu.jobfinderbackend.dto.JobDto;
+import com.kienluu.jobfinderbackend.entity.JobEntity;
 import com.kienluu.jobfinderbackend.service.implement.AdminService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,6 +18,7 @@ import java.util.List;
 @Setter
 public class AdminController {
     private final AdminService adminService;
+
     //tinh tong so luong ung vien da tham gia
     @GetMapping("/user/total")
     public ResponseEntity<Long> getTotalUsers() {
@@ -28,21 +30,45 @@ public class AdminController {
         }
     }
 
+    //so user theo thang, nam
+    @GetMapping("/user/quantity")
+    public ResponseEntity<Long> getTotalUsersByMonthAndYear(@RequestParam("month") int month,
+                                                           @RequestParam("year") int year) {
+        try {
+            long count = adminService.countUserByMonthAndYear(month, year);
+            return ResponseEntity.ok(count);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    //so user dang ki moi theo nam
+    @GetMapping("/user")
+    public ResponseEntity<Long> getTotalUsersByYear(@RequestParam("year") int year) {
+        try {
+            long count = adminService.countJobsByYear(year);
+            return ResponseEntity.ok(count);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+//----------------------------------job----------------------------------------
     //tong so job da duoc tao
     @GetMapping("/job/total")
     public ResponseEntity<Long> getTotalJobs() {
-        try{
+        try {
             long count = adminService.countAllJob();
             return ResponseEntity.ok(count);
-        }catch (Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
     }
 
     //tong so job chua het han
-    @GetMapping("/job/notexpired")
+    @GetMapping("/job/ongoing/total")
     public ResponseEntity<Long> getTotalJobsExpired() {
-        try{
+        try {
             long count = adminService.countJobNotExpired();
             return ResponseEntity.ok(count);
         } catch (Exception e) {
@@ -51,9 +77,9 @@ public class AdminController {
     }
 
     //so job theo tung linh vuc dang tuyen
-    @GetMapping("/job/notexpired/")
+    @GetMapping("/job/ongoing")
     public ResponseEntity<Long> getTotalJobsNotExpiredByField(@RequestParam("field") String field) {
-        try{
+        try {
             long count = adminService.countJobNotExpiredByField(field);
             return ResponseEntity.ok(count);
         } catch (Exception e) {
@@ -66,7 +92,7 @@ public class AdminController {
     @GetMapping("/job/quantity")
     public ResponseEntity<Long> getTotalJobsByMonthAndYear(@RequestParam("month") int month,
                                                            @RequestParam("year") int year) {
-        try{
+        try {
             long count = adminService.countJobsByMonthAndYear(month, year);
             return ResponseEntity.ok(count);
         } catch (Exception e) {
@@ -76,7 +102,7 @@ public class AdminController {
 
     @GetMapping("/job")
     public ResponseEntity<Long> getTotalJobsByYear(@RequestParam("year") int year) {
-        try{
+        try {
             long count = adminService.countJobsByYear(year);
             return ResponseEntity.ok(count);
         } catch (Exception e) {
@@ -85,9 +111,9 @@ public class AdminController {
     }
 
     //so job da dang cua tung cong ty
-    @GetMapping("/{companyid}/totaljobs")
-    public ResponseEntity<Long> getTotalJobsByCompany(@PathVariable("companyid") String companyId) {
-        try{
+    @GetMapping("/{companyId}/job/total")
+    public ResponseEntity<Long> getTotalJobsByCompany(@PathVariable("companyId") String companyId) {
+        try {
             long count = adminService.countJobByCompany(companyId);
             return ResponseEntity.ok(count);
         } catch (Exception e) {
@@ -96,20 +122,20 @@ public class AdminController {
     }
 
     //tong so job dang can tuyen theo tung cong ty
-    @GetMapping("/{companyid}/quantityjobnotexpired")
-    public ResponseEntity<Long> getTotalJobsNotExpiredByCompany(@PathVariable("companyid") String companyId) {
-        try{
+    @GetMapping("/{companyId}/job/ongoing/total")
+    public ResponseEntity<Long> getTotalJobsNotExpiredByCompany(@PathVariable("companyId") String companyId) {
+        try {
             long count = adminService.countJobNotExpiredByCompany(companyId);
             return ResponseEntity.ok(count);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
     }
-
+//-------------------------------------company------------------------------------
     //tong so cong ty, nha tuyen dung da tham gia web
     @GetMapping("/company/total")
     public ResponseEntity<Long> getTotalCompany() {
-        try{
+        try {
             long count = adminService.countAllCompany();
             return ResponseEntity.ok(count);
         } catch (Exception e) {
@@ -119,8 +145,8 @@ public class AdminController {
 
     //so cong ty dang can tuyen nguoi
     @GetMapping("/company/finding")
-    public ResponseEntity<Long> getTotalCompanyFindingEmployee(){
-        try{
+    public ResponseEntity<Long> getTotalCompanyFindingEmployee() {
+        try {
             long count = adminService.countCompanyFindingEmployee();
             return ResponseEntity.ok(count);
         } catch (Exception e) {
@@ -130,7 +156,7 @@ public class AdminController {
 
     @GetMapping("/company")
     public ResponseEntity<Long> getTotalCompanyByYear(@RequestParam("year") int year) {
-        try{
+        try {
             long count = adminService.countCompanyByYear(year);
             return ResponseEntity.ok(count);
         } catch (Exception e) {
@@ -138,19 +164,32 @@ public class AdminController {
         }
     }
 
-    @GetMapping("/reportedjob")
-    public ResponseEntity<Object> getReportedJobs(){
+    //so cong ty dang ki moi theo thang
+    @GetMapping("/company/quantity")
+    public ResponseEntity<Long> getCompanyByMonthAndYear(@RequestParam("month") int month,
+                                                         @RequestParam("year") int year) {
         try {
-            List<JobDto> rpjobs = adminService.reportedJobs();
-            return ResponseEntity.ok(rpjobs);
+            long count = adminService.countCompanyByYear(year);
+            return ResponseEntity.ok(count);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
     }
 
-    @GetMapping("/{jobid}/rpreason")
-    public ResponseEntity<Object> getReportedReasonsByJobId(@PathVariable("jobid") Long jobId) {
-        try{
+    //----------------------------report------------------------------------
+    @GetMapping("/job/reported")
+    public ResponseEntity<Object> getReportedJobs() {
+        try {
+            List<JobDto> jobs = adminService.reportedJobs();
+            return ResponseEntity.ok(jobs);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/{jobId}/reason")
+    public ResponseEntity<Object> getReportedReasonsByJobId(@PathVariable("jobId") Long jobId) {
+        try {
             List<String> reasons = adminService.reportedDescription(jobId);
             return ResponseEntity.ok(reasons);
         } catch (Exception e) {
@@ -159,15 +198,23 @@ public class AdminController {
     }
 
 
-    @PutMapping("/ban/{companyid}")
-    public ResponseEntity<Object> banCompany(@PathVariable("companyid") String companyid) {
-        try{
-            adminService.deActivateCompany(companyid);
+    @PutMapping("/ban/{companyId}")
+    public ResponseEntity<Object> banCompany(@PathVariable("companyId") String companyId) {
+        try {
+            adminService.deActivateCompany(companyId);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-
+    @GetMapping("/{companyId}/job/all")
+    public ResponseEntity<Object> getAllJobs(@PathVariable String companyId) {
+        try{
+            List< JobEntity> jobs= adminService.findJobsByCompanyId(companyId);
+            return ResponseEntity.ok(jobs);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }

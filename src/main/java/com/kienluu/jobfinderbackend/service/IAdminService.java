@@ -27,4 +27,8 @@ public interface IAdminService {
         long countJobsByYear(int year);
         long countUserByYear(int year);
         long countCompanyByYear(int year);
+        long countUserByMonthAndYear(int month, int year);
+        long countCompanyByMonthAndYear(int month, int year);
+
 }
+
