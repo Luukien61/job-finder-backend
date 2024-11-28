@@ -22,6 +22,7 @@ public class JobDto implements Serializable {
     String logo;
     String title;
     String location;
+    String province;
     String description;
     String requirements;
     String benefits;

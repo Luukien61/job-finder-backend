@@ -27,6 +27,7 @@ public class JobEntity {
     @Column(columnDefinition = "TEXT")
     private String title;
     private String location;
+    private String province;
     @Column(columnDefinition = "TEXT")
     private String description;
     @Column(columnDefinition = "TEXT")

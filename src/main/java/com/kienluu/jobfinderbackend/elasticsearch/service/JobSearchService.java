@@ -1,5 +1,6 @@
 package com.kienluu.jobfinderbackend.elasticsearch.service;
 
+import co.elastic.clients.elasticsearch._types.query_dsl.TextQueryType;
 import co.elastic.clients.json.JsonData;
 import com.kienluu.jobfinderbackend.elasticsearch.document.JobDocument;
 import com.kienluu.jobfinderbackend.elasticsearch.event.EvenType;
@@ -22,6 +23,8 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
+
 @Service
 @Slf4j
 @AllArgsConstructor
@@ -41,11 +44,12 @@ public class JobSearchService {
                     JobDocument jobDocument = JobDocument.builder()
                             .title(job.getTitle())
                             .id(job.getJobId().toString())
-                            .location(job.getLocation())
+                            .location(job.getProvince())
                             .companyId(job.getCompany().getId())
                             .companyName(job.getCompany().getName())
                             .logo(job.getCompany().getLogo())
                             .experience(job.getExperience())
+                            .createDate(job.getCreatedAt())
                             .expiryDate(job.getExpireDate())
                             .minSalary(job.getMinSalary())
                             .maxSalary(job.getMaxSalary())
@@ -57,7 +61,7 @@ public class JobSearchService {
                     jobSearchRepository.deleteById(job.getJobId().toString());
                     break;
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             log.error(e.getMessage());
         }
 
@@ -76,30 +80,31 @@ public class JobSearchService {
     public Page<JobDocument> searchJobs(String keyword, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
-        return jobSearchRepository.findByTitleContainingOrLocationContaining(keyword,pageable);
+        return jobSearchRepository.findByTitleContainingOrLocationContaining(keyword, pageable);
     }
 
     public Page<JobDocument> searchJobWithLocation(String keyword, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
-        return jobSearchRepository.findJobValidWithLocation("hồ Chí Minh",keyword,pageable);
+        return jobSearchRepository.findJobValidWithLocation("hồ Chí Minh", keyword, pageable);
     }
 
-    public Page<JobDocument> searchJobWithLocationAndSalary(String keyword, int minSalary, int maxSalary,  int page, int size) {
+    public Page<JobDocument> searchJobWithLocationAndSalary(String keyword, int minSalary, int maxSalary, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
-        return jobSearchRepository.findJobValidWithLocationAndSalary(keyword,"hồ Chí Minh", minSalary, maxSalary,pageable);
+        return jobSearchRepository.findJobValidWithLocationAndSalary(keyword, "hồ Chí Minh", minSalary, maxSalary, pageable);
     }
-    public Page<JobDocument> searchJobWithLocationAndSalaryAndExperience(String keyword, int minSalary, int maxSalary, int experience,  int page, int size) {
+
+    public Page<JobDocument> searchJobWithLocationAndSalaryAndExperience(String keyword, int minSalary, int maxSalary, int experience, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
-        return jobSearchRepository.findJobValidWithLocationAndSalaryAndExperience(keyword,"hồ Chí Minh", minSalary, maxSalary,experience,pageable);
+        return jobSearchRepository.findJobValidWithLocationAndSalaryAndExperience(keyword, "hồ Chí Minh", minSalary, maxSalary, experience, pageable);
     }
-
 
 
     @SuppressWarnings("unchecked")
     public Page<JobDocument> searchJobs(
+            @Nullable String keyword,
             @Nullable String location,
             @Nullable Integer minSalary,
             @Nullable Integer maxSalary,
@@ -109,12 +114,24 @@ public class JobSearchService {
         Pageable pageable = PageRequest.of(page, size);
         NativeQuery searchQuery = NativeQuery.builder()
                 .withQuery(query -> query.bool(bool -> {
+                    if (StringUtils.hasText(keyword)) {
+                        bool.must(must ->
+                                must.multiMatch(multiMatch ->
+                                        multiMatch.query(keyword)
+                                                .fields(List.of("title^3", "companyName^2", "location"))
+                                                .type(TextQueryType.MostFields)
+                                )
+                        );
+                    }
+
+
                     bool.must(must ->
                             must.range(range ->
                                     range.field("expiryDate").gt(JsonData.of("now"))
                                             .format("yyyy-MM-dd")
                             )
                     );
+
 
                     if (StringUtils.hasText(location)) {
                         bool.filter(filter ->
@@ -133,7 +150,7 @@ public class JobSearchService {
                         );
                     }
 
-                    if ( minSalary != null) {
+                    if (minSalary != null) {
                         bool.filter(filter ->
                                 filter.range(range ->
                                         range.field("maxSalary").gte(JsonData.of(minSalary))
@@ -141,18 +158,26 @@ public class JobSearchService {
                         );
                     }
 
-                    if (experience!=null) {
-                        bool.filter(filter ->
-                                filter.term(term ->
-                                        term.field("experience").value(experience)
-                                )
-                        );
+                    if (experience != null && experience > 0) {
+                        if (experience <= 5) {
+                            bool.filter(filter ->
+                                    filter.term(term ->
+                                            term.field("experience").value(experience)
+                                    )
+                            );
+                        } else {
+                            bool.filter(filter ->
+                                    filter.range(range ->
+                                            range.field("experience").gt(JsonData.of(experience))
+                                    )
+                            );
+                        }
+
                     }
                     return bool;
                 }))
                 .withPageable(pageable)
                 .build();
-        log.info("Search query: {}", searchQuery);
 
         SearchHits<JobDocument> searchHits = elasticsearchOperations.search(searchQuery, JobDocument.class);
         SearchPage<JobDocument> searchPage = SearchHitSupport.searchPageFor(searchHits, pageable);

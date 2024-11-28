@@ -57,8 +57,8 @@ public class JobService implements IJobService {
         JobEntity jobEntity = mapper.toJobEntity(job);
         jobEntity.setCompany(companyEntity);
 
-        jobEntity.setCreatedAt(now);
-        jobEntity.setUpdateAt(now);
+        jobEntity.setCreatedAt(job.getCreatedAt());
+        jobEntity.setUpdateAt(job.getCreatedAt());
         jobEntity.setState(JobState.PENDING);
         jobEntity = jobRepository.save(jobEntity);
         eventPublisher.publishEvent(new JobChangedEvent(jobEntity, EvenType.CREATED));
