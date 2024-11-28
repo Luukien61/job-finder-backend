@@ -39,3 +39,6 @@ out/
 
 src/main/resources/application-dev.yml
 src/main/resources/application-prod.yml
+/src/main/java/com/kienluu/jobfinderbackend/elasticsearch/repository/SimpleElasticsearchRepository.java
+/src/main/resources/static/app/
+/src/main/resources/static/elasticsearch/

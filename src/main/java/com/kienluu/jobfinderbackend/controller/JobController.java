@@ -80,6 +80,38 @@ public class JobController {
             @RequestParam int size)
     {
         try {
+            Page<JobDocument> documents = jobSearchService.searchJobWithLocation(query, page, size);
+            return new ResponseEntity<>(documents, HttpStatus.OK);
+        }catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/search/salary")
+    public ResponseEntity<Object> searchJobWithLocationAndSalary(
+            @RequestParam String query,
+            @RequestParam int minSalary,
+            @RequestParam int maxSalary,
+            @RequestParam int experience,
+            @RequestParam int page,
+            @RequestParam int size)
+    {
+        try {
+            Page<JobDocument> documents = jobSearchService.searchJobs("hồ Chí Minh", minSalary,null,null, page,size);
+            return new ResponseEntity<>(documents, HttpStatus.OK);
+        }catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+
+    @GetMapping("/search/nofilter")
+    public ResponseEntity<Object> searchJobWithoutFilter(
+            @RequestParam String query,
+            @RequestParam int page,
+            @RequestParam int size)
+    {
+        try {
             Page<JobDocument> documents = jobSearchService.searchJobs(query, page, size);
             return new ResponseEntity<>(documents, HttpStatus.OK);
         }catch (Exception e) {
