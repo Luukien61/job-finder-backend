@@ -1,5 +1,6 @@
 package com.kienluu.jobfinderbackend.elasticsearch.service;
 
+import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch._types.query_dsl.TextQueryType;
 import co.elastic.clients.json.JsonData;
 import com.kienluu.jobfinderbackend.elasticsearch.document.JobDocument;
@@ -109,7 +110,8 @@ public class JobSearchService {
             @Nullable Integer minSalary,
             @Nullable Integer maxSalary,
             @Nullable Integer experience,
-            int page, int size
+            int page, int size,
+            String sort, String order
     ) {
         Pageable pageable = PageRequest.of(page, size);
         NativeQuery searchQuery = NativeQuery.builder()
@@ -174,13 +176,43 @@ public class JobSearchService {
                         }
 
                     }
+
                     return bool;
                 }))
+                .withSort(sorts ->
+                        sorts.field(builder -> {
+                                    String sortByField = convertToCamelCase(sort);
+                                    SortOrder orderBy = SortOrder.Asc;
+                                    if (order.equalsIgnoreCase("desc")) {
+                                        orderBy = SortOrder.Desc;
+                                    }
+                                    return builder.field(sortByField).order(orderBy);
+                                }
+                        ))
                 .withPageable(pageable)
                 .build();
 
         SearchHits<JobDocument> searchHits = elasticsearchOperations.search(searchQuery, JobDocument.class);
         SearchPage<JobDocument> searchPage = SearchHitSupport.searchPageFor(searchHits, pageable);
         return (Page<JobDocument>) SearchHitSupport.unwrapSearchHits(searchPage);
+    }
+
+    private String convertToCamelCase(String source) {
+        // Chuyển snake_case hoặc kebab-case thành camelCase
+        StringBuilder result = new StringBuilder();
+        boolean toUpperCase = false;
+
+        for (char c : source.toCharArray()) {
+            if (c == '-' || c == '_') {
+                toUpperCase = true;
+            } else if (toUpperCase) {
+                result.append(Character.toUpperCase(c));
+                toUpperCase = false;
+            } else {
+                result.append(c);
+            }
+        }
+
+        return result.toString();
     }
 }

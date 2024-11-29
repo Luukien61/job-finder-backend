@@ -24,7 +24,12 @@ public class JobDocument {
     @Field(type = Text, analyzer = "standard")
     private String title;
 
-    @Field(type = Text,normalizer = "lowercase_normalizer")
+    @MultiField(
+            mainField = @Field(type = FieldType.Text, analyzer = "standard"),
+            otherFields = {
+                    @InnerField(suffix = "keyword", type = FieldType.Keyword)
+            }
+    )
     private String location;
 
     @Field(type = Text, analyzer = "standard")

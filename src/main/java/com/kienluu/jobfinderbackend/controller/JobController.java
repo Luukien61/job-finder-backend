@@ -24,7 +24,7 @@ public class JobController {
 
 
     @PostMapping("/{companyId}")
-    public ResponseEntity<Object> createJob(@PathVariable String companyId,@RequestBody JobCreateRequest job) {
+    public ResponseEntity<Object> createJob(@PathVariable String companyId, @RequestBody JobCreateRequest job) {
         try {
             JobDto saveJob = jobService.saveJob(job);
             return new ResponseEntity<>(saveJob, HttpStatus.CREATED);
@@ -35,20 +35,20 @@ public class JobController {
 
     @PostMapping("/bulk")
     public ResponseEntity<Object> bulkJob(@RequestBody List<JobCreateRequest> jobs) {
-        try{
+        try {
             jobs.forEach(jobService::saveJob);
             return new ResponseEntity<>(HttpStatus.CREATED);
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     @GetMapping("/{jobId}")
     public ResponseEntity<Object> getJob(@PathVariable Long jobId) {
-        try{
+        try {
             JobDto job = jobService.getJobById(jobId);
             return new ResponseEntity<>(job, HttpStatus.OK);
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -94,13 +94,14 @@ public class JobController {
             @RequestParam(required = false) Integer minSalary,
             @RequestParam(required = false) Integer maxSalary,
             @RequestParam(required = false) Integer experience,
-            @RequestParam(defaultValue = "0",required = false) Integer page,
-            @RequestParam(required = false,defaultValue = "10") Integer size)
-    {
+            @RequestParam(defaultValue = "0", required = false) Integer page,
+            @RequestParam(required = false, defaultValue = "10") Integer size,
+            @RequestParam(required = false, defaultValue = "expiry-date") String sort,
+            @RequestParam(required = false,defaultValue = "desc") String order) {
         try {
-            Page<JobDocument> documents = jobSearchService.searchJobs(keyword,location, minSalary,maxSalary,experience, page,size);
+            Page<JobDocument> documents = jobSearchService.searchJobs(keyword, location, minSalary, maxSalary, experience, page, size, sort,order);
             return new ResponseEntity<>(documents, HttpStatus.OK);
-        }catch (Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -123,18 +124,16 @@ public class JobController {
     @GetMapping("/company/{companyId}")
     public ResponseEntity<Object> searchJobByCompany(
             @PathVariable String companyId,
-            @RequestParam( "page") int page,
+            @RequestParam("page") int page,
             @RequestParam(value = "size", defaultValue = "10") int size
     ) {
-        try{
-            Page<JobEmployerCard> cards = jobService.getJobCardsByCompanyId(companyId,page ,size);
+        try {
+            Page<JobEmployerCard> cards = jobService.getJobCardsByCompanyId(companyId, page, size);
             return new ResponseEntity<>(cards, HttpStatus.OK);
-        }catch (Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
-
 
 
 }
