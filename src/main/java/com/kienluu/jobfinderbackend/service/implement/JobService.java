@@ -104,6 +104,14 @@ public class JobService implements IJobService {
         return jobs.map(this::toJobEmployerCard);
     }
 
+    @Override
+    public Page<JobDto> getNewJobs(Integer page, Integer size) {
+        Sort sort = Sort.by(Sort.Order.desc("createdAt"));
+        Pageable pageable = PageRequest.of(page, size,sort);
+        Page<JobEntity> response = jobRepository.getNewJobs(pageable);
+        return response.map(mapper::toJobResponse);
+    }
+
     protected JobEmployerCard toJobEmployerCard(JobEntity jobEntity) {
         List<JobApplicationEntity> jobApplicationEntity = jobEntity.getApplications();
         List<JobApplicationDto> applicationDtos = jobApplicationEntity.stream()

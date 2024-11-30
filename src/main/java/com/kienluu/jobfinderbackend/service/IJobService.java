@@ -17,6 +17,8 @@ public interface IJobService {
 
     JobDto getJobById(Long jobId);
 
+    Page<JobDto> getNewJobs(Integer page, Integer size);
+
 
 
 }

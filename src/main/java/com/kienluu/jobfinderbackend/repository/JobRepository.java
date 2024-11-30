@@ -35,10 +35,15 @@ public interface JobRepository extends JpaRepository<JobEntity, Long> {
                                            @Param("year") int year);
 
 
+
+
     Page<JobEntity> findByCompanyId(@Param("companyId") String companyId, Pageable pageable);
 
     @Query("select job from JobEntity job where job.jobId= :jobId and job.expireDate >=CURRENT_DATE")
     Optional<JobEntity> findJobByidAndNotExpiry(@Param("jobId") Long jobId);
+
+    @Query("select job from JobEntity job where job.expireDate>=CURRENT_DATE ")
+    Page<JobEntity> getNewJobs(Pageable pageable);
 
 
     @Query("select count(p) from JobEntity p")

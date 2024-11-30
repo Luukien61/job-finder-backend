@@ -55,6 +55,8 @@ public class UserEntity extends BaseUserEntity{
 
 
     @ElementCollection(targetClass = String.class, fetch = FetchType.LAZY)
+    @CollectionTable(name = "user_entity_search_history", joinColumns = @JoinColumn(name = "user_entity_id"))
+    @Column(name = "search_history", columnDefinition = "TEXT")
     private List<String> searchHistory;
     @ElementCollection(targetClass = String.class, fetch = FetchType.LAZY)
     @Column(columnDefinition = "TEXT")

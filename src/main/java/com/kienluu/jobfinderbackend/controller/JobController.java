@@ -135,5 +135,19 @@ public class JobController {
         }
     }
 
+    @GetMapping("/news")
+    public ResponseEntity<Object> fetchNewJobs(
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "12") Integer size
+
+    ){
+        try{
+            Page<JobDto> newJobs = jobService.getNewJobs(page, size);
+            return new ResponseEntity<>(newJobs, HttpStatus.OK);
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 
 }
