@@ -2,6 +2,7 @@ package com.kienluu.jobfinderbackend.controller;
 
 import com.kienluu.jobfinderbackend.dto.JobDto;
 import com.kienluu.jobfinderbackend.entity.JobEntity;
+import com.kienluu.jobfinderbackend.model.JobByCompanyByMonth;
 import com.kienluu.jobfinderbackend.model.JobByField;
 import com.kienluu.jobfinderbackend.model.UserStatistic;
 import com.kienluu.jobfinderbackend.service.implement.AdminService;
@@ -240,5 +241,17 @@ public class AdminController {
         }catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    @GetMapping("/jobs/company")
+    public ResponseEntity<Object> getAllJobsByCompany(@RequestParam("month") int month,
+                                                      @RequestParam("year") int year) {
+        try{
+            List<JobByCompanyByMonth> jobsByCompany = adminService.getJobsByCompany(month, year);
+            return ResponseEntity.ok(jobsByCompany);
+        }catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+
     }
 }

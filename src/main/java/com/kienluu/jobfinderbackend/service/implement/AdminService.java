@@ -30,7 +30,7 @@ public class AdminService implements IAdminService {
     @Transactional
     public void deActivateCompany(String companyId) {
         CompanyEntity companyEntity = companyRepository.findById(companyId).orElseThrow(
-                ()-> new RuntimeException("Invalid company id"));
+                () -> new RuntimeException("Invalid company id"));
         companyEntity.setState(CompanyState.BAN);
         companyRepository.save(companyEntity);
         jobRepository.banJobsByCompanyId(JobState.BANNED, companyId);
@@ -57,11 +57,11 @@ public class AdminService implements IAdminService {
 
     public UserStatistic getUserStatistic(int currentMonth, int currentYear) {
         long monthUsers = userRepository.countUserByMonthAndYear(currentMonth, currentYear);
-        long lastMonthUsers = userRepository.countUserByMonthAndYear(currentMonth -1, currentYear);
+        long lastMonthUsers = userRepository.countUserByMonthAndYear(currentMonth - 1, currentYear);
         long totalUsers = userRepository.countAllUser();
 
         long monthCompanys = companyRepository.countCompanyByMonthAndYear(currentMonth, currentYear);
-        long lastMonthCompanys = companyRepository.countCompanyByMonthAndYear(currentMonth -1, currentYear);
+        long lastMonthCompanys = companyRepository.countCompanyByMonthAndYear(currentMonth - 1, currentYear);
         long totalCompanys = companyRepository.countAllCompany();
 
         return UserStatistic.builder()
@@ -116,7 +116,7 @@ public class AdminService implements IAdminService {
 
     @Override
     public List<ReportEntity> findReportPending(String status) {
-        return reportRepository.findByStatus(ReportStatus.fromString(status))  ;
+        return reportRepository.findByStatus(ReportStatus.fromString(status));
     }
 
     @Override
@@ -174,5 +174,14 @@ public class AdminService implements IAdminService {
 
     public List<JobByField> getJobsByField(int month, int year) {
         return jobRepository.getJobsByField(month, year);
+    }
+
+    public List<JobByCompanyByMonth> getJobsByCompany(int month, int year) {
+        int previousMonth = month - 1, previousYear = year;
+        if (month == 1) {
+            previousYear = year - 1;
+            previousMonth = 12;
+        }
+        return companyRepository.countJobByCompanyInMonths(month, previousMonth, year, previousYear);
     }
 }

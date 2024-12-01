@@ -6,6 +6,7 @@ import com.kienluu.jobfinderbackend.dto.response.CompanyCreateResponse;
 import com.kienluu.jobfinderbackend.dto.response.CompanyResponse;
 import com.kienluu.jobfinderbackend.dto.response.LoginResponse;
 import com.kienluu.jobfinderbackend.entity.CompanyEntity;
+import com.kienluu.jobfinderbackend.model.JobByCompanyByMonth;
 import com.kienluu.jobfinderbackend.model.MailTemplate;
 
 import javax.mail.MessagingException;

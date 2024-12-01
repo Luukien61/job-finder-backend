@@ -96,7 +96,7 @@ public interface JobRepository extends JpaRepository<JobEntity, Long> {
 
     @Query("select new com.kienluu.jobfinderbackend.model.JobByField(job.field, count(job.field)) " +
            "from JobEntity job where EXTRACT(MONTH FROM job.createdAt) = :month " +
-           "AND EXTRACT(YEAR FROM job.createdAt) = :year GROUP BY job.field")
+           "AND EXTRACT(YEAR FROM job.createdAt) = :year and job.state!= 'BANNED' GROUP BY job.field")
     List<JobByField> getJobsByField(@Param("month") int month,
                                     @Param("year") int year);
 }

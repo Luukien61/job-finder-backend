@@ -1,6 +1,7 @@
 package com.kienluu.jobfinderbackend.repository;
 
 import com.kienluu.jobfinderbackend.entity.CompanyEntity;
+import com.kienluu.jobfinderbackend.model.JobByCompanyByMonth;
 import com.kienluu.jobfinderbackend.model.JobByField;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -40,5 +41,19 @@ public interface CompanyRepository extends JpaRepository<CompanyEntity, String> 
             "WHERE EXTRACT(YEAR FROM j.createdAt) = :year")
     long countCompanyByYear(@Param("year") int year);
 
+    @Query("SELECT new com.kienluu.jobfinderbackend.model.JobByCompanyByMonth(company.id, company.name, company.logo," +
+           "SUM(CASE WHEN EXTRACT(MONTH FROM job.createdAt) = :month AND EXTRACT(YEAR FROM job.createdAt) = :year THEN 1 ELSE 0 END)," +
+           "SUM(CASE WHEN EXTRACT(MONTH FROM job.createdAt) = :previous_month AND EXTRACT(YEAR FROM job.createdAt) = :previous_year THEN 1 ELSE 0 END)" +
+           ")" +
+           " from CompanyEntity company join JobEntity job on company.id=job.company.id " +
+           "WHERE EXTRACT(MONTH FROM job.createdAt) = :month " +
+           "AND EXTRACT(YEAR FROM job.createdAt) = :year " +
+           "OR EXTRACT(MONTH FROM job.createdAt) = :previous_month AND EXTRACT(YEAR FROM job.createdAt) = :previous_year" +
+           " group by company.id")
+    List<JobByCompanyByMonth> countJobByCompanyInMonths(@Param("month") int month,
+                                                        @Param("previous_month") int previousMonth,
+                                                        @Param("year") int year,
+                                                        @Param("previous_year") int previousYear
+    );
 
 }
