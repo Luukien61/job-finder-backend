@@ -14,6 +14,10 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -35,25 +39,12 @@ public class AdminService implements IAdminService {
         companyRepository.save(companyEntity);
         jobRepository.banJobsByCompanyId(JobState.BANNED, companyId);
 
+        reportRepository.updateReportStatusByCompanyId(ReportStatus.DONE, companyId);
     }
 
     public List<JobEntity> findJobsByCompanyId(String companyId) {
         return jobRepository.findAllByCompanyId(companyId);
     }
-//    @Override
-//    public void delete(String companyId) {
-//        CompanyEntity companyEntity = companyRepository.findByCompanyId(companyId).orElseThrow(
-//                ()-> new RuntimeException("Invalid company id"));
-//        companyRepository.delete(companyEntity);}
-
-
-//        @Override
-//    public void inActiveUser(String userId) {
-//        UserEntity userEntity = userRepository.findByUserId(userId).orElseThrow(()
-//                -> new RuntimeException("Invalid user id!"));
-//        userEntity.setActiveState(false);
-//        userRepository.save(userEntity);
-//    }
 
     public UserStatistic getUserStatistic(int currentMonth, int currentYear) {
         long monthUsers = userRepository.countUserByMonthAndYear(currentMonth, currentYear);
@@ -171,6 +162,41 @@ public class AdminService implements IAdminService {
     public long countCompanyByMonthAndYear(int month, int year) {
         return companyRepository.countCompanyByMonthAndYear(month, year);
     }
+
+
+    @Override
+    @Transactional
+    public void rejectReports(ReportStatus status, long jobId) {
+        reportRepository.updateReportStatusByJobId(status, jobId);
+    }
+
+    @Override
+    public List<Long> countJobsByDayInMonth(int month, int year) {
+        // Lấy kết quả từ database
+        List<Object[]> results = jobRepository.countJobsByDayInMonth(month, year);
+
+        // Số ngày trong tháng
+        int daysInMonth = YearMonth.of(year, month).lengthOfMonth();
+        int lastDay = (year == LocalDate.now().getYear() && month == LocalDate.now().getMonthValue())
+                ? LocalDate.now().getDayOfMonth()
+                : daysInMonth;
+
+        // Tạo danh sách mặc định với tất cả các ngày, gán giá trị ban đầu là 0
+        List<Long> jobCounts = new ArrayList<>(Collections.nCopies(lastDay, 0L));
+
+        // Cập nhật số lượng công việc từ kết quả query vào danh sách
+        for (Object[] result : results) {
+            int day = (int) result[0];       // Ngày từ query
+            long count = (long) result[1];  // Số lượng job từ query
+            if (day <= lastDay) { // Chỉ cập nhật cho các ngày <= ngày cuối cần xét
+                jobCounts.set(day - 1, count);
+            }
+        }
+
+        return jobCounts;
+    }
+
+
 
     public List<JobByField> getJobsByField(int month, int year) {
         return jobRepository.getJobsByField(month, year);
