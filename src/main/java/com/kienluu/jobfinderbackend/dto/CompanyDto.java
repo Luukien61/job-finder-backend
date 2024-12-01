@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -28,4 +29,5 @@ public class CompanyDto implements Serializable {
     String phone;
     String email;
     CompanyState state;
+    LocalDate createdAt;
 }

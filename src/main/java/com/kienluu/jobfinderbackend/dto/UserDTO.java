@@ -29,5 +29,6 @@ public class UserDTO {
     private List<String> cv;
     private Set<Long> savedJobs;
     private Set<Long> appliedJobs;
+    private LocalDate createdAt;
     private List<String> searchHistory;
 }

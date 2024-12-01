@@ -1,6 +1,7 @@
 package com.kienluu.jobfinderbackend.repository;
 
 import com.kienluu.jobfinderbackend.entity.JobEntity;
+import com.kienluu.jobfinderbackend.model.JobByField;
 import com.kienluu.jobfinderbackend.model.JobState;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -92,4 +93,10 @@ public interface JobRepository extends JpaRepository<JobEntity, Long> {
     @Query("UPDATE JobEntity j SET j.state = :state WHERE j.company.id = :companyId")
     void banJobsByCompanyId(@Param("state") JobState state,
                             @Param("companyId") String companyId);
+
+    @Query("select new com.kienluu.jobfinderbackend.model.JobByField(job.field, count(job.field)) " +
+           "from JobEntity job where EXTRACT(MONTH FROM job.createdAt) = :month " +
+           "AND EXTRACT(YEAR FROM job.createdAt) = :year GROUP BY job.field")
+    List<JobByField> getJobsByField(@Param("month") int month,
+                                    @Param("year") int year);
 }

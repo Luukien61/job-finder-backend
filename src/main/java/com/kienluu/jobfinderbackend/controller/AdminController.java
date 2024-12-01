@@ -2,6 +2,8 @@ package com.kienluu.jobfinderbackend.controller;
 
 import com.kienluu.jobfinderbackend.dto.JobDto;
 import com.kienluu.jobfinderbackend.entity.JobEntity;
+import com.kienluu.jobfinderbackend.model.JobByField;
+import com.kienluu.jobfinderbackend.model.UserStatistic;
 import com.kienluu.jobfinderbackend.service.implement.AdminService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,6 +28,17 @@ public class AdminController {
             long count = adminService.countAllUser();
             return ResponseEntity.ok(count);
         } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/user/statistics")
+    public ResponseEntity<Object> getStatistics(@RequestParam("month") int month,
+                                                @RequestParam("year") int year) {
+        try{
+            UserStatistic userStatistic = adminService.getUserStatistic(month, year);
+            return ResponseEntity.ok(userStatistic);
+        }catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
     }
@@ -169,7 +182,7 @@ public class AdminController {
     public ResponseEntity<Long> getCompanyByMonthAndYear(@RequestParam("month") int month,
                                                          @RequestParam("year") int year) {
         try {
-            long count = adminService.countCompanyByYear(year);
+            long count = adminService.countCompanyByMonthAndYear(month,year);
             return ResponseEntity.ok(count);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -214,6 +227,17 @@ public class AdminController {
             List< JobEntity> jobs= adminService.findJobsByCompanyId(companyId);
             return ResponseEntity.ok(jobs);
         } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/jobs/fields")
+    public ResponseEntity<Object> getAllJobsByField(@RequestParam("month") int month,
+                                                    @RequestParam("year") int year) {
+        try{
+            List<JobByField> jobs = adminService.getJobsByField(month, year);
+            return ResponseEntity.ok(jobs);
+        }catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
     }

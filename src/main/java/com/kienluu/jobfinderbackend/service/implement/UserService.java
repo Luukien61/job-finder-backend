@@ -229,6 +229,7 @@ public class UserService implements IUserService {
         user.setDateOfBirth(userDTO.getDateOfBirth());
         user.setEducationLevel(userDTO.getEducationLevel());
         user.setGender(userDTO.getGender());
+        user.setCreatedAt(userDTO.getCreatedAt());
         return userRepository.save(user);
     }
 

@@ -4,9 +4,7 @@ import com.kienluu.jobfinderbackend.dto.JobDto;
 import com.kienluu.jobfinderbackend.entity.CompanyEntity;
 import com.kienluu.jobfinderbackend.entity.JobEntity;
 import com.kienluu.jobfinderbackend.entity.ReportEntity;
-import com.kienluu.jobfinderbackend.model.CompanyState;
-import com.kienluu.jobfinderbackend.model.JobState;
-import com.kienluu.jobfinderbackend.model.ReportStatus;
+import com.kienluu.jobfinderbackend.model.*;
 import com.kienluu.jobfinderbackend.repository.CompanyRepository;
 import com.kienluu.jobfinderbackend.repository.JobRepository;
 import com.kienluu.jobfinderbackend.repository.ReportRepository;
@@ -56,6 +54,25 @@ public class AdminService implements IAdminService {
 //        userEntity.setActiveState(false);
 //        userRepository.save(userEntity);
 //    }
+
+    public UserStatistic getUserStatistic(int currentMonth, int currentYear) {
+        long monthUsers = userRepository.countUserByMonthAndYear(currentMonth, currentYear);
+        long lastMonthUsers = userRepository.countUserByMonthAndYear(currentMonth -1, currentYear);
+        long totalUsers = userRepository.countAllUser();
+
+        long monthCompanys = companyRepository.countCompanyByMonthAndYear(currentMonth, currentYear);
+        long lastMonthCompanys = companyRepository.countCompanyByMonthAndYear(currentMonth -1, currentYear);
+        long totalCompanys = companyRepository.countAllCompany();
+
+        return UserStatistic.builder()
+                .totalUsers(totalUsers)
+                .newMonthUsers(monthUsers)
+                .lastMonthUsers(lastMonthUsers)
+                .newCompanyUsers(monthCompanys)
+                .lastCompanyUsers(lastMonthCompanys)
+                .totalCompanyUsers(totalCompanys)
+                .build();
+    }
 
     @Override
     public int countAllUser() {
@@ -153,5 +170,9 @@ public class AdminService implements IAdminService {
     @Override
     public long countCompanyByMonthAndYear(int month, int year) {
         return companyRepository.countCompanyByMonthAndYear(month, year);
+    }
+
+    public List<JobByField> getJobsByField(int month, int year) {
+        return jobRepository.getJobsByField(month, year);
     }
 }

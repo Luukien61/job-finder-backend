@@ -1,6 +1,7 @@
 package com.kienluu.jobfinderbackend.repository;
 
 import com.kienluu.jobfinderbackend.entity.CompanyEntity;
+import com.kienluu.jobfinderbackend.model.JobByField;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -9,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -37,4 +39,6 @@ public interface CompanyRepository extends JpaRepository<CompanyEntity, String> 
     @Query("SELECT COUNT(j) FROM CompanyEntity j " +
             "WHERE EXTRACT(YEAR FROM j.createdAt) = :year")
     long countCompanyByYear(@Param("year") int year);
+
+
 }
