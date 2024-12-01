@@ -33,5 +33,7 @@ public interface IAdminService {
         long countCompanyByMonthAndYear(int month, int year);
         List<JobEntity> findJobsByCompanyId(String companyId);
         void rejectReports(ReportStatus status, long jobId);
+
+        List<Long> countJobsByDayInMonth(int month, int year);
 }
 

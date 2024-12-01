@@ -88,4 +88,13 @@ public interface JobRepository extends JpaRepository<JobEntity, Long> {
     @Query("UPDATE JobEntity j SET j.state = :state WHERE j.company.id = :companyId")
     void banJobsByCompanyId(@Param("state") JobState state,
                             @Param("companyId") String companyId);
+
+    @Query("SELECT EXTRACT(DAY FROM j.createdAt), COUNT(j) " +
+            "FROM JobEntity j " +
+            "WHERE EXTRACT(MONTH FROM j.createdAt) = :month " +
+            "AND EXTRACT(YEAR FROM j.createdAt) = :year " +
+            "GROUP BY EXTRACT(DAY FROM j.createdAt) " +
+            "ORDER BY EXTRACT(DAY FROM j.createdAt)")
+    List<Object[]> countJobsByDayInMonth(@Param("month") int month,
+                                         @Param("year") int year);
 }
