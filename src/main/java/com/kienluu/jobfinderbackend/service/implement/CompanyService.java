@@ -7,6 +7,7 @@ import com.kienluu.jobfinderbackend.dto.response.CompanyResponse;
 import com.kienluu.jobfinderbackend.dto.response.LoginResponse;
 import com.kienluu.jobfinderbackend.entity.CompanyEntity;
 import com.kienluu.jobfinderbackend.mapper.CustomMapper;
+import com.kienluu.jobfinderbackend.model.CompanyState;
 import com.kienluu.jobfinderbackend.model.JobByCompanyByMonth;
 import com.kienluu.jobfinderbackend.model.MailTemplate;
 import com.kienluu.jobfinderbackend.model.UserRole;
@@ -78,6 +79,7 @@ public class CompanyService implements ICompanyService {
         }
         CompanyEntity company = mapper.toCompanyEntity(request);
         company.setRole(UserRole.EMPLOYER);
+        company.setState(CompanyState.ACTIVE);
         company = companyRepository.save(company);
         return mapper.toCompanyCreateResponse(company);
     }

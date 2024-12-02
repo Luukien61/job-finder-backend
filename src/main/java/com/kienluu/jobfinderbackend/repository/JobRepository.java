@@ -43,14 +43,14 @@ public interface JobRepository extends JpaRepository<JobEntity, Long> {
     @Query("select job from JobEntity job where job.jobId= :jobId and job.expireDate >=CURRENT_DATE")
     Optional<JobEntity> findJobByidAndNotExpiry(@Param("jobId") Long jobId);
 
-    @Query("select job from JobEntity job where job.expireDate>=CURRENT_DATE ")
+    @Query("select job from JobEntity job where job.expireDate>=CURRENT_DATE and job.state!= 'BANNED' ")
     Page<JobEntity> getNewJobs(Pageable pageable);
 
 
     @Query("select count(p) from JobEntity p")
     Integer countAllJob();
 
-    @Query("select count(p) from  JobEntity p where p.expireDate >= CURRENT_DATE ")
+    @Query("select count(p) from  JobEntity p where p.expireDate >= CURRENT_DATE and p.state!='BANNED' ")
     Integer countJobNotExpired();
 
     @Query("select count(p) from  JobEntity p where p.field = :field and p.expireDate >= CURRENT_DATE ")

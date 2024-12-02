@@ -40,11 +40,9 @@ public class AdminService implements IAdminService {
     public void deActivateCompany(String companyId, CompanyBanRequest request) {
         CompanyEntity companyEntity = companyRepository.findById(companyId).orElseThrow(
                 () -> new RuntimeException("Invalid company id"));
-//        companyEntity.setState(CompanyState.BAN);
-//        jobRepository.banJobsByCompanyId(JobState.BANNED, companyId);
-//        companyRepository.save(companyEntity);
-//
-//        reportRepository.updateReportStatusByCompanyId(ReportStatus.DONE, companyId);
+        companyEntity.setState(CompanyState.BAN);
+        jobRepository.banJobsByCompanyId(JobState.BANNED, companyId);
+        reportRepository.updateReportStatusByCompanyId(ReportStatus.DONE, companyId);
         String BAN_MESSAGE = "Chúng tôi nhận thấy rẳng bài đăng ${title} của bạn đã vi phạm: ${reason}." +
                              "Nhằm mục đích nâng cao chất lượng môi trường việc làm, chúng tôi sẽ khóa tài khoản của bạn vô thời hạn.  ";
 
@@ -56,6 +54,7 @@ public class AdminService implements IAdminService {
                 .userId(companyEntity.getId())
                 .status(NotificationStatus.SENT)
                 .build();
+        companyRepository.save(companyEntity);
         notification=banNotificationRepository.save(notification);
         publisher.publishEvent(notification);
     }
