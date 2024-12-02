@@ -1,16 +1,14 @@
 package com.kienluu.jobfinderbackend.service.implement;
 
 import com.kienluu.jobfinderbackend.dto.JobDto;
+import com.kienluu.jobfinderbackend.dto.ReportedJobDto;
 import com.kienluu.jobfinderbackend.entity.CompanyEntity;
 import com.kienluu.jobfinderbackend.entity.JobEntity;
 import com.kienluu.jobfinderbackend.entity.ReportEntity;
 import com.kienluu.jobfinderbackend.model.CompanyState;
 import com.kienluu.jobfinderbackend.model.JobState;
 import com.kienluu.jobfinderbackend.model.ReportStatus;
-import com.kienluu.jobfinderbackend.repository.CompanyRepository;
-import com.kienluu.jobfinderbackend.repository.JobRepository;
-import com.kienluu.jobfinderbackend.repository.ReportRepository;
-import com.kienluu.jobfinderbackend.repository.UserRepository;
+import com.kienluu.jobfinderbackend.repository.*;
 import com.kienluu.jobfinderbackend.service.IAdminService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +17,10 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -31,6 +31,7 @@ public class AdminService implements IAdminService {
     private final UserRepository userRepository;
     private final JobRepository jobRepository;
     private final ReportRepository reportRepository;
+    private final JobApplicationRepository jobApplicationRepository;
 
     @Override
     @Transactional
@@ -99,18 +100,20 @@ public class AdminService implements IAdminService {
     }
 
     @Override
-    public List<JobDto> reportedJobs() {
-        List<JobEntity> jobs = jobRepository.findReportedJobs();
-        return jobs.stream()
-                .map(job -> {
-                    return JobDto.builder()
-                            .jobId(job.getJobId())
-                            .companyId(job.getCompany().getId())
-                            .companyName(job.getCompany().getName())
-                            .logo(job.getCompany().getLogo())
-                            .title(job.getTitle())
-                            .build();
-                }).toList();
+    public List<ReportedJobDto> reportedJobs() {
+        List<Object[]> results = jobRepository.findReportedJobs();
+
+        return results.stream()
+                .map(result -> new ReportedJobDto(
+                        (Long) result[0],
+                        (String) result[1],
+                        (String) result[2],
+                        (String) result[3],
+                        (String) result[4],
+                        (Long) result[5]
+                ))
+                .collect(Collectors.toList());
+
     }
 
     @Override
@@ -178,13 +181,18 @@ public class AdminService implements IAdminService {
         for (Object[] result : results) {
             int day = (int) result[0];       // Ngày từ query
             long count = (long) result[1];  // Số lượng job từ query
-            if (day <= lastDay) { // Chỉ cập nhật cho các ngày <= ngày cuối cần xét
-                jobCounts.set(day - 1, count);
-            }
+            //if (day <= lastDay) { // Chỉ cập nhật cho các ngày <= ngày cuối cần xét
+            jobCounts.set(day - 1, count);
+            //}
         }
 
         return jobCounts;
     }
 
+    //------------------------------job apply-------------------------------------
 
+    @Override
+    public int countAppsByMonth(int month, int year) {
+        return jobApplicationRepository.countAppsByMonth(month, year);
+    }
 }

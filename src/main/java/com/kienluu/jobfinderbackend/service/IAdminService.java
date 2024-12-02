@@ -1,6 +1,7 @@
 package com.kienluu.jobfinderbackend.service;
 
 import com.kienluu.jobfinderbackend.dto.JobDto;
+import com.kienluu.jobfinderbackend.dto.ReportedJobDto;
 import com.kienluu.jobfinderbackend.entity.JobEntity;
 import com.kienluu.jobfinderbackend.entity.ReportEntity;
 import com.kienluu.jobfinderbackend.model.ReportStatus;
@@ -22,7 +23,7 @@ public interface IAdminService {
         int countJobByCompany(String companyId);
         int countJobNotExpiredByCompany(String companyId);
         List<ReportEntity> findReportPending(String status);
-        List<JobDto> reportedJobs();
+        List<ReportedJobDto> reportedJobs();
         List<String> reportedDescription(Long jobId);
         long countJobsByFieldAndMonthAndyYear(String field, int month, int year);
         long countJobsByMonthAndYear(int month, int year);
@@ -35,5 +36,7 @@ public interface IAdminService {
         void rejectReports(ReportStatus status, long jobId);
 
         List<Long> countJobsByDayInMonth(int month, int year);
+
+        int countAppsByMonth(int month, int year);
 }
 

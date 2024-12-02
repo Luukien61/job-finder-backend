@@ -1,6 +1,7 @@
 package com.kienluu.jobfinderbackend.controller;
 
 import com.kienluu.jobfinderbackend.dto.JobDto;
+import com.kienluu.jobfinderbackend.dto.ReportedJobDto;
 import com.kienluu.jobfinderbackend.entity.JobEntity;
 import com.kienluu.jobfinderbackend.model.ReportStatus;
 import com.kienluu.jobfinderbackend.service.IAdminService;
@@ -194,9 +195,9 @@ public class AdminController {
 
     //----------------------------report------------------------------------
     @GetMapping("/job/reported")
-    public ResponseEntity<Object> getReportedJobs() {
+    public ResponseEntity<List<ReportedJobDto>> getReportedJobs() {
         try {
-            List<JobDto> jobs = adminService.reportedJobs();
+            List<ReportedJobDto> jobs = adminService.reportedJobs();
             return ResponseEntity.ok(jobs);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -241,6 +242,20 @@ public class AdminController {
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+
+
+    //-----------------------job apply----------------------------------------
+    @GetMapping("/application")
+    public ResponseEntity<Integer> getQuantityApplicationsByMonth(@RequestParam int month,
+                                                                 @RequestParam int year) {
+        try {
+            int count = adminService.countAppsByMonth(month, year);
+            return ResponseEntity.ok(count);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
         }
     }
 }
