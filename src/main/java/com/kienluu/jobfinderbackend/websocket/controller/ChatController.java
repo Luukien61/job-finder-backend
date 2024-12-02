@@ -27,7 +27,6 @@ import java.util.List;
 @AllArgsConstructor
 public class ChatController {
     private SimpMessagingTemplate simpMessagingTemplate;
-    private ConversationRepository conversationRepository;
     private ChatMessageRepository chatMessageRepository;
     private ConversationService conversationService;
     private ParticipantService participantService;

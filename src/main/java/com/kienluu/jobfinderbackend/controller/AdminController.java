@@ -1,14 +1,10 @@
 package com.kienluu.jobfinderbackend.controller;
 
-import com.kienluu.jobfinderbackend.dto.JobDto;
 import com.kienluu.jobfinderbackend.dto.ReportedJobDto;
+import com.kienluu.jobfinderbackend.dto.request.CompanyBanRequest;
 import com.kienluu.jobfinderbackend.entity.JobEntity;
-import com.kienluu.jobfinderbackend.model.JobByCompanyByMonth;
-import com.kienluu.jobfinderbackend.model.JobByField;
-import com.kienluu.jobfinderbackend.model.UserStatistic;
-import com.kienluu.jobfinderbackend.model.ReportStatus;
+import com.kienluu.jobfinderbackend.model.*;
 import com.kienluu.jobfinderbackend.service.IAdminService;
-import com.kienluu.jobfinderbackend.service.implement.AdminService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,10 +35,10 @@ public class AdminController {
     @GetMapping("/user/statistics")
     public ResponseEntity<Object> getStatistics(@RequestParam("month") int month,
                                                 @RequestParam("year") int year) {
-        try{
+        try {
             UserStatistic userStatistic = adminService.getUserStatistic(month, year);
             return ResponseEntity.ok(userStatistic);
-        }catch (Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
     }
@@ -200,7 +196,7 @@ public class AdminController {
     public ResponseEntity<Long> getCompanyByMonthAndYear(@RequestParam("month") int month,
                                                          @RequestParam("year") int year) {
         try {
-            long count = adminService.countCompanyByMonthAndYear(month,year);
+            long count = adminService.countCompanyByMonthAndYear(month, year);
             return ResponseEntity.ok(count);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -221,7 +217,7 @@ public class AdminController {
     @GetMapping("/{jobId}/reason")
     public ResponseEntity<Object> getReportedReasonsByJobId(@PathVariable("jobId") Long jobId) {
         try {
-            List<String> reasons = adminService.reportedDescription(jobId);
+            List<ReportItemDetail> reasons = adminService.reportedItems(jobId);
             return ResponseEntity.ok(reasons);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -230,9 +226,10 @@ public class AdminController {
 
 
     @PutMapping("/ban/{companyId}")
-    public ResponseEntity<Object> banCompany(@PathVariable("companyId") String companyId) {
+    public ResponseEntity<Object> banCompany(@PathVariable("companyId") String companyId,
+                                             @RequestBody CompanyBanRequest request) {
         try {
-            adminService.deActivateCompany(companyId);
+            adminService.deActivateCompany(companyId, request);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -252,10 +249,10 @@ public class AdminController {
     @GetMapping("/jobs/fields")
     public ResponseEntity<Object> getAllJobsByField(@RequestParam("month") int month,
                                                     @RequestParam("year") int year) {
-        try{
+        try {
             List<JobByField> jobs = adminService.getJobsByField(month, year);
             return ResponseEntity.ok(jobs);
-        }catch (Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
     }
@@ -263,10 +260,10 @@ public class AdminController {
     @GetMapping("/jobs/company")
     public ResponseEntity<Object> getAllJobsByCompany(@RequestParam("month") int month,
                                                       @RequestParam("year") int year) {
-        try{
+        try {
             List<JobByCompanyByMonth> jobsByCompany = adminService.getJobsByCompany(month, year);
             return ResponseEntity.ok(jobsByCompany);
-        }catch (Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
 
@@ -283,11 +280,10 @@ public class AdminController {
     }
 
 
-
     //-----------------------job apply----------------------------------------
     @GetMapping("/application")
     public ResponseEntity<Integer> getQuantityApplicationsByMonth(@RequestParam int month,
-                                                                 @RequestParam int year) {
+                                                                  @RequestParam int year) {
         try {
             int count = adminService.countAppsByMonth(month, year);
             return ResponseEntity.ok(count);

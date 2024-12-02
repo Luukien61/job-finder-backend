@@ -28,7 +28,7 @@ public class ConversationService {
     private final ConversationRepository conversationRepository;
     private final UserRepository userRepository;
     private final CompanyRepository companyRepository;
-    private ChatMessageRepository chatMessageRepository;
+    private final ChatMessageRepository chatMessageRepository;
     private final MessageMapper mapper;
 
 

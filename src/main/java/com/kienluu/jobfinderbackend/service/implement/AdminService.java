@@ -1,28 +1,23 @@
 package com.kienluu.jobfinderbackend.service.implement;
 
-import com.kienluu.jobfinderbackend.dto.JobDto;
 import com.kienluu.jobfinderbackend.dto.ReportedJobDto;
+import com.kienluu.jobfinderbackend.dto.request.CompanyBanRequest;
 import com.kienluu.jobfinderbackend.entity.CompanyEntity;
 import com.kienluu.jobfinderbackend.entity.JobEntity;
 import com.kienluu.jobfinderbackend.entity.ReportEntity;
-import com.kienluu.jobfinderbackend.model.CompanyState;
-import com.kienluu.jobfinderbackend.model.JobState;
-import com.kienluu.jobfinderbackend.model.ReportStatus;
-import com.kienluu.jobfinderbackend.repository.*;
+import com.kienluu.jobfinderbackend.entity.notification.BanNotification;
 import com.kienluu.jobfinderbackend.model.*;
-import com.kienluu.jobfinderbackend.repository.CompanyRepository;
-import com.kienluu.jobfinderbackend.repository.JobRepository;
-import com.kienluu.jobfinderbackend.repository.ReportRepository;
-import com.kienluu.jobfinderbackend.repository.UserRepository;
+import com.kienluu.jobfinderbackend.repository.*;
 import com.kienluu.jobfinderbackend.service.IAdminService;
+import com.kienluu.jobfinderbackend.websocket.event.BanEvent;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,17 +32,32 @@ public class AdminService implements IAdminService {
     private final JobRepository jobRepository;
     private final ReportRepository reportRepository;
     private final JobApplicationRepository jobApplicationRepository;
+    private final ApplicationEventPublisher publisher;
+    private final BanNotificationRepository banNotificationRepository;
 
     @Override
     @Transactional
-    public void deActivateCompany(String companyId) {
+    public void deActivateCompany(String companyId, CompanyBanRequest request) {
         CompanyEntity companyEntity = companyRepository.findById(companyId).orElseThrow(
                 () -> new RuntimeException("Invalid company id"));
-        companyEntity.setState(CompanyState.BAN);
-        companyRepository.save(companyEntity);
-        jobRepository.banJobsByCompanyId(JobState.BANNED, companyId);
+//        companyEntity.setState(CompanyState.BAN);
+//        jobRepository.banJobsByCompanyId(JobState.BANNED, companyId);
+//        companyRepository.save(companyEntity);
+//
+//        reportRepository.updateReportStatusByCompanyId(ReportStatus.DONE, companyId);
+        String BAN_MESSAGE = "Chúng tôi nhận thấy rẳng bài đăng ${title} của bạn đã vi phạm: ${reason}." +
+                             "Nhằm mục đích nâng cao chất lượng môi trường việc làm, chúng tôi sẽ khóa tài khoản của bạn vô thời hạn.  ";
 
-        reportRepository.updateReportStatusByCompanyId(ReportStatus.DONE, companyId);
+        BanNotification notification = BanNotification.builder()
+                .reason(request.getReason())
+                .title(request.getTitle())
+                .message(BAN_MESSAGE)
+                .createdAt(request.getCreatedAt())
+                .userId(companyEntity.getId())
+                .status(NotificationStatus.SENT)
+                .build();
+        notification=banNotificationRepository.save(notification);
+        publisher.publishEvent(notification);
     }
 
     public List<JobEntity> findJobsByCompanyId(String companyId) {
@@ -142,6 +152,18 @@ public class AdminService implements IAdminService {
     }
 
     @Override
+    public List<ReportItemDetail> reportedItems(Long jobId) {
+        List<Object[]> details = reportRepository.findAllReportDetailByJobId(jobId);
+        return details.stream().map(item ->
+                        new ReportItemDetail(
+                                (Long) item[0],
+                                (String) item[1],
+                                (String) item[2],
+                                (String) item[3]))
+                .toList();
+    }
+
+    @Override
     public long countJobsByFieldAndMonthAndyYear(String field, int month, int year) {
         return jobRepository.countJobsByFieldAndMonthAndYear(field, month, year);
     }
@@ -215,10 +237,12 @@ public class AdminService implements IAdminService {
     public int countAppsByMonth(int month, int year) {
         return jobApplicationRepository.countAppsByMonth(month, year);
     }
+
     @Override
     public List<JobByField> getJobsByField(int month, int year) {
         return jobRepository.getJobsByField(month, year);
     }
+
     @Override
     public List<JobByCompanyByMonth> getJobsByCompany(int month, int year) {
         int previousMonth = month - 1, previousYear = year;

@@ -1,6 +1,7 @@
 package com.kienluu.jobfinderbackend.repository;
 
 import com.kienluu.jobfinderbackend.entity.ReportEntity;
+import com.kienluu.jobfinderbackend.model.ReportItemDetail;
 import com.kienluu.jobfinderbackend.model.ReportStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -22,6 +23,11 @@ public interface ReportRepository extends JpaRepository<ReportEntity, Long> {
 
     @Query("select rp.rpReason from ReportEntity rp where rp.job.jobId = :jobId")
     List<String> findAllReportDescriptionByJobId(@Param("jobId") Long jobId);
+
+    @Query(value = "select rp.id, u.email, u.avatar, rp.reason  " +
+           "from report rp join user_entity u on rp.user_id=u.id " +
+           "where rp.job_id = :jobId", nativeQuery = true)
+    List<Object[]> findAllReportDetailByJobId(@Param("jobId") Long jobId);
 
     @Modifying
     @Query("UPDATE ReportEntity r SET r.status = :status WHERE r.companyId= :companyId")

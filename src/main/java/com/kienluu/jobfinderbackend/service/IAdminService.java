@@ -1,19 +1,16 @@
 package com.kienluu.jobfinderbackend.service;
 
-import com.kienluu.jobfinderbackend.dto.JobDto;
 import com.kienluu.jobfinderbackend.dto.ReportedJobDto;
+import com.kienluu.jobfinderbackend.dto.request.CompanyBanRequest;
 import com.kienluu.jobfinderbackend.entity.JobEntity;
 import com.kienluu.jobfinderbackend.entity.ReportEntity;
-import com.kienluu.jobfinderbackend.model.JobByCompanyByMonth;
-import com.kienluu.jobfinderbackend.model.JobByField;
-import com.kienluu.jobfinderbackend.model.ReportStatus;
-import com.kienluu.jobfinderbackend.model.UserStatistic;
+import com.kienluu.jobfinderbackend.model.*;
 
 import java.util.List;
 
 public interface IAdminService {
 
-    void deActivateCompany(String companyId);
+    void deActivateCompany(String companyId, CompanyBanRequest request);
 
     int countAllUser();
 
@@ -36,6 +33,7 @@ public interface IAdminService {
     List<ReportedJobDto> reportedJobs();
 
     List<String> reportedDescription(Long jobId);
+    List<ReportItemDetail> reportedItems(Long jobId);
 
     long countJobsByFieldAndMonthAndyYear(String field, int month, int year);
 
