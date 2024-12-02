@@ -18,4 +18,10 @@ public interface JobApplicationRepository extends JpaRepository<JobApplicationEn
 
     @Query("select app from JobApplicationEntity app where app.job.jobId= :jobId")
     List<JobApplicationEntity> findAllByJobId(Long jobId);
+
+    @Query("SELECT count(app) FROM JobApplicationEntity app " +
+            "WHERE EXTRACT(MONTH FROM app.createdDate) = :month " +
+            "AND EXTRACT(YEAR FROM app.createdDate) = :year")
+    Integer countAppsByMonth(@Param("month") int month,
+                          @Param("year") int year);
 }

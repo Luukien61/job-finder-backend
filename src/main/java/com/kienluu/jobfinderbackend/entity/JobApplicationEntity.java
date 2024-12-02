@@ -36,6 +36,7 @@ public class JobApplicationEntity {
 
     @Column(columnDefinition = "TEXT")
     private String referenceLetter;
+
     private LocalDate createdDate;
 }
 

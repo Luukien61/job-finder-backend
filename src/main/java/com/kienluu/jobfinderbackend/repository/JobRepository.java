@@ -63,10 +63,12 @@ public interface JobRepository extends JpaRepository<JobEntity, Long> {
     Integer countJobNotExpireByCompanyId(@Param("companyId") String companyId);
 
     //@Query("select job from ReportEntity rp join JobEntity job on rp.job.jobId = job.jobId where (select count(p) from ReportEntity p group by p.job.jobId) >=5")
-    @Query("SELECT job FROM ReportEntity rp JOIN JobEntity job ON rp.job.jobId = job.jobId " +
-            "WHERE rp.status= 'PENDING'" +
-            " GROUP BY job.jobId HAVING count(rp) >= 5")
-    List<JobEntity> findReportedJobs();
+    @Query("SELECT job.jobId, job.title, job.company.name, job.company.id, job.company.logo, count(rp.id) " +
+            "FROM ReportEntity rp JOIN JobEntity job ON rp.job.jobId = job.jobId " +
+            "WHERE rp.status= 'PENDING' " +
+            "GROUP BY job.jobId, job.title, job.company.id, job.company.name, job.company.logo " +
+            "HAVING count(rp.id) >= 5")
+    List<Object[]> findReportedJobs();
 
 
     @Query("SELECT  job.jobId, job.title, count(rp.id), job.company.id, job.company.name " +
