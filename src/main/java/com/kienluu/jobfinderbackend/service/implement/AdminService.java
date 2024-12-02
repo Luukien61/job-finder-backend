@@ -46,6 +46,7 @@ public class AdminService implements IAdminService {
         return jobRepository.findAllByCompanyId(companyId);
     }
 
+    @Override
     public UserStatistic getUserStatistic(int currentMonth, int currentYear) {
         long monthUsers = userRepository.countUserByMonthAndYear(currentMonth, currentYear);
         long lastMonthUsers = userRepository.countUserByMonthAndYear(currentMonth - 1, currentYear);
@@ -197,11 +198,11 @@ public class AdminService implements IAdminService {
     }
 
 
-
+    @Override
     public List<JobByField> getJobsByField(int month, int year) {
         return jobRepository.getJobsByField(month, year);
     }
-
+    @Override
     public List<JobByCompanyByMonth> getJobsByCompany(int month, int year) {
         int previousMonth = month - 1, previousYear = year;
         if (month == 1) {

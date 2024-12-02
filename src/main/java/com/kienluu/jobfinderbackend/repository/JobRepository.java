@@ -68,6 +68,13 @@ public interface JobRepository extends JpaRepository<JobEntity, Long> {
             " GROUP BY job.jobId HAVING count(rp) >= 5")
     List<JobEntity> findReportedJobs();
 
+
+    @Query("SELECT  job.jobId, job.title, count(rp.id), job.company.id, job.company.name " +
+           "FROM ReportEntity rp JOIN JobEntity job ON rp.job.jobId = job.jobId " +
+           "WHERE rp.status= 'PENDING'" +
+           " GROUP BY job.jobId,job.company.name HAVING count(rp) >= 5")
+    List<Object[]> findReportedJobsWithCount();
+
     @Query("SELECT COUNT(j) FROM JobEntity j " +
             "WHERE EXTRACT(MONTH FROM j.createdAt) = :month " +
             "AND EXTRACT(YEAR FROM j.createdAt) = :year")

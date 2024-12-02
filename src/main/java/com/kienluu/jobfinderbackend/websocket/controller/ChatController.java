@@ -44,7 +44,6 @@ public class ChatController {
         try{
             return conversationService.sendMessage(message);
         }catch (Exception e){
-            e.printStackTrace();
             return null;
         }
     }
