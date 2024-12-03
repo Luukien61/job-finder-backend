@@ -11,7 +11,7 @@ import java.util.List;
 public interface BanNotificationRepository extends JpaRepository<BanNotification, Long> {
     List<BanNotification> findAllByUserId(String userId);
 
-    @Query("select count(n) from BanNotification n where n.userId= :user_id and n.status= :status")
+    @Query("select count(n) from BanNotification n where n.userId= :user_id and n.status= :status or n.status = 'SENT'")
     Long countAllNotificationsByUserIdAndStatus(@Param("user_id") String userId, @Param("status") NotificationStatus status);
 
 }

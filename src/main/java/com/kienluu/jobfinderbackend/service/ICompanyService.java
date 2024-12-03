@@ -6,7 +6,9 @@ import com.kienluu.jobfinderbackend.dto.response.CompanyCreateResponse;
 import com.kienluu.jobfinderbackend.dto.response.CompanyResponse;
 import com.kienluu.jobfinderbackend.dto.response.LoginResponse;
 import com.kienluu.jobfinderbackend.entity.CompanyEntity;
-import com.kienluu.jobfinderbackend.model.JobByCompanyByMonth;
+import com.kienluu.jobfinderbackend.model.CompanyJobDetailStatistics;
+import com.kienluu.jobfinderbackend.model.CompanyMonthlyJob;
+import com.kienluu.jobfinderbackend.model.CompanyStatistics;
 import com.kienluu.jobfinderbackend.model.MailTemplate;
 
 import javax.mail.MessagingException;
@@ -29,4 +31,16 @@ public interface ICompanyService {
     String sendVerificationCode(MailTemplate mailTemplate) throws MessagingException, GeneralSecurityException, IOException;
 
     boolean canPostJob(String companyId);
+
+    Long countNewApplicantsInMonth(String companyId, Integer month, Integer year);
+
+    Long countJobsInMonth(String companyId, Integer month, Integer year);
+
+    Long countApplicantsInMonth(String companyId, Integer month, Integer year);
+
+    CompanyStatistics getCompanyStatistics(String companyId, Integer month, Integer year);
+
+    List<CompanyMonthlyJob> getJobsIn12Month(String companyId, Integer month, Integer year);
+
+    List<CompanyJobDetailStatistics> getJobDetailStatistics(String companyId);
 }

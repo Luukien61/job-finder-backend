@@ -4,12 +4,13 @@ import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch._types.query_dsl.TextQueryType;
 import co.elastic.clients.json.JsonData;
 import com.kienluu.jobfinderbackend.elasticsearch.document.JobDocument;
+import com.kienluu.jobfinderbackend.elasticsearch.event.BanJobByCompanyEvent;
 import com.kienluu.jobfinderbackend.elasticsearch.event.EvenType;
 import com.kienluu.jobfinderbackend.elasticsearch.event.JobChangedEvent;
 import com.kienluu.jobfinderbackend.elasticsearch.repository.JobSearchRepository;
 import com.kienluu.jobfinderbackend.entity.JobEntity;
 import com.kienluu.jobfinderbackend.repository.JobRepository;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Page;
@@ -20,6 +21,9 @@ import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHitSupport;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.SearchPage;
+import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
+import org.springframework.data.elasticsearch.core.query.ScriptType;
+import org.springframework.data.elasticsearch.core.query.UpdateQuery;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -28,11 +32,12 @@ import java.util.List;
 
 @Service
 @Slf4j
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class JobSearchService {
-    private JobSearchRepository jobSearchRepository;
-    private JobRepository jobRepository;
+    private final JobSearchRepository jobSearchRepository;
+    private final JobRepository jobRepository;
     private final ElasticsearchOperations elasticsearchOperations;
+
 
     @EventListener
     public void handleJobChange(JobChangedEvent event) {
@@ -54,6 +59,7 @@ public class JobSearchService {
                             .expiryDate(job.getExpireDate())
                             .minSalary(job.getMinSalary())
                             .maxSalary(job.getMaxSalary())
+                            .state(job.getState().toString())
                             .build();
                     jobSearchRepository.save(jobDocument);
                     log.info("Elasticsearch synchronized for job ID: {} - Action: {}", job.getJobId(), action);
@@ -103,6 +109,31 @@ public class JobSearchService {
     }
 
 
+    @EventListener(classes = BanJobByCompanyEvent.class)
+    public void banJobsByCompany(BanJobByCompanyEvent event) {
+        NativeQuery nativeQuery = NativeQuery.builder()
+                .withQuery(query -> query.bool(bool -> bool.must(must ->
+                        must.term(term -> term.value(event.getCompanyId()).field("companyId"))
+                )))
+                .build();
+
+
+        UpdateQuery updateQuery = UpdateQuery.builder(nativeQuery)
+                .withScript("ctx._source.state='BANNED'")
+                .withLang("painless")
+                .withScriptType(ScriptType.INLINE)
+                .build();
+
+//        SearchHits<JobDocument> searchHits = elasticsearchOperations.search(nativeQuery, JobDocument.class);
+//        List<JobDocument> jobDocuments = searchHits.stream()
+//                .map(SearchHit::getContent)
+//                .toList();
+//        List<JobDocument> documents = jobSearchRepository.findAllByCompanyId(companyId);
+//        log.info("Found {} jobs", documents.size());
+        elasticsearchOperations.updateByQuery(updateQuery, IndexCoordinates.of("jobs"));
+    }
+
+
     @SuppressWarnings("unchecked")
     public Page<JobDocument> searchJobs(
             @Nullable String keyword,
@@ -128,10 +159,16 @@ public class JobSearchService {
 
 
                     bool.must(must ->
-                            must.range(range ->
-                                    range.field("expiryDate").gt(JsonData.of("now"))
-                                            .format("yyyy-MM-dd")
-                            )
+                            {
+                                must.range(range ->
+                                        range.field("expiryDate").gt(JsonData.of("now"))
+                                                .format("yyyy-MM-dd")
+                                );
+                                must.term(term -> term.field("state").value("PENDING"));
+
+                                return must;
+                            }
+
                     );
 
 

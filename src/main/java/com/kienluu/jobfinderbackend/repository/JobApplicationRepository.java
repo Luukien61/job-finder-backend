@@ -24,4 +24,12 @@ public interface JobApplicationRepository extends JpaRepository<JobApplicationEn
             "AND EXTRACT(YEAR FROM app.createdDate) = :year")
     Integer countAppsByMonth(@Param("month") int month,
                           @Param("year") int year);
+
+    @Query("select count(*) from JobApplicationEntity applicant join JobEntity job on applicant.job.jobId= job.jobId " +
+           "where job.company.id= :companyId " +
+           "and EXTRACT(MONTH FROM applicant.createdDate) = :month " +
+           "AND EXTRACT(YEAR FROM applicant.createdDate) = :year")
+    Long countApplicantInMonthByCompany(@Param("companyId") String companyId,
+                                        @Param("month") int month,
+                                        @Param("year") int year);
 }

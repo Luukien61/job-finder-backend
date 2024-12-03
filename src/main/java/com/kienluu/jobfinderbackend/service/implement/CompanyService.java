@@ -7,16 +7,13 @@ import com.kienluu.jobfinderbackend.dto.response.CompanyResponse;
 import com.kienluu.jobfinderbackend.dto.response.LoginResponse;
 import com.kienluu.jobfinderbackend.entity.CompanyEntity;
 import com.kienluu.jobfinderbackend.mapper.CustomMapper;
-import com.kienluu.jobfinderbackend.model.CompanyState;
-import com.kienluu.jobfinderbackend.model.JobByCompanyByMonth;
-import com.kienluu.jobfinderbackend.model.MailTemplate;
-import com.kienluu.jobfinderbackend.model.UserRole;
+import com.kienluu.jobfinderbackend.model.*;
 import com.kienluu.jobfinderbackend.repository.CompanyRepository;
+import com.kienluu.jobfinderbackend.repository.JobApplicationRepository;
 import com.kienluu.jobfinderbackend.repository.JobRepository;
 import com.kienluu.jobfinderbackend.service.ICompanyService;
-import lombok.AllArgsConstructor;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +21,8 @@ import javax.mail.MessagingException;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.LocalDate;
+import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,6 +34,7 @@ public class CompanyService implements ICompanyService {
     private final CustomMapper mapper;
     private final MailService mailService;
     private final JobRepository jobRepository;
+    private final JobApplicationRepository applicationRepository;
 
     @Value("${app.monthly-post}")
     private int MONTHLY_POST;
@@ -74,7 +74,7 @@ public class CompanyService implements ICompanyService {
     @Override
     public CompanyCreateResponse createCompany(CompanyDto request) {
         Optional<CompanyEntity> optionalCompany = companyRepository.findByEmail(request.getEmail());
-        if(optionalCompany.isPresent()) {
+        if (optionalCompany.isPresent()) {
             throw new RuntimeException("Company already exists");
         }
         CompanyEntity company = mapper.toCompanyEntity(request);
@@ -102,5 +102,53 @@ public class CompanyService implements ICompanyService {
         int month = now.getMonthValue();
         int year = now.getYear();
         return jobRepository.countJobsByCompanyId(companyId, month, year) < MONTHLY_POST;
+    }
+
+    @Override
+    public Long countNewApplicantsInMonth(String companyId, Integer month, Integer year) {
+        return companyRepository.countNewApplicantsInMonthByCompany(companyId, month, year);
+    }
+
+    @Override
+    public Long countJobsInMonth(String companyId, Integer month, Integer year) {
+        return companyRepository.countJobsInMonthByCompany(companyId, month, year);
+    }
+
+    @Override
+    public Long countApplicantsInMonth(String companyId, Integer month, Integer year) {
+        return applicationRepository.countApplicantInMonthByCompany(companyId, month, year);
+    }
+
+    @Override
+    public CompanyStatistics getCompanyStatistics(String companyId, Integer month, Integer year) {
+        Long newApplicantsInMonth = countNewApplicantsInMonth(companyId, month, year);
+        Long newJobsInMonth = countJobsInMonth(companyId, month, year);
+        Long applicantsInMonth = countApplicantsInMonth(companyId, month, year);
+        List<CompanyMonthlyJob> monthlyJobs = getJobsIn12Month(companyId, month, year);
+        return new CompanyStatistics(newApplicantsInMonth, newJobsInMonth, applicantsInMonth,monthlyJobs);
+    }
+    @Override
+    public List<CompanyMonthlyJob> getJobsIn12Month(String companyId, Integer month, Integer year){
+        LocalDate startDate = LocalDate.of(year, month, 1).minusMonths(11); // Tính ngày bắt đầu
+        List<CompanyMonthlyJob> statistics = companyRepository.countJobsInLast12Months(companyId, startDate);
+        YearMonth current = YearMonth.of(year, month);
+        List<CompanyMonthlyJob> finalResult = new ArrayList<>();
+        for (int i = 0; i < 12; i++) {
+            YearMonth finalCurrent = current;
+            int currentYear = finalCurrent.getYear();
+            int monthValue = finalCurrent.getMonthValue();
+            CompanyMonthlyJob monthlyJob = statistics.stream()
+                    .filter(stat -> stat.getYear() == currentYear && stat.getMonth() == monthValue)
+                    .findFirst()
+                    .orElse(new CompanyMonthlyJob(currentYear,monthValue,0L));
+            finalResult.add(monthlyJob);
+            current = current.minusMonths(1);
+        }
+        return finalResult;
+    }
+
+    @Override
+    public List<CompanyJobDetailStatistics> getJobDetailStatistics(String companyId) {
+        return companyRepository.getJobsDetailStatisticByCompanyId(companyId);
     }
 }

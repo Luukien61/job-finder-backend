@@ -35,7 +35,7 @@ public class JobDocument {
     @Field(type = Text, analyzer = "standard")
     private String companyName;
 
-    @Field(type = Keyword, index = false)
+    @Field(type = Keyword, index = true)
     private String companyId;
 
     @Field(type = Keyword, index = false)
@@ -55,6 +55,8 @@ public class JobDocument {
 
     @Field(type = FieldType.Date, format = DateFormat.date)
     private LocalDate createDate;
+
+    private String state;
 
 
 //    @MultiField(

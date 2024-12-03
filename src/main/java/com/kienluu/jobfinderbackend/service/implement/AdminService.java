@@ -2,6 +2,7 @@ package com.kienluu.jobfinderbackend.service.implement;
 
 import com.kienluu.jobfinderbackend.dto.ReportedJobDto;
 import com.kienluu.jobfinderbackend.dto.request.CompanyBanRequest;
+import com.kienluu.jobfinderbackend.elasticsearch.event.BanJobByCompanyEvent;
 import com.kienluu.jobfinderbackend.entity.CompanyEntity;
 import com.kienluu.jobfinderbackend.entity.JobEntity;
 import com.kienluu.jobfinderbackend.entity.ReportEntity;
@@ -10,6 +11,7 @@ import com.kienluu.jobfinderbackend.model.*;
 import com.kienluu.jobfinderbackend.repository.*;
 import com.kienluu.jobfinderbackend.service.IAdminService;
 import com.kienluu.jobfinderbackend.websocket.event.BanEvent;
+import com.kienluu.jobfinderbackend.websocket.service.NotificationService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -34,6 +36,7 @@ public class AdminService implements IAdminService {
     private final JobApplicationRepository jobApplicationRepository;
     private final ApplicationEventPublisher publisher;
     private final BanNotificationRepository banNotificationRepository;
+    private final NotificationService notificationService;
 
     @Override
     @Transactional
@@ -56,7 +59,9 @@ public class AdminService implements IAdminService {
                 .build();
         companyRepository.save(companyEntity);
         notification=banNotificationRepository.save(notification);
+        banNotificationRepository.flush();
         publisher.publishEvent(notification);
+        publisher.publishEvent(new BanJobByCompanyEvent(companyEntity.getId()));
     }
 
     public List<JobEntity> findJobsByCompanyId(String companyId) {
@@ -69,17 +74,17 @@ public class AdminService implements IAdminService {
         long lastMonthUsers = userRepository.countUserByMonthAndYear(currentMonth - 1, currentYear);
         long totalUsers = userRepository.countAllUser();
 
-        long monthCompanys = companyRepository.countCompanyByMonthAndYear(currentMonth, currentYear);
-        long lastMonthCompanys = companyRepository.countCompanyByMonthAndYear(currentMonth - 1, currentYear);
-        long totalCompanys = companyRepository.countAllCompany();
+        long monthCompanies = companyRepository.countCompanyByMonthAndYear(currentMonth, currentYear);
+        long lastMonthCompanies = companyRepository.countCompanyByMonthAndYear(currentMonth - 1, currentYear);
+        long totalCompanies = companyRepository.countAllCompany();
 
         return UserStatistic.builder()
                 .totalUsers(totalUsers)
                 .newMonthUsers(monthUsers)
                 .lastMonthUsers(lastMonthUsers)
-                .newCompanyUsers(monthCompanys)
-                .lastCompanyUsers(lastMonthCompanys)
-                .totalCompanyUsers(totalCompanys)
+                .newCompanyUsers(monthCompanies)
+                .lastCompanyUsers(lastMonthCompanies)
+                .totalCompanyUsers(totalCompanies)
                 .build();
     }
 

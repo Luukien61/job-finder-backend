@@ -7,6 +7,8 @@ import org.springframework.data.elasticsearch.annotations.Query;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface JobSearchRepository extends ElasticsearchRepository<JobDocument, String> {
 
@@ -179,5 +181,7 @@ public interface JobSearchRepository extends ElasticsearchRepository<JobDocument
                  }
             """)
     Page<JobDocument> findJobValidWithLocationAndSalaryAndExperience(String title, String location, int minSalary, int maxSalary, int experience, Pageable pageable);
+
+    List<JobDocument> findAllByCompanyId(String companyId);
 
 }
