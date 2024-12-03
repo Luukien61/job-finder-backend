@@ -16,6 +16,7 @@ public class CompanyJobDetailStatistics {
     private LocalDate expireDate;
     private int quantity;
     private Long applicants;
+    private Long pending;
     private Long accepted;
 
 }

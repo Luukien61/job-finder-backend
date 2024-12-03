@@ -88,6 +88,7 @@ public interface CompanyRepository extends JpaRepository<CompanyEntity, String> 
 
 
     @Query("select new com.kienluu.jobfinderbackend.model.CompanyJobDetailStatistics(job.jobId, job.title, job.createdAt, job.expireDate, job.quantity, count(applications), " +
+           "SUM(CASE WHEN applications.state = 'PENDING' THEN 1 ELSE 0 END), " +
            "SUM(CASE WHEN applications.state = 'ACCEPTED' THEN 1 ELSE 0 END))  " +
            "from JobEntity job " +
            " left join JobApplicationEntity applications on job.jobId = applications.job.jobId" +

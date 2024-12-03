@@ -445,6 +445,9 @@ COPY public.job (job_id, benefits, created_at, description, experience, expire_d
 --
 
 COPY public.job_application (id, created_date, cv_url, reference_letter, state, job_job_id, user_id) FROM stdin;
+11	2024-12-03	https://jobfinder-kienluu.s3.ap-southeast-1.amazonaws.com/Nguyen-Lan-Anh-CV-marketing.pdf	tôi muốn việc làm	PENDING	59	u_1732423672781
+13	2024-12-03	https://jobfinder-kienluu.s3.ap-southeast-1.amazonaws.com/Nguyen-Lan-Anh-CV-marketing.pdf	àc	PENDING	52	u_1732423672781
+12	2024-12-03	https://jobfinder-kienluu.s3.ap-southeast-1.amazonaws.com/Luu-Dinh-Kien--TopCV.vn-291024.172109.pdf	\N	ACCEPTED	58	u_1732423672781
 \.
 
 
@@ -453,6 +456,9 @@ COPY public.job_application (id, created_date, cv_url, reference_letter, state, 
 --
 
 COPY public.job_applications (job_entity_job_id, applications_id) FROM stdin;
+59	11
+58	12
+52	13
 \.
 
 
@@ -515,6 +521,9 @@ u_1732502359113	1
 u_1732423672781	2
 u_1732423672781	42
 u_1732423672781	51
+u_1732423672781	59
+u_1732423672781	58
+u_1732423672781	52
 \.
 
 
@@ -571,7 +580,7 @@ SELECT pg_catalog.setval('public.conversations_id_seq', 7, true);
 -- Name: job_application_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.job_application_id_seq', 10, true);
+SELECT pg_catalog.setval('public.job_application_id_seq', 13, true);
 
 
 --
