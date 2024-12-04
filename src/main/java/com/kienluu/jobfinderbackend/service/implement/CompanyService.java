@@ -59,13 +59,10 @@ public class CompanyService implements ICompanyService {
         // Cập nhật thông tin
         company.setName(request.getName());
         company.setAddress(request.getAddress());
-        company.setEmail(request.getEmail());
         company.setPhone(request.getPhone());
         company.setDescription(request.getDescription());
         company.setLogo(request.getLogo());
         company.setWebsite(request.getWebsite());
-        company.setField(request.getField());
-
         company = companyRepository.save(company);
 
         return mapper.toCompanyResponse(company);

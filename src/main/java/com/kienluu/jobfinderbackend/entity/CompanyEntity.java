@@ -32,6 +32,7 @@ public class CompanyEntity extends BaseUserEntity {
     private String field;
 
     private String password;
+    @Column(columnDefinition = "TEXT")
     private String description;
     private String address;
     private String phone;
