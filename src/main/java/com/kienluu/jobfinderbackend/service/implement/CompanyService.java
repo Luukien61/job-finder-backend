@@ -13,18 +13,21 @@ import com.kienluu.jobfinderbackend.repository.CompanyRepository;
 import com.kienluu.jobfinderbackend.service.ICompanyService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @AllArgsConstructor
 public class CompanyService implements ICompanyService {
-
+    @Autowired
     private CompanyRepository companyRepository;
     private final CustomMapper mapper;
     private final MailService mailService;
@@ -33,8 +36,22 @@ public class CompanyService implements ICompanyService {
 
     @Override
     public List<CompanyEntity> getCompanies() {
+
         return companyRepository.findAll();
     }
+
+    @Override
+    public List<CompanyEntity> getAllCompanies() {
+        try {
+            List<CompanyEntity> companies = companyRepository.findAll();
+            System.out.println("Fetched companies: " + companies);
+            return companies;
+        } catch (Exception e) {
+            System.err.println("Error fetching companies: " + e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
 
     @Override
     public CompanyResponse getCompanyById(String id) {
@@ -81,9 +98,43 @@ public class CompanyService implements ICompanyService {
     }
 
     @Override
+    public Page<Object[]> getCompanies(int page, int size, String sortBy, String sortOrder) {
+        // Xác nhận các tham số sắp xếp hợp lệ
+        List<String> validSortByFields = Arrays.asList("name", "address", "jobCount", "logo");
+        if (!validSortByFields.contains(sortBy)) {
+            throw new IllegalArgumentException("Invalid sortBy parameter: " + sortBy);
+        }
+
+        // Kiểm tra sortOrder hợp lệ
+        if (sortOrder == null || (!sortOrder.equalsIgnoreCase("asc") && !sortOrder.equalsIgnoreCase("desc"))) {
+            throw new IllegalArgumentException("Invalid sortOrder parameter: " + sortOrder);
+        }
+
+        // Tạo đối tượng Sort từ các tham số sắp xếp
+        Sort sort;
+        if ("jobCount".equalsIgnoreCase(sortBy)) {
+            // Nếu muốn sắp xếp theo jobCount, bạn cần sửa trực tiếp trong câu truy vấn
+            // Không thể sử dụng Pageable với jobCount vì đó là trường tính toán
+            sort = Sort.by(Sort.Direction.fromString(sortOrder), "jobCount");
+        } else {
+            sort = Sort.by(Sort.Direction.fromString(sortOrder), sortBy);
+        }
+
+        // Tạo Pageable từ các tham số phân trang
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        // Trả về kết quả phân trang từ repository
+        return companyRepository.findAllByPage(pageable);
+    }
+
+
+
+    @Override
     public LoginResponse login(String email, String password) {
         CompanyEntity companyEntity = companyRepository.findCompanyEntityByEmailAndPassword(email, password)
                 .orElseThrow(() -> new RuntimeException("Company not found"));
         return mapper.toLoginResponse(companyEntity);
     }
+
+
 }

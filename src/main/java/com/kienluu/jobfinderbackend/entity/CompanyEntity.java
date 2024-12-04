@@ -33,7 +33,6 @@ public class CompanyEntity extends BaseUserEntity {
     private String address;
     private String phone;
     private String email;
-
     @OneToMany(mappedBy = "company")
     @JsonIgnore
     @JsonBackReference

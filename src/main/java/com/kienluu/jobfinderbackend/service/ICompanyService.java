@@ -7,6 +7,7 @@ import com.kienluu.jobfinderbackend.dto.response.CompanyResponse;
 import com.kienluu.jobfinderbackend.dto.response.LoginResponse;
 import com.kienluu.jobfinderbackend.entity.CompanyEntity;
 import com.kienluu.jobfinderbackend.model.MailTemplate;
+import org.springframework.data.domain.Page;
 
 import javax.mail.MessagingException;
 import java.io.IOException;
@@ -17,6 +18,8 @@ public interface ICompanyService {
 
     List<CompanyEntity> getCompanies();
 
+    List<CompanyEntity> getAllCompanies();
+
     CompanyResponse getCompanyById(String id);
 
     CompanyResponse updateCompany(String companyId, UpdateCompanyRequest request);
@@ -26,4 +29,6 @@ public interface ICompanyService {
     LoginResponse login(String email, String password);
 
     String sendVerificationCode(MailTemplate mailTemplate) throws MessagingException, GeneralSecurityException, IOException;
+
+     Page<Object[]> getCompanies(int pageNumber, int pageSize, String sortBy, String sortOrder);
 }

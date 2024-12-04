@@ -1,6 +1,10 @@
 package com.kienluu.jobfinderbackend.repository;
 
+import com.kienluu.jobfinderbackend.dto.response.CompanyResponse;
+import com.kienluu.jobfinderbackend.dto.response.CompanyResponsePage;
 import com.kienluu.jobfinderbackend.entity.CompanyEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -15,7 +19,6 @@ import java.util.Optional;
 public interface CompanyRepository extends JpaRepository<CompanyEntity, String> {
     Optional<CompanyEntity> findCompanyById(String id);
     boolean existsByEmail(String email);
-
     Optional<CompanyEntity> findByEmail(String email);
     Optional<CompanyEntity> findByName(String name);
     Optional<CompanyEntity> findCompanyEntityByEmailAndPassword(String email, String password);
@@ -27,5 +30,14 @@ public interface CompanyRepository extends JpaRepository<CompanyEntity, String> 
 
     @Query("select  count(distinct p.id) from CompanyEntity p join JobEntity j on p.id = j.company.id and j.expireDate >= CURRENT_DATE ")
     Integer countCompanyByJobNotExpired();
+
+    @Query("SELECT new com.kienluu.jobfinderbackend.dto.response.CompanyResponsePage(c.name, c.address, COUNT(j.jobId), c.logo) " +
+            "FROM CompanyEntity c " +
+            "LEFT JOIN JobEntity j ON c.id = j.company.id " +
+            "GROUP BY c.id, c.name, c.address, c.logo " +
+            "ORDER BY COUNT(j.jobId) DESC")  // Sắp xếp theo jobCount giảm dần
+    Page<Object[]> findAllByPage(Pageable pageable);
+
+
 
 }

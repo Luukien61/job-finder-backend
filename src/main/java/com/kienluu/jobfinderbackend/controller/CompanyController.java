@@ -1,18 +1,19 @@
 package com.kienluu.jobfinderbackend.controller;
 
 import com.kienluu.jobfinderbackend.dto.CompanyDto;
-import com.kienluu.jobfinderbackend.dto.request.CompanyCreationRequest;
 import com.kienluu.jobfinderbackend.dto.request.LoginRequest;
 import com.kienluu.jobfinderbackend.dto.request.UpdateCompanyRequest;
 import com.kienluu.jobfinderbackend.dto.response.CompanyCreateResponse;
 import com.kienluu.jobfinderbackend.dto.response.CompanyResponse;
+import com.kienluu.jobfinderbackend.dto.response.CompanyResponsePage;
 import com.kienluu.jobfinderbackend.dto.response.LoginResponse;
 import com.kienluu.jobfinderbackend.entity.CompanyEntity;
 import com.kienluu.jobfinderbackend.model.MailTemplate;
 import com.kienluu.jobfinderbackend.service.ICompanyService;
-import com.kienluu.jobfinderbackend.service.implement.CompanyService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,12 +24,21 @@ import java.util.List;
 @AllArgsConstructor(onConstructor_ = {@Autowired})
 public class CompanyController {
 
-    private ICompanyService companyService;
+    private final ICompanyService companyService;
 
     @GetMapping("/all")
-    List<CompanyEntity> getCompanies(){
-        return companyService.getCompanies();
+    public ResponseEntity<List<CompanyEntity>> getCompanies() {
+        try {
+            List<CompanyEntity> companies = companyService.getAllCompanies();
+            System.out.println("Companies in Controller: " + companies); // Kiểm tra log
+            return ResponseEntity.ok(companies); // Trả về danh sách dù có rỗng
+        } catch (Exception e) {
+            System.err.println("Error in Controller: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
     }
+
 
 
     @GetMapping("/{companyId}")
@@ -38,6 +48,21 @@ public class CompanyController {
             return ResponseEntity.ok(response);
         }catch (Exception e){
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping()
+    public ResponseEntity<Page<Object[]>> getCompanies(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "9") int size,
+            @RequestParam(defaultValue = "name") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortOrder)
+    {
+        try {
+            Page<Object[]> companies = companyService.getCompanies(page, size, sortBy, sortOrder);
+            return ResponseEntity.ok(companies);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
         }
     }
 
