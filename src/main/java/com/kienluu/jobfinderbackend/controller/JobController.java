@@ -73,6 +73,8 @@ public class JobController {
         }
     }
 
+
+
 //    @GetMapping("/search")
 //    public ResponseEntity<Object> searchJob(
 //            @RequestParam String query,
@@ -106,20 +108,15 @@ public class JobController {
         }
     }
 
-
-//    @GetMapping("/search/nofilter")
-//    public ResponseEntity<Object> searchJobWithoutFilter(
-//            @RequestParam String query,
-//            @RequestParam int page,
-//            @RequestParam int size)
-//    {
-//        try {
-//            Page<JobDocument> documents = jobSearchService.searchJobs(query, page, size);
-//            return new ResponseEntity<>(documents, HttpStatus.OK);
-//        }catch (Exception e) {
-//            return ResponseEntity.badRequest().body(e.getMessage());
-//        }
-//    }
+    @PostMapping("/update")
+    public ResponseEntity<Object> updateJob(@RequestBody JobDto job) {
+        try{
+            jobService.updateJob(job);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
     @GetMapping("/company/{companyId}")
     public ResponseEntity<Object> searchJobByCompany(

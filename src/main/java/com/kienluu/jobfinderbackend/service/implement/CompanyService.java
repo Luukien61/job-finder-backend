@@ -151,4 +151,10 @@ public class CompanyService implements ICompanyService {
     public List<CompanyJobDetailStatistics> getJobDetailStatistics(String companyId) {
         return companyRepository.getJobsDetailStatisticByCompanyId(companyId);
     }
+
+    @Override
+    public Boolean checkCompanyStatus(String companyId) {
+        CompanyState companyStatus = companyRepository.getCompanyStatus(companyId);
+        return companyStatus==CompanyState.BAN;
+    }
 }

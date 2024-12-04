@@ -8,7 +8,7 @@ import org.springframework.data.domain.Page;
 
 public interface IJobService {
     JobDto saveJob(JobCreateRequest job);
-    JobDto updateJob(JobCreateRequest job);
+    void updateJob(JobDto job);
     void deleteJob(JobEntity job);
 
     void deleteJobById(Long jobId);

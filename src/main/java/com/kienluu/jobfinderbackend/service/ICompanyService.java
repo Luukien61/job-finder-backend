@@ -43,4 +43,6 @@ public interface ICompanyService {
     List<CompanyMonthlyJob> getJobsIn12Month(String companyId, Integer month, Integer year);
 
     List<CompanyJobDetailStatistics> getJobDetailStatistics(String companyId);
+
+    Boolean checkCompanyStatus(String companyId);
 }

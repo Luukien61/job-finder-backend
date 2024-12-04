@@ -30,6 +30,11 @@ public interface CustomMapper {
     @Mapping(target = "company", ignore = true)
     JobEntity toJobEntity(JobCreateRequest request);
 
+    @Mapping(target = "company",ignore = true)
+    @Mapping(target = "applications",ignore = true)
+    @Mapping(target = "reports",ignore = true)
+    JobEntity toJobEntity(JobDto dto);
+
     @Mapping(target = "companyName", expression = "java(job.getCompany().getName())")
     @Mapping(target = "companyId", expression = "java(job.getCompany().getId())")
     @Mapping(target = "logo", expression = "java(job.getCompany().getLogo())")

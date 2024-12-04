@@ -16,7 +16,6 @@ import com.kienluu.jobfinderbackend.repository.CompanyRepository;
 import com.kienluu.jobfinderbackend.repository.JobRepository;
 import com.kienluu.jobfinderbackend.service.IJobService;
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
@@ -66,8 +65,28 @@ public class JobService implements IJobService {
     }
 
     @Override
-    public JobDto updateJob(JobCreateRequest job) {
-        return null;
+    public void updateJob(JobDto job) {
+        JobEntity jobEntity = jobRepository.findByJobId(job.getJobId())
+                .orElseThrow(() -> new RuntimeException("Job not found"));
+        jobEntity.setTitle(job.getTitle());
+        jobEntity.setDescription(job.getDescription());
+        jobEntity.setRequirements(job.getRequirements());
+        jobEntity.setBenefits(job.getBenefits());
+        jobEntity.setWorkTime(job.getWorkTime());
+        jobEntity.setLocation(job.getLocation());
+        jobEntity.setProvince(job.getProvince());
+        jobEntity.setMinSalary(job.getMinSalary());
+        jobEntity.setMaxSalary(job.getMaxSalary());
+        jobEntity.setRole(job.getRole());
+        jobEntity.setQuantity(job.getQuantity());
+        jobEntity.setType(job.getType());
+        jobEntity.setExperience(job.getExperience());
+        jobEntity.setGender(job.getGender());
+        jobEntity.setField(job.getField());
+        jobEntity.setExpireDate(job.getExpireDate());
+        jobEntity.setUpdateAt(job.getUpdateAt());
+        jobRepository.save(jobEntity);
+
     }
 
     @Override

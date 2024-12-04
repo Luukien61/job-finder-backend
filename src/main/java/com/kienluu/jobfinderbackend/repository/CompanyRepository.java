@@ -3,6 +3,7 @@ package com.kienluu.jobfinderbackend.repository;
 import com.kienluu.jobfinderbackend.entity.CompanyEntity;
 import com.kienluu.jobfinderbackend.model.CompanyJobDetailStatistics;
 import com.kienluu.jobfinderbackend.model.CompanyMonthlyJob;
+import com.kienluu.jobfinderbackend.model.CompanyState;
 import com.kienluu.jobfinderbackend.model.JobByCompanyByMonth;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -95,6 +96,7 @@ public interface CompanyRepository extends JpaRepository<CompanyEntity, String> 
            " where job.company.id= :companyId " +
            " group by job.jobId")
     List<CompanyJobDetailStatistics> getJobsDetailStatisticByCompanyId(@Param("companyId") String companyId);
-
+    @Query("select company.state from CompanyEntity company where company.id= :companyId")
+    CompanyState getCompanyStatus(@Param("companyId") String companyId);
 
 }

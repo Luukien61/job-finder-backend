@@ -46,8 +46,14 @@ public class AdminService implements IAdminService {
         companyEntity.setState(CompanyState.BAN);
         jobRepository.banJobsByCompanyId(JobState.BANNED, companyId);
         reportRepository.updateReportStatusByCompanyId(ReportStatus.DONE, companyId);
-        String BAN_MESSAGE = "Chúng tôi nhận thấy rẳng bài đăng ${title} của bạn đã vi phạm: ${reason}." +
-                             "Nhằm mục đích nâng cao chất lượng môi trường việc làm, chúng tôi sẽ khóa tài khoản của bạn vô thời hạn.  ";
+        String BAN_MESSAGE = """
+                Chúng tôi nhận thấy rẳng bài đăng ${title} của bạn đã vi phạm: ${reason}.\
+                Nhằm mục đích nâng cao chất lượng môi trường việc làm, chúng tôi sẽ khóa tài khoản của bạn vô thời hạn. \
+                Mọi chức năng liên quan đến Bài đăng và Ứng viên sẽ bị vô hiệu hóa.\s
+                 \
+                Nếu bạn có bất kì khiếu nại nào hãy liên hệ ngay với chúng tôi tại: jobfinder@gmail.com.
+                 \
+                Trân trọng""";
 
         BanNotification notification = BanNotification.builder()
                 .reason(request.getReason())

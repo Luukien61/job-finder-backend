@@ -116,4 +116,14 @@ public class CompanyController {
             return ResponseEntity.badRequest().body(e.getLocalizedMessage());
         }
     }
+
+    @GetMapping("/{companyId}/status")
+    public ResponseEntity<Object> getCompanyStatus(@PathVariable String companyId) {
+        try{
+            Boolean status = companyService.checkCompanyStatus(companyId);
+            return ResponseEntity.ok(status);
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getLocalizedMessage());
+        }
+    }
 }
