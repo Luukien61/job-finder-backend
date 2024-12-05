@@ -35,7 +35,7 @@ public class JobDocument {
     @Field(type = Text, analyzer = "standard")
     private String companyName;
 
-    @Field(type = Keyword, index = true)
+    @Field(type = Keyword)
     private String companyId;
 
     @Field(type = Keyword, index = false)

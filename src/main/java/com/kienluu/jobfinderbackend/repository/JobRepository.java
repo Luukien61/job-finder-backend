@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,6 +40,9 @@ public interface JobRepository extends JpaRepository<JobEntity, Long> {
 
 
     Page<JobEntity> findByCompanyId(@Param("companyId") String companyId, Pageable pageable);
+
+    @Query("select job from JobEntity job where job.company.id= :companyId and job.state= :state")
+    Page<JobEntity> findByCompany(@Param("companyId") String companyId,@Param("state") JobState state, Pageable pageable);
 
     @Query("select job from JobEntity job where job.jobId= :jobId and job.expireDate >=CURRENT_DATE")
     Optional<JobEntity> findJobByidAndNotExpiry(@Param("jobId") Long jobId);
@@ -118,4 +122,8 @@ public interface JobRepository extends JpaRepository<JobEntity, Long> {
             "ORDER BY EXTRACT(DAY FROM j.createdAt)")
     List<Object[]> countJobsByDayInMonth(@Param("month") int month,
                                          @Param("year") int year);
+
+
+
+    JobEntity findJobEntitiesByJobIdAndStateAndExpireDateGreaterThanEqual(Long jobId, JobState state, LocalDate date);
 }

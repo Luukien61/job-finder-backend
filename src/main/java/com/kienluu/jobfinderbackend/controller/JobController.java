@@ -2,12 +2,13 @@ package com.kienluu.jobfinderbackend.controller;
 
 import com.kienluu.jobfinderbackend.dto.JobDto;
 import com.kienluu.jobfinderbackend.dto.request.JobCreateRequest;
-import com.kienluu.jobfinderbackend.dto.response.JobEmployerCard;
+import com.kienluu.jobfinderbackend.dto.response.JobCardResponse;
 import com.kienluu.jobfinderbackend.elasticsearch.document.JobDocument;
 import com.kienluu.jobfinderbackend.elasticsearch.service.JobSearchService;
 import com.kienluu.jobfinderbackend.entity.JobEntity;
 import com.kienluu.jobfinderbackend.service.IJobService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/job")
 @AllArgsConstructor
@@ -53,6 +55,19 @@ public class JobController {
         }
     }
 
+    @GetMapping("/{jobId}/valid")
+    public ResponseEntity<Object> getJobValid(@PathVariable Long jobId,
+                                              @RequestHeader(value = "X-custom-userId",required = false) String userId) {
+        try{
+            JobDto job = jobService.getJobByIdNotExpiryAndNotBan(jobId, userId);
+            return new ResponseEntity<>(job, HttpStatus.OK);
+
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+
+    }
+
     @DeleteMapping("/")
     public ResponseEntity<Object> deleteJob(@RequestBody JobEntity job) {
         try {
@@ -75,20 +90,6 @@ public class JobController {
 
 
 
-//    @GetMapping("/search")
-//    public ResponseEntity<Object> searchJob(
-//            @RequestParam String query,
-//            @RequestParam int page,
-//            @RequestParam int size)
-//    {
-//        try {
-//            Page<JobDocument> documents = jobSearchService.searchJobWithLocation(query, page, size);
-//            return new ResponseEntity<>(documents, HttpStatus.OK);
-//        }catch (Exception e) {
-//            return ResponseEntity.badRequest().body(e.getMessage());
-//        }
-//    }
-
     @GetMapping("/search")
     public ResponseEntity<Object> searchJobWithLocationAndSalary(
             @RequestParam String keyword,
@@ -99,9 +100,10 @@ public class JobController {
             @RequestParam(defaultValue = "0", required = false) Integer page,
             @RequestParam(required = false, defaultValue = "10") Integer size,
             @RequestParam(required = false, defaultValue = "expiry-date") String sort,
-            @RequestParam(required = false,defaultValue = "desc") String order) {
+            @RequestParam(required = false,defaultValue = "desc") String order,
+            @RequestHeader(value = "X-custom-userId",required = false) String userId) {
         try {
-            Page<JobDocument> documents = jobSearchService.searchJobs(keyword, location, minSalary, maxSalary, experience, page, size, sort,order);
+            Page<JobDocument> documents = jobSearchService.searchJobs(keyword, location, minSalary, maxSalary, experience, page, size, sort,order,userId);
             return new ResponseEntity<>(documents, HttpStatus.OK);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -125,7 +127,7 @@ public class JobController {
             @RequestParam(value = "size", defaultValue = "10") int size
     ) {
         try {
-            Page<JobEmployerCard> cards = jobService.getJobCardsByCompanyId(companyId, page, size);
+            Page<JobCardResponse> cards = jobService.getJobCardsByCompany(companyId, page, size);
             return new ResponseEntity<>(cards, HttpStatus.OK);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -144,6 +146,12 @@ public class JobController {
         }catch (Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    @GetMapping("/customHeaders")
+    public ResponseEntity<Object> fetchCustomHeaders(@RequestHeader(value = "X-custom-userId",required = false) String userId) {
+        log.info("UserId: {}", userId);
+        return new ResponseEntity<>("received" ,HttpStatus.OK);
     }
 
 

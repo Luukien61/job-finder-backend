@@ -5,6 +5,7 @@ import com.kienluu.jobfinderbackend.dto.request.UpdateCompanyRequest;
 import com.kienluu.jobfinderbackend.dto.response.CompanyCreateResponse;
 import com.kienluu.jobfinderbackend.dto.response.CompanyResponse;
 import com.kienluu.jobfinderbackend.dto.response.LoginResponse;
+import com.kienluu.jobfinderbackend.elasticsearch.event.CompanyUpdateEvent;
 import com.kienluu.jobfinderbackend.entity.CompanyEntity;
 import com.kienluu.jobfinderbackend.mapper.CustomMapper;
 import com.kienluu.jobfinderbackend.model.*;
@@ -15,6 +16,7 @@ import com.kienluu.jobfinderbackend.service.ICompanyService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
@@ -35,6 +37,7 @@ public class CompanyService implements ICompanyService {
     private final MailService mailService;
     private final JobRepository jobRepository;
     private final JobApplicationRepository applicationRepository;
+    private final ApplicationEventPublisher publisher;
 
     @Value("${app.monthly-post}")
     private int MONTHLY_POST;
@@ -64,7 +67,7 @@ public class CompanyService implements ICompanyService {
         company.setLogo(request.getLogo());
         company.setWebsite(request.getWebsite());
         company = companyRepository.save(company);
-
+        publisher.publishEvent(new CompanyUpdateEvent(company.getId(), company.getName(), company.getLogo()));
         return mapper.toCompanyResponse(company);
     }
 

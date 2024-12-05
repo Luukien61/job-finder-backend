@@ -8,6 +8,7 @@ import com.kienluu.jobfinderbackend.dto.request.UserCreationRequest;
 import com.kienluu.jobfinderbackend.dto.response.UserResponse;
 import com.kienluu.jobfinderbackend.entity.JobEntity;
 import com.kienluu.jobfinderbackend.entity.UserEntity;
+import com.kienluu.jobfinderbackend.event.UserSearchEvent;
 import com.kienluu.jobfinderbackend.mapper.CustomMapper;
 import com.kienluu.jobfinderbackend.model.CodeExchange;
 import com.kienluu.jobfinderbackend.model.GoogleUserInfo;
@@ -18,6 +19,8 @@ import com.kienluu.jobfinderbackend.repository.UserRepository;
 import com.kienluu.jobfinderbackend.service.IUserService;
 import com.kienluu.jobfinderbackend.util.AppUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,11 +28,10 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.mail.MessagingException;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService implements IUserService {
@@ -273,5 +275,25 @@ public class UserService implements IUserService {
                 .address(user.getAddress())
                 .university(user.getUniversity())
                 .build();
+    }
+
+    @EventListener(UserSearchEvent.class)
+    public void onUserSearch(UserSearchEvent event) {
+        try{
+            UserEntity user = userRepository.findUserById(event.getUserId())
+                    .orElseThrow(() -> new RuntimeException("Invalid user id!"));
+            List<String> searchHistory = user.getSearchHistory();
+            if (searchHistory == null) searchHistory = new ArrayList<>();
+            if (searchHistory.size() >= 5) {
+                searchHistory.remove(0);
+            }
+            searchHistory.add(event.getData());
+            searchHistory = new ArrayList<>(new LinkedHashSet<>(searchHistory));;
+            user.setSearchHistory(searchHistory);
+            userRepository.save(user);
+            userRepository.flush();
+        }catch (Exception e) {
+            log.error(e.getMessage());
+        }
     }
 }

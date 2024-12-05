@@ -27,6 +27,7 @@ public interface CustomMapper {
     @Mapping(target = "savedJobs", source = "savedJobs", qualifiedByName = "jobsToJobId")
     UserDTO toUserDTO(UserEntity user);
 
+
     @Mapping(target = "company", ignore = true)
     JobEntity toJobEntity(JobCreateRequest request);
 
@@ -40,6 +41,13 @@ public interface CustomMapper {
     @Mapping(target = "logo", expression = "java(job.getCompany().getLogo())")
 //    @Mapping(target = "salary", expression = "java(job.getMinSalary() + \" - \" + job.getMaxSalary() + \" triệu\")")
     JobDto toJobResponse(JobEntity job);
+
+
+    @Mapping(target = "companyName", expression = "java(job.getCompany().getName())")
+    @Mapping(target = "companyId", expression = "java(job.getCompany().getId())")
+    @Mapping(target = "logo", expression = "java(job.getCompany().getLogo())")
+    JobCardResponse toJobCardResponse(JobEntity job);
+
 
     CompanyResponse toCompanyResponse(CompanyEntity company);
 

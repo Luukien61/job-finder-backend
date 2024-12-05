@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 14.13 (Ubuntu 14.13-0ubuntu0.22.04.1)
--- Dumped by pg_dump version 14.13 (Ubuntu 14.13-0ubuntu0.22.04.1)
+-- Dumped from database version 14.15 (Ubuntu 14.15-0ubuntu0.22.04.1)
+-- Dumped by pg_dump version 14.15 (Ubuntu 14.15-0ubuntu0.22.04.1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -78,7 +78,7 @@ CREATE TABLE public.company (
     role character varying(255),
     address character varying(255),
     created_at date,
-    description character varying(255),
+    description text,
     email character varying(255),
     field character varying(255),
     logo character varying(255),
@@ -379,6 +379,10 @@ COPY public.chat_message (id, content, conversation_id, recipient_id, sender_id,
 1732690618661	hôm nào em rảnh không	7	u_1732423672781	company_1732383018210	2024-11-27 13:56:58.661	text
 1732690624661	dạ mai cũng được ạ	7	company_1732383018210	u_1732423672781	2024-11-27 13:57:04.661	text
 1732968757464	https://res.cloudinary.com/dmi3xizxq/image/upload/v1732968757/glnhg64jndnqstaotdkh.jpg	7	u_1732423672781	company_1732383018210	2024-11-30 19:12:37.464	image
+1733307491652	chào em	8	u_1733020009402	company_1733025482728	2024-12-04 17:18:11.652	text
+1733307550745	chào em	8	u_1733020009402	company_1733025482728	2024-12-04 17:19:10.745	text
+1733402077418	chào chị	8	company_1733025482728	u_1733020009402	2024-12-05 19:34:37.419	text
+1733402302453	ok em rảnh không	8	u_1733020009402	company_1733025482728	2024-12-05 19:38:22.453	text
 \.
 
 
@@ -387,9 +391,9 @@ COPY public.chat_message (id, content, conversation_id, recipient_id, sender_id,
 --
 
 COPY public.company (id, role, address, created_at, description, email, field, logo, name, password, phone, state, wallpaper, website) FROM stdin;
-company_1732383018210	EMPLOYER	Quận Ba Đình, Thành phố Hà Nội	2024-11-30	\N	conanjisoo@gmail.com	\N	https://res.cloudinary.com/dmi3xizxq/image/upload/v1732355405/company_default_a6vjzg.png	Viettel	123456	0353795729	\N	https://static.topcv.vn/v4/image/normal-company/cover/company_cover_1.jpg	www.viettel.vn
 company_1733155577955	EMPLOYER	Huyện Yên Phong, Tỉnh Bắc Ninh	2024-12-02	\N	jisooconan@gmail.com	\N	https://res.cloudinary.com/dmi3xizxq/image/upload/v1732355405/company_default_a6vjzg.png	CÔNG TY CỔ PHẦN THẾ GIỚI DI ĐỘNG	123456	0238734555	ACTIVE	https://static.topcv.vn/v4/image/normal-company/cover/company_cover_1.jpg	thegioididong.com
-company_1733025482728	EMPLOYER	Quận Hoàn Kiếm, Thành phố Hà Nội	2024-12-01	\N	kienluu61@gmail.com	\N	https://res.cloudinary.com/dmi3xizxq/image/upload/v1732355405/company_default_a6vjzg.png	Công ty An ninh mạng Viettel- Chi nhánh Tập đoàn Công nghiệp- Viễn thông quân đội	123456	0353795729	ACTIVE	https://static.topcv.vn/v4/image/normal-company/cover/company_cover_1.jpg	www.viettel.com
+company_1732383018210	EMPLOYER	Quận Ba Đình, Thành phố Hà Nội	2024-11-30	\N	conanjisoo@gmail.com	\N	https://res.cloudinary.com/dmi3xizxq/image/upload/v1732355405/company_default_a6vjzg.png	Viettel	123456	0353795729	BAN	https://static.topcv.vn/v4/image/normal-company/cover/company_cover_1.jpg	www.viettel.vn
+company_1733025482728	EMPLOYER	Quận Hoàn Kiếm, Thành phố Hà Nội	2024-12-01	FPT tự hào là tập đoàn công nghệ hàng đầu Việt Nam.\n\nThành lập ngày 13/09/1988, FPT hoạt động trong 03 lĩnh vực kinh doanh cốt lõi gồm: Công nghệ, Viễn thông và Giáo dục. FPT sở hữu hạ tầng viễn thông phủ khắp 59/63 tỉnh thành tại Việt Nam và không ngừng mở rộng hoạt động trên thị trường toàn cầu với 48 văn phòng tại 26 quốc gia và vùng lãnh thổ bên ngoài Việt Nam.\n\nTrong suốt quá trình hoạt động, FPT luôn nỗ lực với mục tiêu cao nhất là mang lại sự hài lòng cho khách hàng thông qua những dịch vụ, sản phẩm và giải pháp công nghệ tối ưu nhất. Đồng thời, FPT không ngừng nghiên cứu và tiên phong trong các xu hướng công nghệ mới góp phần khẳng định vị thế của Việt Nam trong cuộc cách mạng công nghiệp lần thứ 4 - Cuộc cách mạng số. FPT sẽ tiên phong cung cấp dịch vụ chuyển đổi số toàn diện cho các tổ chức, doanh nghiệp trên quy mô toàn cầu.	kienluu61@gmail.com	\N	https://res.cloudinary.com/dmi3xizxq/image/upload/v1733398640/xja7au4ff0sris3w8ggy.png	Công ty An ninh mạng Viettel	123456	0353795729	ACTIVE	https://static.topcv.vn/v4/image/normal-company/cover/company_cover_1.jpg	www.viettel.com
 \.
 
 
@@ -406,6 +410,7 @@ COPY public.conversation_users (conversation_id, users) FROM stdin;
 --
 
 COPY public.conversations (id, last_message, created_at, type, receiver_id, sender_id) FROM stdin;
+8	ok em rảnh không	2024-12-05 19:38:22.458865	text	u_1733020009402	company_1733025482728
 \.
 
 
@@ -429,7 +434,6 @@ COPY public.job (job_id, benefits, created_at, description, experience, expire_d
 51	- “FPT care” health insurance provided by Petrolimex (PJICO) and is exclusive for FPT employees.\n- Annual Summer Vacation: follows company’s policy and starts from May every year\n- Salary review: 1 time per year\n- International, dynamic, friendly working environment\n- Annual leave, working conditions follow Vietnam labor laws.\n- Other allowances: lunch allowance, working on-site allowance, etc.	2024-11-29	- Develop modern web development and DevOps practices to develop, test, debug and deploy.\n- Develop responsive and mobile friendly web design.\n- Develop robust solutions with consideration to security, performance, internationalization, and browser-compatibility.\n- Use the business process requirements to drive the detailed design of the application and technical architecture components.\n- Configure, build, and test the application or technical architecture components.\n- Work with other developers, designers, and architects to make sure that the configuration and custom components meet application requirements and performance goals.\n- Plan and execute all required process steps as defined in our methodologies.\n- Anticipate, identify, track, and resolve issues and risks affecting the delivery.\n- Any relevant ad-hoc duties.\n- This is an individual contributor role.\n- Learn new technologies, languages, and techniques so that you are able to adapt to the evolving needs of our clients.	5	2024-12-31	Công nghệ thông tin	Không yêu cầu	Tòa nhà FPT, 17 Duy Tan, Cầu Giấy	40	20	Hà Nội	10	- Bachelor’s degree in Computer Science or related field.\n- Have at least 4 years of experience as a Software Engineer.\n- Strong knowledge of Java Spring Boot and Java core.\n- Experience with RESTful API development.\n- Familiarity with MyBatis for database access.\n- Understanding of role-based access control (RBAC) concepts.\n- Proficiency in Oracle and Cassandra databases.\n- Experience with microservices architecture.\n- Ability to write unit tests using JUnit.\n- Knowledge of deployment processes.\n- Excellent communication and teamwork skills.\n- Good English communication.	Trưởng phòng	PENDING	Senior Java Eng Good	Full time	2024-11-29	08:00-17:00, Thứ hai-Thứ sáu	company_1732383018210
 58	- Lương thỏa thuận theo năng lực từ 17 - 25M\n- Xét tăng lương 1 lần/ năm căn cứ vào hiệu quả công việc.\n- BHXH, phép năm, thưởng tết đầy đủ theo quy định của Công ty và luật lao động\n- Công việc ổn định, nhiều cơ hội được học hỏi, phát triển và thăng tiến tại N&H Logistics.\n- Thời gian làm việc từ thứ 2 đến thứ 6.	2024-12-01	- Tham gia vào quá trình phát triển và bảo trì các ứng dụng web backend cho hệ thống logistics của công ty.\n- Phát triển các API RESTful để kết nối với các ứng dụng frontend và các hệ thống bên ngoài.\n- Thiết kế và triển khai cơ sở dữ liệu sử dụng MongoDB và PostgreSQL.\n- Sử dụng Redis để tối ưu hóa hiệu suất của ứng dụng.\n- Viết code sạch, hiệu quả và có thể bảo trì dễ dàng.\n- Tham gia vào các cuộc họp và thảo luận về thiết kế và phát triển sản phẩm.\n- Hỗ trợ các thành viên khác trong nhóm để giải quyết các vấn đề kỹ thuật.\n- Thực hiện các nhiệm vụ khác theo yêu cầu của quản lý.	3	2025-01-31	Công nghệ thông tin	Không yêu cầu	Số 9 Trà Khúc, Phường 2, Tân Bình	5	3	TP Hồ Chí Minh	5	- Ứng viên tuổi từ 24- 32\n- Tốt nghiệp Cao Đẳng, Đại Học hoặc bằng cấp tương đương về lập trình phần mềm\n- Trên 2 năm lập trình ngôn ngữ Python và có kinh nghiệm làm việc với Django, Django Rest framework.\n- Từng triển khai Web API: RESTful, Authentication, Authorization, and multi-devices session\n- Có kinh nghiệm làm việc với Celery , Redis; Git; Redis, Elasticsearch; hệ cơ sở dữ liệu: PostgreSql hoặc biết Mysql, MongoDB\n- Am hiểu về ORM , tối ưu truy vấn; Caching, Queue; Docker , Docker compos\n- Ứng viên đã làm các dự án về ERP/ WMS/ Ecommerce/ Saas là một lợi thế\n- Có tư duy lập trình và kỹ năng giải quyết vấn đề tốt.\n- Khả năng đọc hiểu tiếng Anh chuyên ngành, học hỏi công nghệ mới nhanh.	Nhân viên	PENDING	Middle Backend Developer (Python) - Tân Bình HCM - Lương Hấp Dẫn	Full time	2024-12-01	08:00-17:00, Thứ hai-Thứ sáu	company_1733025482728
 61	- Làm việc tại tập đoàn bán lẻ hàng đầu Việt Nam.\n- Môi trường làm việc chuyên nghiệp, lớn mạnh.\n- Cọ xát kinh nghiệm từ đội ngũ nhân viên dày dặn kinh nghiệm.\n- Ký HĐLĐ, Phúc lợi đầy đủ tăng dần.\n- Nhiều phúc lợi công ty hấp dẫn.	2024-12-02	-  Quản lý và cấu trúc dữ liệu sản phẩm, bao gồm danh mục, thông số kỹ thuật, bộ lọc, nhãn, hướng dẫn và Câu hỏi thường gặp.\n- Cung cấp hướng dẫn cho nhóm Nội dung để đảm bảo tính chính xác của dữ liệu.\n- Tiến hành nghiên cứu người dùng để thiết kế các tính năng như Hướng dẫn mua hàng và các bộ lọc nâng cao.\n- Phát triển các công cụ và bảng điều khiển cho nhóm nội dung, sản phẩm và SEO.\n- Cộng tác phát triển các tính năng mới để nâng cao trải nghiệm người dùng.	1	2025-02-01	Nhân sự	Không yêu cầu	Toà Nhà MWG - Lô T2-Đường D1, Phường Tân Phú, Thủ Đức, Thủ Đức	5	3	TP Hồ Chí Minh	1	- Sử dụng thành thạo các công cụ đồ họa trong bộ Adobe như: Photoshop, Illustrator. Biết After Effect là 1 lợi thế.\n- Biết sử dụng Figma (bắt buộc)\n- Am hiểu về hành vi của người dùng trên Desktop, Mobile.\n- Có ít nhất 01 năm kinh nghiệm làm việc trong lĩnh vực thiết kế đồ họa / UI Design.\n- Có thẩm mỹ tốt trong ngành MẸ VÀ BÉ, khả năng tư duy, năng động trong công việc.\n- Có kinh nghiệm làm việc trong mảng Thương Mại Điện Tử cho MẸ VÀ BÉ là 1 lợi thế.\n- Chủ động sắp xếp và lên kế hoạch xử lý công việc tốt.	Nhân viên	PENDING	Chuyên Viên Quản Lý Thông Tin Sản Phẩm	Full time	2024-12-02	08:00-17:00, Thứ hai-Thứ sáu	company_1733155577955
-52	- Hỗ trợ lương cứng 5 triệu/tháng\n- Được thưởng nóng, thưởng theo quý, theo năm\n- Mức hoa hồng cao cho từng dự án\n- Thu nhập không giới hạn: lương cứng +thưởng + hoa hồng lên tới 30tr/tháng\n- Đào tạo miễn phí, bài bản\n- Môi trường làm việc trẻ trung, thoải mái\n- Đội nhóm hỗ trợ nhiệt tình\n- Bảng hàng đẹp từ Chủ đầu tư Vinhomes\n- Du lịch trong và ngoài nước thường xuyên	2024-12-01	- Đăng tin lên các hội nhóm, website bất động sản\n- Tìm kiếm khách hàng, khai thác thông tin về khách hàng, tư vấn các sản phẩm phù hợp với khách hàng (được đào tạo, hỗ trợ từ Giám đốc kinh doanh, Trưởng phòng kèm 1-1)\n- Tư vấn, đàm phán giá cả, hỗ trợ các thủ tục sau mua nhà	0	2024-12-20	Bán hàng	Không yêu cầu	Số 27 đường Đông Hội, Đông Anh	5	3	Hà Nội	20	- Không yêu cầu kinh nghiệm\n- Có laptop, phương tiện đi lại\n- Kỹ năng giao tiếp, xử lý tình huống\n- Kỹ năng làm việc nhóm	Nhân viên	PENDING	Nhân Viên Kinh Doanh/Sales (Không Yêu Cầu Kinh Nghiệm, Thu Nhập Lên Tới Trên 30tr/Tháng)	Full time	2024-12-01	08:00-17:00, Thứ hai-Thứ sáu	company_1733025482728
 56	- Lương cứng thoả thuận (khoảng 15tr/tháng)\n- Hoa hồng dịch vụ: 5-7%\n- Hoa hồng mỹ phẩm: 5%\n- Công tua dịch vụ: theo quy định toàn hệ thống\n- Tổng thu nhập bao gồm lương cứng, công tua và hoa hồng tư vấn khoảng 30tr/ tháng trở lên\n- Đãi ngộ, Phúc lợi: e. Lễ tết, Hiếu hỉ, sinh nhật, nghỉ mát, ốm đau, thai sản,...\n- Phụ cấp: Công tác phí theo quy định . Được hưởng đầy đủ quyền lợi theo quy định của Luật lao động: BHXH, BHYT, BHTN\n- Được cung cấp đầy đủ đồng phục và trang thiết bị phục vụ công việc\n- Cơ hội làm việc trong môi trường trẻ - năng động – thân thiện, chuyên nghiệp, hệ thống quy trình tác nghiệp rõ ràng, nhiều cơ hội thăng tiến theo năng lực\n- Làm việc hoàn toàn dân chủ đóng góp ý kiến, trao đổi trực tiếp với ban lãnh đạo công ty\n- Làm việc trong môi trường mở, có cơ hội tham gia các khóa đào tạo nâng cao năng lực trong và ngoài nước, được giao lưu học hỏi với các đối tác lớn tầm cỡ quốc gia và quốc tế	2024-12-01	- Khám, chẩn đoán, và đưa phác đồ điều trị về da cho khách hàng\n- Phối hợp với Tư vấn viên và team chốt gói nếu cần\n- Tư vấn và thực hiện điều trị chuyên sâu, chăm sóc thẩm mỹ cho khách hàng\n- Trực tiếp thực hiện các dịch vụ nội khoa & công nghệ cao\n- Đảm bảo thực hiện đúng quy trình chăm sóc da, phác đồ điều trị được Công ty đào tạo và chuyển giao\n- Theo dõi kết quả điều trị và đáp ứng của khách hàng \n- Tư vấn cho khách hàng sử dụng các liệu trình chăm sóc tại nhà\n- Phối hợp với quản lý, nhân viên Spa với các chi nhánh ghi nhận, theo dõi và báo cáo kết quả điều trị của khách hàng qua từng đợt điều trị nhằm đánh giá kết quả thực hiện làm cơ sở tư vấn\n- Trực tiếp vận hành các máy móc công nghệ cao \n- Lưu giữ và bảo mật hồ sơ của khách hàng cũng như các phương pháp trị liệu được cung cấp cho khách hàng. \n- Xử lý và theo dõi khách khi gặp kích ứng bất thường\n- Phụ trách đào tạo nâng cao tay nghề cho các bác sĩ tại phòng khám\n- Cập nhật các công nghệ thẩm mỹ da liễu, thẩm mỹ nội khoa cũng các dòng sản phẩm đặc trị mới và hiệu quả cho phòng khám\n- Tham gia các buổi hội thảo và đào tạo theo phân công của Ban lãnh đạo Công ty\n- Quản lý và giám sát công việc được phân công	1	2025-01-01	Y tế - Chăm sóc sức khỏe	Không yêu cầu	60 Tuệ Tĩnh, Hai Bà Trưng, Hà Nội, Hai Bà Trưng	5	3	Hà Nội	1	- Giới tính: Nam/Nữ\n- Ưu tiên ứng viên có bằng định hướng chuyên khoa da liễu, Bác sĩ da liễu có kinh nghiệm thẩm mỹ, laser. Có chứng chỉ hành nghề khám chữa bệnh chuyên khoa Da liễu\n- Có kinh nghiệm ít nhất 1 năm tại vị trí tương đương\n- Giao tiếp tốt, tự tin, có khả năng nắm bắt công việc nhanh. Ngoại hình sáng, da đẹp\n- Có khả năng giao tiếp và tư vấn khách hàng tốt\n- Có khả năng sử dụng tiếng Anh tốt sẽ được ưu tiên	Nhân viên	PENDING	Bác Sĩ Thẩm Mỹ Da Liễu	Full time	2024-12-01	08:00-17:00, Thứ hai-Thứ sáu	company_1733025482728
 55	- Mức lương: Thỏa thuận theo năng lực, trao đổi cụ thể khi tham gia phỏng vấn\n- Được tham gia các khóa đào tạo để nâng cao nghiệp vụ giảng dạy và đáp ứng nhu cầu công việc từ Hội sở.\n- Được tham gia các chế độ BHXH, BHYT đầy đủ theo quy định của nhà nước.\n- Chế độ nâng lương định kỳ theo quy định của công ty.\n- Ứng viên có kinh nghiệm giảng dạy hoặc quản lý sẽ được cân nhắc các vị trí Leader, Trưởng phòng đào tạo	2024-12-01	- Giảng dạy các lớp học được phân công theo lịch. \n- Tham gia các công việc kiểm tra học sinh: Kiểm tra đầu vào, kiểm tra giữa kỳ, cuối kỳ...\n- Xây dựng hình ảnh giáo viên nhiệt huyết, truyền được cảm hứng học cho học viên \n- Quan tâm, chăm sóc học viên, đánh giá sự tiến bộ của học viên trong suốt khóa học\n- Trợ giảng cho Giáo viên nước ngoài	1	2024-12-26	Giáo dục - Đào tạo	Không yêu cầu	122, Đường Trần Phú	5	3	Hà Tĩnh	1	- Tốt nghiệp Đại học chuyên ngành Tiếng anh.\n- Phát âm tiếng Anh chuẩn, phong cách giảng dạy sôi nổi, năng động, gây được thiện cảm cho học viên.\n- Tự tin, giao tiếp tốt, vui vẻ, hòa đồng, ham học hỏi.\n- Ứng viên mới ra trường sẽ được đào tạo trước khi đứng lớp.	Nhân viên	PENDING	English Teacher /Giáo Viên Tiếng Anh - Thu Nhập Hấp Dẫn Tại Hà Tĩnh	Full time	2024-12-01	08:00-17:00, Thứ hai-Thứ sáu	company_1733025482728
 57	-  nhập: 8-12 triệu\n- Môi trường làm việc năng động, cơ hội học hỏi, trải nghiệm và phát triển.\n- Được hưởng các chính sách phúc lợi: du lịch hàng năm, thưởng lễ, Tết,...\n- Khuyến khích các nhân sự gắn bó, cùng phát triển lâu dài với Công ty.\n- 	2024-12-01	- Hỗ trợ Bác sĩ trong quá trình thăm khám và điều trị.\n- Chuẩn bị dụng cụ y tế, thuốc men và các vật dụng cần thiết để phục vụ cho quá trình điều trị.\n- Chăm sóc bệnh nhân sau khám và điều trị.\n- Các công việc khác theo yêu cầu của Bác sĩ.\n- Giờ làm theo ca:\n- Sáng: 7h30 - 16h30 (nghỉ trưa 1 tiếng)  \n- Tối: 16h - 21h\n- Thời gian làm từ thứ 2 - Chủ nhật (nghỉ 4 buổi bất kỳ các ngày trong tháng)	1	2025-01-04	Y tế - Chăm sóc sức khỏe	Không yêu cầu	Nguyễn Lân, Phường Phương Liệt, Thanh Xuân	5	3	Hà Nội	1	- Tốt nghiệp trung cấp trở lên chuyên ngành điều dưỡng\n- Có chứng chỉ hành nghề là một lợi thế.\n- Chưa có kinh nghiệm sẽ được đào tạo.\n- Ngoại hình ưa nhìn, giao tiếp tốt, nhanh nhẹn, cẩn thận.	Nhân viên	PENDING	Điều Dưỡng Viên - Phòng Khám Bác Sĩ Gia Đình	Full time	2024-12-01	08:00-17:00, Thứ hai-Thứ sáu	company_1733025482728
@@ -437,6 +441,7 @@ COPY public.job (job_id, benefits, created_at, description, experience, expire_d
 54	- ương cơ bản: 12.000.000 - 15.000.000 VNĐ/tháng (Đảm bảo dạy 20 buổi/tháng hoặc phân chia theo lớp)\n- Từ buổi thứ 21 hoặc từ lớp thứ 3 trở đi: Hưởng thêm lương đi lớp từ 350.000 - 450.000/buổi/2h + thưởng hiệu quả giảng dạy (Tuỳ vào Level - Khoá học và Chất lượng lớp học)\n- TỔNG THU NHẬP trung bình dao động từ 15.000.000 - 40.000.000 VNĐ/tháng.\n- Đóng BHXH theo Luật lao động, nghỉ phép 12 ngày/năm và các ngày Lễ, Tết.\n- Review lương định kỳ 6 tháng/lần.\n- Được đào tạo nâng cao trình độ chuyên môn, kỹ năng giảng dạy.\n- Được cam kết phát triển bản thân và sự nghiệp tại công ty.\n- Part-Time: Lương theo ca 400.000 - 800.000 VNĐ/ca.\n- Thưởng tháng lên tới 10.000.000 VNĐ\n- 	2024-12-01	- Chịu trách nhiệm giảng dạy các lớp TOEIC hoặc IELTS của trung tâm.\n- Giảng dạy theo lộ trình, giáo án độc quyền của ATHENA, đảm bảo hoàn thành yêu cầu của mỗi buổi học và mục tiêu cuối cùng của khóa học.\n- Báo cáo và cập nhật tình hình lớp học cho Quản lý lớp học.\n- Giải đáp các thắc mắc về buổi học và bài tập cho học viên cùng với Trợ giảng.\n- Tham gia đánh giá chất lượng học viên cùng với bộ phận Đào tạo.\n- Đề xuất và hỗ trợ cải thiện lộ trình đào tạo học viên hiệu quả hơn.	1	2024-12-31	Giáo dục - Đào tạo	Không yêu cầu	35 Chùa Láng, Đống Đa	5	3	Hà Nội	1	- Ứng viên đã tốt nghiệp.\n- Ưu tiên ứng viên tốt nghiệp các trường: ĐH Ngoại Ngữ (có chứng chỉ nghiệp vụ sư phạm), ĐH Sư Phạm (chuyên ngành Tiếng Anh).\n- Có chứng chỉ Tiếng Anh TOEIC 900+ hoặc IELTS 7.5+.\n- Ưu tiên ứng viên có ít nhất 01 năm kinh nghiệm giảng dạy.\n- Có kỹ năng sư phạm, kỹ năng giao tiếp, kỹ năng truyền đạt\n- Biết sử dụng công nghệ trong giảng dạy.\n- Nhiệt tình, kiên nhẫn, có tinh thần trách nhiệm.	Nhân viên	PENDING	Giáo Viên Tiếng Anh (TOEIC/IELTS) Part-Time/Full-Time - Thu Nhập 15 - 40 Triệu - Hà Nội	Full time	2024-12-01	08:00-17:00, Thứ hai-Thứ sáu	company_1733025482728
 60	- Có cơ hội làm việc trong môi trường chuyên nghiệp, năng động, có chuyên môn cao mảng An ninh an toàn thông tin\n- Được tham gia các lớp đào tạo, khóa đào tạo, các buổi tọa đàm về chuyên môn\n- Có cơ hội được tiếp cận với những xu hướng công nghệ mới\n- Phúc lợi thưởng các dịp lễ, Tết, sinh nhật tập đoàn...lên đến 16 triệu 1 năm\n- Tham gia các hoạt động teambuilding hàng năm\n- Đóng bhxh theo Luật lao động quy định	2024-12-01	-  Phát triển và triển khai hệ thống CRM trên nền tảng ASP.NET và MS SQL.\n- Thực hiện kiểm thử phần mềm và khắc phục lỗi sau khi hoàn thành các dự án.\n- Nghiên cứu và ứng dụng các công nghệ mới nhằm nâng cao chất lượng phần mềm.\n- Thu thập và phân tích yêu cầu từ các bộ phận liên quan để phát triển tính năng mới.\n- Viết tài liệu hướng dẫn sử dụng cho người dùng và tài liệu kỹ thuật.\n- Hỗ trợ và phối hợp với các bộ phận khác trong quá trình triển khai và vận hành phần mềm.\n- Thực hiện các công việc khác theo yêu cầu của Trưởng bộ phận	3	2025-01-10	Công nghệ thông tin	Không yêu cầu	Tầng 15 số 11 Duy Tân, Cầu Giấy	5	3	Hà Nội	4	-  Tốt nghiệp chuyên ngành công nghệ thông tin hoặc các ngành liên quan.\n- Có 3 năm kinh nghiệm phát triển phần mềm với ASP.NET và MS SQL.\n- Hiểu biết tốt về Web Service, API, và các giao thức liên quan.\n- Thành thạo với MSSQL và các công cụ quản lý cơ sở dữ liệu.\n- Thành thạo với ASP.NET Core, C#.\n- Có kinh nghiệm làm việc với MVC, ReactJS là một lợi thế.\n- Khả năng làm việc độc lập và phối hợp trong môi trường nhóm tốt.\n- Hiểu biết về các hệ thống quản lý khách hàng (CRM) hoặc các hệ thống tương đương\n- Ưu tiên ứng viên có kinh nghiệm kiểm thử phần mềm và xây dựng tài liệu.	Nhân viên	PENDING	Lập Trình Viên Backend (ASP.NET)	Full time	2024-12-01	08:00-17:00, Thứ hai-Thứ sáu	company_1733025482728
 59	- • Cơ hội tham gia nhiều hoạt động văn hóa, thể dục thể thao, giải trí (hoạt động ngoại khóa hàng tháng, kỷ nghỉ lễ tết, nghỉ mát 2 lần/ năm...) do công ty tổ chức hàng năm tại các địa điểm du lịch, resort cao cấp.\n- \n- • Thưởng theo dự án, thưởng CBNV xuất sắc, ngoài ra còn có các khoản trợ cấp hàng tháng như sau :\n- \n- Trợ cấp đi lại\n- \n- Trợ cấp ăn trưa\n- \n- Du lịch hằng năm trong, ngoài nước\n- \n- Câu lạc bộ Game, bóng đá (Thứ 2, thứ 6 hàng tuần ra sân).\n- \n- Làm việc từ thứ 2 đến thứ 6 và 2 sáng thứ 7 trong tháng	2024-12-01	- • Phát triển và hoàn thiện các ứng dụng.\n- \n- • Duy trì các ứng dụng hiện có.\n- \n- • Viết mã đáp ứng tiêu chuẩn hệ thống máy tính.\n- \n- • Phương pháp phân tích hiệu quả giải quyết yêu cầu hệ thống phần mềm.	2	2025-01-31	Công nghệ thông tin	Không yêu cầu	Tầng 14, Center Building Hapulico Số 85 Vũ Trọng Phụng, Thanh Xuân, Hà Nội, Thanh Xuân	5	3	Hà Nội	3	- • Biết khái niệm căn bản về quy trình phát triển phần mềm, lập trình hướng đối tượng, mô hình MVC.\n- \n- • Có kiến thức về C#, .NET. \n- \n- • Có kiến thức về lập trình Web ( HTML5, CSS, Javascript, jQuery....). \n- \n- • Có kiến thức về cơ sở dữ liệu. \n- \n- Ham học hỏi, yêu thích lập trình, có khả năng tự tìm hiểu và giải quyết vấn đề\n- \n- Ưu tiên các ứng vên có kinh nghiệm về tài chính ngân hàng chứng khoán	Nhân viên	PENDING	Lập Trình Viên .Net (Từ 2 Năm Kinh Nghiệm)	Full time	2024-12-01	08:00-17:00, Thứ hai-Thứ sáu	company_1733025482728
+52	- Hỗ trợ lương cứng 5 triệu/tháng\n- Được thưởng nóng, thưởng theo quý, theo năm\n- Mức hoa hồng cao cho từng dự án\n- Thu nhập không giới hạn: lương cứng +thưởng + hoa hồng lên tới 30tr/tháng\n- Đào tạo miễn phí, bài bản\n- Môi trường làm việc trẻ trung, thoải mái\n- Đội nhóm hỗ trợ nhiệt tình\n- Bảng hàng đẹp từ Chủ đầu tư Vinhomes\n- Du lịch trong và ngoài nước thường xuyên	2024-12-01	- Đăng tin lên các hội nhóm, website bất động sản\n- Tìm kiếm khách hàng, khai thác thông tin về khách hàng, tư vấn các sản phẩm phù hợp với khách hàng (được đào tạo, hỗ trợ từ Giám đốc kinh doanh, Trưởng phòng kèm 1-1)\n- Tư vấn, đàm phán giá cả, hỗ trợ các thủ tục sau mua nhà \n-Tìm kiếm và liên hệ với các đối tác cũng như nhà phân phối, cung cấp dịch vụ để hỗ trợ sự kiện: in ấn banner, Poster, tờ rơi,...phục vụ sự kiện abc 	4	2024-12-30	Bán hàng	Không yêu cầu	Số 27 đường Đông Hội, Đông Anh	11	7	Hà Nội	10	- Không yêu cầu kinh nghiệm\n- Có laptop, phương tiện đi lại\n- Kỹ năng giao tiếp, xử lý tình huống\n- Kỹ năng làm việc nhóm \n- Kỹ năng bán hàng 	Nhân viên	PENDING	Nhân Viên Kinh Doanh/Sale (Không Yêu Cầu Kinh Nghiệm, Thu Nhập Lên Tới Trên 30tr/Tháng)	Full time	2024-12-04	08:00-17:00, Thứ hai-Thứ bảy	company_1733025482728
 \.
 
 
@@ -448,6 +453,9 @@ COPY public.job_application (id, created_date, cv_url, reference_letter, state, 
 11	2024-12-03	https://jobfinder-kienluu.s3.ap-southeast-1.amazonaws.com/Nguyen-Lan-Anh-CV-marketing.pdf	tôi muốn việc làm	PENDING	59	u_1732423672781
 13	2024-12-03	https://jobfinder-kienluu.s3.ap-southeast-1.amazonaws.com/Nguyen-Lan-Anh-CV-marketing.pdf	àc	PENDING	52	u_1732423672781
 12	2024-12-03	https://jobfinder-kienluu.s3.ap-southeast-1.amazonaws.com/Luu-Dinh-Kien--TopCV.vn-291024.172109.pdf	\N	ACCEPTED	58	u_1732423672781
+14	2024-12-03	https://jobfinder-kienluu.s3.ap-southeast-1.amazonaws.com/Luu-Dinh-Kien--TopCV.vn-291024.172109.pdf	A Vietnamese NLP toolkit. Underthesea is a suite of open source Python modules data sets and tutorials supporting research and development in Vietnamese Natural Language Processing.	REJECTED	52	u_1732502359113
+15	2024-12-03	https://jobfinder-kienluu.s3.ap-southeast-1.amazonaws.com/CV---dao-Thuy-Nga---Nhan-su-part-time.pdf	A Vietnamese NLP toolkit. Underthesea is a suite of open source Python modules data sets and tutorials supporting research and development in Vietnamese Natural Language Processing.	ACCEPTED	52	u_1733020009402
+16	2024-12-05	https://jobfinder-kienluu.s3.ap-southeast-1.amazonaws.com/CV---dao-Thuy-Nga---Nhan-su-part-time.pdf	Tôi cần việc làm	REJECTED	57	u_1733020009402
 \.
 
 
@@ -459,6 +467,9 @@ COPY public.job_applications (job_entity_job_id, applications_id) FROM stdin;
 59	11
 58	12
 52	13
+52	14
+52	15
+57	16
 \.
 
 
@@ -495,6 +506,7 @@ COPY public.report (id, company_id, reason, status, user_id, job_id) FROM stdin;
 21	company_1733155577955	Tin trùng lặp -  A Vietnamese NLP toolkit. Underthesea is a suite of open source Python modules data sets and tutorials supporting research and development in Vietnamese Natural Language Processing. We provides extremely easy API to quickly apply pretrained NLP models to your Vietnamese text, such as word segmentation, part-of-speech tagging (PoS), named entity recognition (NER), text classification and dependency parsing.	PENDING	u_1733020019009	61
 23	company_1733155577955	Nội dung vi phạm pháp luật -  A Vietnamese NLP toolkit. Underthesea is a suite of open source Python modules data sets and tutorials supporting research and development in Vietnamese Natural Language Processing. We provides extremely easy API to quickly apply pretrained NLP models to your Vietnamese text, such as word segmentation, part-of-speech tagging (PoS), named entity recognition (NER), text classification and dependency parsing.	PENDING	u_1732423672781	61
 24	company_1733155577955	Lý do khác -  A Vietnamese NLP toolkit. Underthesea is a suite of open source Python modules data sets and tutorials supporting research and development in Vietnamese Natural Language Processing. We provides extremely easy API to quickly apply pretrained NLP models to your Vietnamese text, such as word segmentation, part-of-speech tagging (PoS), named entity recognition (NER), text classification and dependency parsing.	PENDING	u_1732502359113	61
+25	company_1733025482728	Tin rác - Toppy Ai chưa thể đưa ra đánh giá vì chưa có đủ hiểu biết về năng lực của bạn. Vui lòng Đăng nhập để giúp mình hiểu thêm và đánh giá giúp bạn nhé.	PENDING	u_1733020009402	52
 \.
 
 
@@ -524,6 +536,9 @@ u_1732423672781	51
 u_1732423672781	59
 u_1732423672781	58
 u_1732423672781	52
+u_1732502359113	52
+u_1733020009402	52
+u_1733020009402	57
 \.
 
 
@@ -536,6 +551,7 @@ u_1732423672781	https://jobfinder-kienluu.s3.ap-southeast-1.amazonaws.com/Nguyen
 u_1732423672781	https://jobfinder-kienluu.s3.ap-southeast-1.amazonaws.com/Luu-Dinh-Kien--TopCV.vn-291024.172109.pdf
 u_1732502359113	https://jobfinder-kienluu.s3.ap-southeast-1.amazonaws.com/CV---dao-Thuy-Nga---Nhan-su-part-time.pdf
 u_1732502359113	https://jobfinder-kienluu.s3.ap-southeast-1.amazonaws.com/Luu-Dinh-Kien--TopCV.vn-291024.172109.pdf
+u_1733020009402	https://jobfinder-kienluu.s3.ap-southeast-1.amazonaws.com/CV---dao-Thuy-Nga---Nhan-su-part-time.pdf
 \.
 
 
@@ -549,6 +565,8 @@ u_1732423672781	2
 u_1732423672781	42
 u_1732423672781	51
 u_1732423672781	54
+u_1733020009402	52
+u_1733020009402	57
 \.
 
 
@@ -559,6 +577,10 @@ u_1732423672781	54
 COPY public.user_entity_search_history (user_entity_id, search_history) FROM stdin;
 u_1732423672781	java
 u_1732423672781	kế toán
+u_1733020009402	nhan vien
+u_1733020009402	Nhân viên
+u_1733020009402	Nhân Viên Kinh Doanh/Sale (Không Yêu Cầu Kinh Nghiệm, Thu Nhập Lên Tới Trên 30tr/Tháng)
+u_1733020009402	Điều Dưỡng Viên - Phòng Khám Bác Sĩ Gia Đình
 \.
 
 
@@ -573,14 +595,14 @@ SELECT pg_catalog.setval('public.ban_notification_id_seq', 19, true);
 -- Name: conversations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.conversations_id_seq', 7, true);
+SELECT pg_catalog.setval('public.conversations_id_seq', 8, true);
 
 
 --
 -- Name: job_application_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.job_application_id_seq', 13, true);
+SELECT pg_catalog.setval('public.job_application_id_seq', 16, true);
 
 
 --
@@ -594,7 +616,7 @@ SELECT pg_catalog.setval('public.job_job_id_seq', 61, true);
 -- Name: report_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.report_id_seq', 24, true);
+SELECT pg_catalog.setval('public.report_id_seq', 25, true);
 
 
 --

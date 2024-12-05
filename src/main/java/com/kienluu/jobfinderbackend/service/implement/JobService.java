@@ -1,21 +1,18 @@
 package com.kienluu.jobfinderbackend.service.implement;
 
-import com.kienluu.jobfinderbackend.dto.JobApplicationDto;
 import com.kienluu.jobfinderbackend.dto.JobDto;
 import com.kienluu.jobfinderbackend.dto.request.JobCreateRequest;
-import com.kienluu.jobfinderbackend.dto.response.JobEmployerCard;
+import com.kienluu.jobfinderbackend.dto.response.JobCardResponse;
 import com.kienluu.jobfinderbackend.elasticsearch.event.EvenType;
 import com.kienluu.jobfinderbackend.elasticsearch.event.JobChangedEvent;
 import com.kienluu.jobfinderbackend.entity.CompanyEntity;
-import com.kienluu.jobfinderbackend.entity.JobApplicationEntity;
 import com.kienluu.jobfinderbackend.entity.JobEntity;
+import com.kienluu.jobfinderbackend.event.UserSearchEvent;
 import com.kienluu.jobfinderbackend.mapper.CustomMapper;
-import com.kienluu.jobfinderbackend.mapper.UserContext;
 import com.kienluu.jobfinderbackend.model.JobState;
 import com.kienluu.jobfinderbackend.repository.CompanyRepository;
 import com.kienluu.jobfinderbackend.repository.JobRepository;
 import com.kienluu.jobfinderbackend.service.IJobService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
@@ -26,7 +23,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -110,17 +106,14 @@ public class JobService implements IJobService {
         JobEntity jobEntity = jobRepository.findByJobId(jobId)
                 .orElseThrow(() -> new RuntimeException("Job not found"));
         return mapper.toJobResponse(jobEntity);
-
     }
 
     @Override
-    @Transactional
-    public Page<JobEmployerCard> getJobCardsByCompanyId(String companyId, int page, int size) {
-        Sort sort1 = Sort.by(Sort.Order.desc("expireDate"),Sort.Order.desc("createdAt") );
+    public Page<JobCardResponse> getJobCardsByCompany(String companyId, int page, int size) {
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
-        Pageable pageable = PageRequest.of(page, size, sort1);
-        Page<JobEntity> jobs = jobRepository.findByCompanyId(companyId, pageable);
-        return jobs.map(this::toJobEmployerCard);
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<JobEntity> jobs = jobRepository.findByCompany(companyId, JobState.PENDING, pageable);
+        return jobs.map(mapper::toJobCardResponse);
     }
 
     @Override
@@ -131,18 +124,13 @@ public class JobService implements IJobService {
         return response.map(mapper::toJobResponse);
     }
 
-    protected JobEmployerCard toJobEmployerCard(JobEntity jobEntity) {
-        List<JobApplicationEntity> jobApplicationEntity = jobEntity.getApplications();
-        List<JobApplicationDto> applicationDtos = jobApplicationEntity.stream()
-                .map(item -> mapper.toJobApplicationDto(item, new UserContext(item.getUser())))
-                .toList();
-        return JobEmployerCard.builder()
-                .jobId(jobEntity.getJobId())
-                .title(jobEntity.getTitle())
-                .state(jobEntity.getState())
-                .expireDate(jobEntity.getExpireDate())
-                .logo(jobEntity.getCompany().getLogo())
-                .applications(applicationDtos)
-                .build();
+    @Override
+    public JobDto getJobByIdNotExpiryAndNotBan(Long jobId, String userId) {
+        JobEntity job = jobRepository.findJobEntitiesByJobIdAndStateAndExpireDateGreaterThanEqual(jobId, JobState.PENDING, LocalDate.now());
+        if(job==null) throw new RuntimeException("Job not found");
+        if(userId!=null && !userId.isEmpty()){
+            eventPublisher.publishEvent(new UserSearchEvent(userId,job.getTitle()));
+        }
+        return mapper.toJobResponse(job);
     }
 }

@@ -1,24 +1,39 @@
 package com.kienluu.jobfinderbackend.dto.response;
 
-import com.kienluu.jobfinderbackend.dto.JobApplicationDto;
-import com.kienluu.jobfinderbackend.model.JobState;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Builder
-public class JobEmployerCard {
+public class JobCardResponse {
     private Long jobId;
+
     private String title;
-    private LocalDate expireDate;
-    private JobState state;
+
+    private String province;
+
+    private String companyName;
+
+    private String companyId;
+
     private String logo;
-    private List<JobApplicationDto> applications;
+
+    private int experience;
+
+    private int minSalary;
+
+    private int maxSalary;
+
+    private LocalDate expireDate;
+
+    private LocalDate createdAt;
+
+    private String state;
+
 }

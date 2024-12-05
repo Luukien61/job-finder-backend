@@ -8,8 +8,10 @@ import com.kienluu.jobfinderbackend.websocket.entity.Conversation;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.sql.ast.tree.expression.Collation;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -71,6 +73,7 @@ public class UserEntity extends BaseUserEntity{
         if (this.getId() == null) {
             this.setId("u_" + AppUtil.generateCustomUserId());
         }
+
     }
 
 }

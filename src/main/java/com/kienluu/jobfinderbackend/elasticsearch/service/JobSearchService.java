@@ -5,13 +5,16 @@ import co.elastic.clients.elasticsearch._types.query_dsl.TextQueryType;
 import co.elastic.clients.json.JsonData;
 import com.kienluu.jobfinderbackend.elasticsearch.document.JobDocument;
 import com.kienluu.jobfinderbackend.elasticsearch.event.BanJobByCompanyEvent;
+import com.kienluu.jobfinderbackend.elasticsearch.event.CompanyUpdateEvent;
 import com.kienluu.jobfinderbackend.elasticsearch.event.EvenType;
 import com.kienluu.jobfinderbackend.elasticsearch.event.JobChangedEvent;
 import com.kienluu.jobfinderbackend.elasticsearch.repository.JobSearchRepository;
 import com.kienluu.jobfinderbackend.entity.JobEntity;
+import com.kienluu.jobfinderbackend.event.UserSearchEvent;
 import com.kienluu.jobfinderbackend.repository.JobRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,7 +31,10 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -37,6 +43,7 @@ public class JobSearchService {
     private final JobSearchRepository jobSearchRepository;
     private final JobRepository jobRepository;
     private final ElasticsearchOperations elasticsearchOperations;
+    private final ApplicationEventPublisher eventPublisher;
 
 
     @EventListener
@@ -133,6 +140,35 @@ public class JobSearchService {
         elasticsearchOperations.updateByQuery(updateQuery, IndexCoordinates.of("jobs"));
     }
 
+    @EventListener(classes = CompanyUpdateEvent.class)
+    public void companyUpdateEventListener(CompanyUpdateEvent event) throws IllegalAccessException {
+        NativeQuery nativeQuery = NativeQuery.builder()
+                .withQuery(query -> query.term(term -> term.value(event.getCompanyId()).field("companyId")))
+                .build();
+        Map<String, Object> fieldsToUpdate = new HashMap<>();
+        for (Field field : event.getClass().getDeclaredFields()) {
+            field.setAccessible(true);
+            Object value = field.get(event);
+            if (value != null && !field.getName().equalsIgnoreCase("companyId")) {
+                fieldsToUpdate.put(field.getName(), value);
+            }
+        }
+        String script = fieldsToUpdate.keySet()
+                .stream()
+                .map(field -> "ctx._source." + field + " = params." + field)
+                .reduce((f1, f2) -> f1 + "; " + f2)
+                .orElse("");
+        log.info("Script: {}", script);
+
+        UpdateQuery updateQuery = UpdateQuery.builder(nativeQuery)
+                .withScript(script)
+                .withScriptType(ScriptType.INLINE)
+                .withParams(fieldsToUpdate)
+                .withLang("painless")
+                .build();
+        elasticsearchOperations.updateByQuery(updateQuery, IndexCoordinates.of("jobs"));
+    }
+
 
     @SuppressWarnings("unchecked")
     public Page<JobDocument> searchJobs(
@@ -142,8 +178,12 @@ public class JobSearchService {
             @Nullable Integer maxSalary,
             @Nullable Integer experience,
             int page, int size,
-            String sort, String order
+            String sort, String order,
+            String userId
     ) {
+        if(userId!=null){
+            eventPublisher.publishEvent(new UserSearchEvent(userId, keyword));
+        }
         Pageable pageable = PageRequest.of(page, size);
         NativeQuery searchQuery = NativeQuery.builder()
                 .withQuery(query -> query.bool(bool -> {
@@ -159,17 +199,12 @@ public class JobSearchService {
 
 
                     bool.must(must ->
-                            {
-                                must.range(range ->
-                                        range.field("expiryDate").gt(JsonData.of("now"))
-                                                .format("yyyy-MM-dd")
-                                );
-                                must.term(term -> term.field("state").value("PENDING"));
-
-                                return must;
-                            }
-
+                            must.range(range ->
+                                    range.field("expiryDate").gt(JsonData.of("now"))
+                                            .format("yyyy-MM-dd")
+                            )
                     );
+                    bool.must(must -> must.term(term -> term.field("state").value("PENDING")));
 
 
                     if (StringUtils.hasText(location)) {
