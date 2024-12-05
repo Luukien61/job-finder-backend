@@ -1,10 +1,7 @@
 package com.kienluu.jobfinderbackend.repository;
 
 import com.kienluu.jobfinderbackend.entity.CompanyEntity;
-import com.kienluu.jobfinderbackend.model.CompanyJobDetailStatistics;
-import com.kienluu.jobfinderbackend.model.CompanyMonthlyJob;
-import com.kienluu.jobfinderbackend.model.CompanyState;
-import com.kienluu.jobfinderbackend.model.JobByCompanyByMonth;
+import com.kienluu.jobfinderbackend.model.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -98,5 +95,18 @@ public interface CompanyRepository extends JpaRepository<CompanyEntity, String> 
     List<CompanyJobDetailStatistics> getJobsDetailStatisticByCompanyId(@Param("companyId") String companyId);
     @Query("select company.state from CompanyEntity company where company.id= :companyId")
     CompanyState getCompanyStatus(@Param("companyId") String companyId);
+
+
+    @Query("SELECT new com.kienluu.jobfinderbackend.model.CompanyMonthlyApps(EXTRACT(YEAR FROM app.createdDate), EXTRACT(MONTH FROM app.createdDate), COUNT(app)) " +
+            "FROM CompanyEntity company " +
+            "JOIN JobApplicationEntity app ON company.id = app.job.company.id " +
+            "WHERE company.id = :companyId " +
+            "AND app.createdDate >= :startDate " +
+            "GROUP BY EXTRACT(YEAR FROM app.createdDate), EXTRACT(MONTH FROM app.createdDate) " +
+            "ORDER BY EXTRACT(YEAR FROM app.createdDate) DESC, EXTRACT(MONTH FROM app.createdDate) DESC")
+    List<CompanyMonthlyApps> countAppsInLast12Months(@Param("companyId") String companyId,
+                                                     @Param("startDate") LocalDate startDate);
+
+
 
 }

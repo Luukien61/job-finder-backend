@@ -6,10 +6,7 @@ import com.kienluu.jobfinderbackend.dto.response.CompanyCreateResponse;
 import com.kienluu.jobfinderbackend.dto.response.CompanyResponse;
 import com.kienluu.jobfinderbackend.dto.response.LoginResponse;
 import com.kienluu.jobfinderbackend.entity.CompanyEntity;
-import com.kienluu.jobfinderbackend.model.CompanyJobDetailStatistics;
-import com.kienluu.jobfinderbackend.model.CompanyMonthlyJob;
-import com.kienluu.jobfinderbackend.model.CompanyStatistics;
-import com.kienluu.jobfinderbackend.model.MailTemplate;
+import com.kienluu.jobfinderbackend.model.*;
 
 import javax.mail.MessagingException;
 import java.io.IOException;
@@ -45,4 +42,6 @@ public interface ICompanyService {
     List<CompanyJobDetailStatistics> getJobDetailStatistics(String companyId);
 
     Boolean checkCompanyStatus(String companyId);
+
+    List<CompanyMonthlyApps> getAppsIn12Month(String companyId, Integer month, Integer year);
 }

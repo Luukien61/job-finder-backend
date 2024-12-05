@@ -16,4 +16,5 @@ public class CompanyStatistics {
     private Long newJobs;
     private Long applicants;
     private List<CompanyMonthlyJob> monthlyJobs;
+    private List<CompanyMonthlyApps> monthlyApps;
 }

@@ -122,7 +122,8 @@ public class CompanyService implements ICompanyService {
         Long newJobsInMonth = countJobsInMonth(companyId, month, year);
         Long applicantsInMonth = countApplicantsInMonth(companyId, month, year);
         List<CompanyMonthlyJob> monthlyJobs = getJobsIn12Month(companyId, month, year);
-        return new CompanyStatistics(newApplicantsInMonth, newJobsInMonth, applicantsInMonth,monthlyJobs);
+        List<CompanyMonthlyApps> monthlyApps = getAppsIn12Month(companyId, month, year);
+        return new CompanyStatistics(newApplicantsInMonth, newJobsInMonth, applicantsInMonth,monthlyJobs, monthlyApps);
     }
     @Override
     public List<CompanyMonthlyJob> getJobsIn12Month(String companyId, Integer month, Integer year){
@@ -139,6 +140,26 @@ public class CompanyService implements ICompanyService {
                     .findFirst()
                     .orElse(new CompanyMonthlyJob(currentYear,monthValue,0L));
             finalResult.add(monthlyJob);
+            current = current.minusMonths(1);
+        }
+        return finalResult;
+    }
+
+    @Override
+    public List<CompanyMonthlyApps> getAppsIn12Month(String companyId, Integer month, Integer year){
+        LocalDate startDate = LocalDate.of(year, month, 1).minusMonths(11); // Tính ngày bắt đầu
+        List<CompanyMonthlyApps> statistics = companyRepository.countAppsInLast12Months(companyId, startDate);
+        YearMonth current = YearMonth.of(year, month);
+        List<CompanyMonthlyApps> finalResult = new ArrayList<>();
+        for (int i = 0; i < 12; i++) {
+            YearMonth finalCurrent = current;
+            int currentYear = finalCurrent.getYear();
+            int monthValue = finalCurrent.getMonthValue();
+            CompanyMonthlyApps monthlyApps = statistics.stream()
+                    .filter(stat -> stat.getYear() == currentYear && stat.getMonth() == monthValue)
+                    .findFirst()
+                    .orElse(new CompanyMonthlyApps(currentYear,monthValue,0L));
+            finalResult.add(monthlyApps);
             current = current.minusMonths(1);
         }
         return finalResult;
