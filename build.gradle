@@ -44,6 +44,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'javax.mail:mail:1.4.7'
     implementation 'software.amazon.awssdk:s3:2.29.10'
+
+    implementation 'com.stripe:stripe-java:28.0.0'
+
 }
 
 tasks.named('test') {
