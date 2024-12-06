@@ -60,3 +60,22 @@ aws:
   secret-key: ${AWS_SECRET_KEY}
   bucket-name: ${BUCKET_NAME}
   region: ${AWS_REGION}
+
+stripe:
+  api:
+    key: sk_test_51QSgLlFMfEC9tDRAxnWcGeOwUHWfpeBMbQlUXbbTxqUvTFKve4GcPj6ieXAynGjfDrnp8eLweci6cf5h9eTFfrwy00JYWwL0yP
+  checkout:
+    register:
+      successUrl: http://localhost:5173/payment/success?session_id={CHECKOUT_SESSION_ID}
+      cancelUrl : http://localhost:5173/employer/profile
+    upgrade:
+      successUrl: http://localhost:5173/employer/upgrade/success?session_id={CHECKOUT_SESSION_ID}
+      cancelUrl : http://localhost:5173/employer
+    un-subscribe: http://localhost:5173/employer
+    plan:
+      ultimate: Ultimate
+      pro: Pro
+      basic:
+        name: Basic
+        limit: 30
+

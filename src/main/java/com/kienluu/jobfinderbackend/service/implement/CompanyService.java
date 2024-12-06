@@ -7,13 +7,13 @@ import com.kienluu.jobfinderbackend.dto.response.CompanyResponse;
 import com.kienluu.jobfinderbackend.dto.response.LoginResponse;
 import com.kienluu.jobfinderbackend.elasticsearch.event.CompanyUpdateEvent;
 import com.kienluu.jobfinderbackend.entity.CompanyEntity;
+import com.kienluu.jobfinderbackend.entity.CompanyPlan;
 import com.kienluu.jobfinderbackend.mapper.CustomMapper;
 import com.kienluu.jobfinderbackend.model.*;
 import com.kienluu.jobfinderbackend.repository.CompanyRepository;
 import com.kienluu.jobfinderbackend.repository.JobApplicationRepository;
 import com.kienluu.jobfinderbackend.repository.JobRepository;
 import com.kienluu.jobfinderbackend.service.ICompanyService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
@@ -41,6 +41,14 @@ public class CompanyService implements ICompanyService {
 
     @Value("${app.monthly-post}")
     private int MONTHLY_POST;
+    @Value("${stripe.checkout.plan.ultimate}")
+    private String ULTIMATE_PLAN;
+    @Value("${stripe.checkout.plan.pro}")
+    private String PRO_PLAN;
+    @Value("${stripe.checkout.plan.basic.name}")
+    private String BASIC_PLAN;
+    @Value("${stripe.checkout.plan.basic.limit}")
+    private Integer BASIC_PLAN_LIMIT;
 
     @Override
     public List<CompanyEntity> getCompanies() {
@@ -98,10 +106,19 @@ public class CompanyService implements ICompanyService {
 
     @Override
     public boolean canPostJob(String companyId) {
+        int limitJob = MONTHLY_POST;
+        CompanyPlan plan = getCompanyPlan(companyId);
+        if (plan != null) {
+            if (ULTIMATE_PLAN.equals(plan.getName()) || PRO_PLAN.equals(plan.getName())) {
+                return true;
+            }else {
+                limitJob= BASIC_PLAN_LIMIT;
+            }
+        }
         var now = LocalDate.now();
         int month = now.getMonthValue();
         int year = now.getYear();
-        return jobRepository.countJobsByCompanyId(companyId, month, year) < MONTHLY_POST;
+        return jobRepository.countJobsByCompanyId(companyId, month, year) < limitJob;
     }
 
     @Override
@@ -125,10 +142,11 @@ public class CompanyService implements ICompanyService {
         Long newJobsInMonth = countJobsInMonth(companyId, month, year);
         Long applicantsInMonth = countApplicantsInMonth(companyId, month, year);
         List<CompanyMonthlyJob> monthlyJobs = getJobsIn12Month(companyId, month, year);
-        return new CompanyStatistics(newApplicantsInMonth, newJobsInMonth, applicantsInMonth,monthlyJobs);
+        return new CompanyStatistics(newApplicantsInMonth, newJobsInMonth, applicantsInMonth, monthlyJobs);
     }
+
     @Override
-    public List<CompanyMonthlyJob> getJobsIn12Month(String companyId, Integer month, Integer year){
+    public List<CompanyMonthlyJob> getJobsIn12Month(String companyId, Integer month, Integer year) {
         LocalDate startDate = LocalDate.of(year, month, 1).minusMonths(11); // Tính ngày bắt đầu
         List<CompanyMonthlyJob> statistics = companyRepository.countJobsInLast12Months(companyId, startDate);
         YearMonth current = YearMonth.of(year, month);
@@ -140,7 +158,7 @@ public class CompanyService implements ICompanyService {
             CompanyMonthlyJob monthlyJob = statistics.stream()
                     .filter(stat -> stat.getYear() == currentYear && stat.getMonth() == monthValue)
                     .findFirst()
-                    .orElse(new CompanyMonthlyJob(currentYear,monthValue,0L));
+                    .orElse(new CompanyMonthlyJob(currentYear, monthValue, 0L));
             finalResult.add(monthlyJob);
             current = current.minusMonths(1);
         }
@@ -155,6 +173,12 @@ public class CompanyService implements ICompanyService {
     @Override
     public Boolean checkCompanyStatus(String companyId) {
         CompanyState companyStatus = companyRepository.getCompanyStatus(companyId);
-        return companyStatus==CompanyState.BAN;
+        return companyStatus == CompanyState.BAN;
+    }
+
+    private CompanyPlan getCompanyPlan(String companyId) {
+        CompanyEntity companyEntity = companyRepository.findCompanyById(companyId.trim())
+                .orElseThrow(() -> new RuntimeException("Company not found"));
+        return companyEntity.getCompanySubscription().getPlan();
     }
 }

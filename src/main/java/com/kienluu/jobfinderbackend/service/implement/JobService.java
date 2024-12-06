@@ -12,6 +12,7 @@ import com.kienluu.jobfinderbackend.mapper.CustomMapper;
 import com.kienluu.jobfinderbackend.model.JobState;
 import com.kienluu.jobfinderbackend.repository.CompanyRepository;
 import com.kienluu.jobfinderbackend.repository.JobRepository;
+import com.kienluu.jobfinderbackend.service.ICompanyService;
 import com.kienluu.jobfinderbackend.service.IJobService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,6 +35,7 @@ public class JobService implements IJobService {
     private final CustomMapper mapper;
     @Value("${app.monthly-post}")
     private int MONTHLY_POST;
+    private final ICompanyService companyService;
 
     //eventPublisher.publishEvent(new JobChangedEvent(savedJob, EvenType.CREATED));
 
@@ -42,22 +44,19 @@ public class JobService implements IJobService {
     public JobDto saveJob(JobCreateRequest job) {
         CompanyEntity companyEntity = companyRepository.findCompanyById(job.getCompanyId())
                 .orElseThrow(() -> new RuntimeException("Company not found"));
-        var now = LocalDate.now();
-        int month = now.getMonthValue();
-        int year = now.getYear();
-        long jobCount = jobRepository.countJobsByCompanyId(job.getCompanyId(), month, year);
-        if(jobCount>MONTHLY_POST){
-            throw new RuntimeException("Bạn đã sử dụng hết số bài đăng trong tháng");
+        boolean canPostJob = companyService.canPostJob(job.getCompanyId());
+        if(canPostJob) {
+            JobEntity jobEntity = mapper.toJobEntity(job);
+            jobEntity.setCompany(companyEntity);
+            jobEntity.setCreatedAt(job.getCreatedAt());
+            jobEntity.setUpdateAt(job.getCreatedAt());
+            jobEntity.setState(JobState.PENDING);
+            jobEntity = jobRepository.save(jobEntity);
+            eventPublisher.publishEvent(new JobChangedEvent(jobEntity, EvenType.CREATED));
+            return mapper.toJobResponse(jobEntity);
+        }else {
+            throw new RuntimeException("Bạn đã vượt quá số bài đăng cho phép, nâng cấp tài khoản để tiếp tục đăng tin.");
         }
-        JobEntity jobEntity = mapper.toJobEntity(job);
-        jobEntity.setCompany(companyEntity);
-
-        jobEntity.setCreatedAt(job.getCreatedAt());
-        jobEntity.setUpdateAt(job.getCreatedAt());
-        jobEntity.setState(JobState.PENDING);
-        jobEntity = jobRepository.save(jobEntity);
-        eventPublisher.publishEvent(new JobChangedEvent(jobEntity, EvenType.CREATED));
-        return mapper.toJobResponse(jobEntity);
     }
 
     @Override

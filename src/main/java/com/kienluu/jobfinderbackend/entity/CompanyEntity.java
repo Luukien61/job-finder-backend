@@ -51,6 +51,11 @@ public class CompanyEntity extends BaseUserEntity {
     @JsonManagedReference
     private List<Conversation> conversations;
 
+    @OneToOne(fetch = FetchType.EAGER)
+    private CompanySubscription companySubscription;
+
+
+
     @PrePersist
     public void generateUniqueId() {
         if (this.getId() == null) {
