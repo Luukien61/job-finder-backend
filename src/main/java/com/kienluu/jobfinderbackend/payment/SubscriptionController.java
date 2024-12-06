@@ -2,7 +2,6 @@ package com.kienluu.jobfinderbackend.payment;
 
 import com.kienluu.jobfinderbackend.entity.CompanyPlan;
 import com.kienluu.jobfinderbackend.service.implement.SubscriptionService;
-import com.stripe.Stripe;
 import com.stripe.model.Subscription;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.SubscriptionUpdateParams;

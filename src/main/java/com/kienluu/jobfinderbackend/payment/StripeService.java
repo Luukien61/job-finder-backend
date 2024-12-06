@@ -20,23 +20,22 @@ import java.util.stream.Collectors;
 public class StripeService {
 
     public String createCheckoutSession(String email, String planId) throws StripeException {
-        Stripe.apiKey = "sk_test_your_secret_key"; // Thay bằng Stripe Secret Key của bạn
+        Stripe.apiKey = "sk_test_your_secret_key";
 
-        // Tạo Checkout Session
         SessionCreateParams params = SessionCreateParams.builder()
-                .setMode(SessionCreateParams.Mode.SUBSCRIPTION) // Đăng ký định kỳ
-                .setCustomerEmail(email) // Email của khách hàng
+                .setMode(SessionCreateParams.Mode.SUBSCRIPTION)
+                .setCustomerEmail(email)
                 .setSuccessUrl("https://your-frontend.com/success?session_id={CHECKOUT_SESSION_ID}") // Redirect khi thành công
-                .setCancelUrl("https://your-frontend.com/cancel") // Redirect khi hủy
+                .setCancelUrl("https://your-frontend.com/cancel")
                 .addLineItem(
                         SessionCreateParams.LineItem.builder()
-                                .setPrice(planId) // ID gói thanh toán trong Stripe
+                                .setPrice(planId)
                                 .setQuantity(1L)
                                 .build())
                 .build();
 
         Session session = Session.create(params);
-        return session.getUrl(); // Trả về URL thanh toán
+        return session.getUrl();
     }
 
     public boolean isSubscriptionActive(String subscriptionId) throws StripeException {
@@ -55,16 +54,16 @@ public class StripeService {
             String subscriptionId = "sub_1QSqeuFMfEC9tDRA74MHDvM0";
             Subscription subscription = Subscription.retrieve(subscriptionId);
 
-            // Kiểm tra trạng thái subscription
+
             if ("active".equals(subscription.getStatus())) {
                 System.out.println("Subscription is active.");
-                // Xử lý logic cho trạng thái active
+
             } else if ("canceled".equals(subscription.getStatus())) {
                 System.out.println("Subscription is canceled.");
-                // Xử lý logic cho trạng thái canceled
+
             } else {
                 System.out.println("Subscription status: " + subscription.getStatus());
-                // Xử lý logic khác nếu cần
+
             }
 
         } catch (Exception e) {
@@ -75,11 +74,11 @@ public class StripeService {
 
     public void getPrice(){
         try {
-            // Lấy danh sách prices
+
             Map<String, Object> params = new HashMap<>();
             PriceCollection prices = Price.list(params);
 
-            // Chuyển đổi dữ liệu để gửi về frontend
+
             List<Map<String, Object>> priceDetails = prices.getData().stream().map(price -> {
                 Map<String, Object> details = new HashMap<>();
                 details.put("id", price.getId());
