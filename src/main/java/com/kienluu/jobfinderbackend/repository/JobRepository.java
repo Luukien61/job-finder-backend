@@ -41,7 +41,7 @@ public interface JobRepository extends JpaRepository<JobEntity, Long> {
 
     Page<JobEntity> findByCompanyId(@Param("companyId") String companyId, Pageable pageable);
 
-    @Query("select job from JobEntity job where job.company.id= :companyId and job.state= :state")
+    @Query("select job from JobEntity job where job.company.id= :companyId and job.state= :state and job.expireDate >=CURRENT_DATE")
     Page<JobEntity> findByCompany(@Param("companyId") String companyId,@Param("state") JobState state, Pageable pageable);
 
     @Query("select job from JobEntity job where job.jobId= :jobId and job.expireDate >=CURRENT_DATE")
