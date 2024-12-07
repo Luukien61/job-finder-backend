@@ -1,6 +1,9 @@
 package com.kienluu.jobfinderbackend.elasticsearch.service;
 
 import co.elastic.clients.elasticsearch._types.SortOrder;
+import co.elastic.clients.elasticsearch._types.query_dsl.FunctionBoostMode;
+import co.elastic.clients.elasticsearch._types.query_dsl.FunctionScore;
+import co.elastic.clients.elasticsearch._types.query_dsl.FunctionScoreMode;
 import co.elastic.clients.elasticsearch._types.query_dsl.TextQueryType;
 import co.elastic.clients.json.JsonData;
 import com.kienluu.jobfinderbackend.elasticsearch.document.JobDocument;
@@ -10,10 +13,12 @@ import com.kienluu.jobfinderbackend.elasticsearch.event.EvenType;
 import com.kienluu.jobfinderbackend.elasticsearch.event.JobChangedEvent;
 import com.kienluu.jobfinderbackend.elasticsearch.repository.JobSearchRepository;
 import com.kienluu.jobfinderbackend.entity.JobEntity;
+import com.kienluu.jobfinderbackend.event.CompanyTierChange;
 import com.kienluu.jobfinderbackend.event.UserSearchEvent;
 import com.kienluu.jobfinderbackend.repository.JobRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Page;
@@ -32,9 +37,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -45,6 +48,14 @@ public class JobSearchService {
     private final ElasticsearchOperations elasticsearchOperations;
     private final ApplicationEventPublisher eventPublisher;
 
+
+    private final String PAINLESS = "painless";
+    private final String INDEX = "jobs";
+
+    @Value("${stripe.checkout.plan.ultimate}")
+    private String ULTIMATE_PLAN;
+    @Value("${stripe.checkout.plan.pro}")
+    private String PRO_PLAN;
 
     @EventListener
     public void handleJobChange(JobChangedEvent event) {
@@ -140,6 +151,25 @@ public class JobSearchService {
         elasticsearchOperations.updateByQuery(updateQuery, IndexCoordinates.of("jobs"));
     }
 
+    @EventListener(CompanyTierChange.class)
+    public void onCompanyTierChange(CompanyTierChange event) {
+        NativeQuery nativeQuery = NativeQuery.builder()
+                .withQuery(query -> query.term(term -> term.value(event.getCompanyId()).field("companyId")))
+                .build();
+        String script;
+        if (event.getTier() != null) {
+            script = "ctx._source.tier='" + event.getTier() + "'";
+        } else {
+            script = "ctx._source.tier= null";
+        }
+        UpdateQuery updateQuery = UpdateQuery.builder(nativeQuery)
+                .withScript(script)
+                .withScriptType(ScriptType.INLINE)
+                .withLang(PAINLESS)
+                .build();
+        elasticsearchOperations.updateByQuery(updateQuery, IndexCoordinates.of(INDEX));
+    }
+
     @EventListener(classes = CompanyUpdateEvent.class)
     public void companyUpdateEventListener(CompanyUpdateEvent event) throws IllegalAccessException {
         NativeQuery nativeQuery = NativeQuery.builder()
@@ -181,7 +211,7 @@ public class JobSearchService {
             String sort, String order,
             String userId
     ) {
-        if(userId!=null){
+        if (userId != null) {
             eventPublisher.publishEvent(new UserSearchEvent(userId, keyword));
         }
         Pageable pageable = PageRequest.of(page, size);
@@ -263,8 +293,108 @@ public class JobSearchService {
                         ))
                 .withPageable(pageable)
                 .build();
+        FunctionScore score1 = FunctionScore.of(func ->
+                func.filter(filter -> filter
+                                .term(term -> term
+                                        .field("tier").value(ULTIMATE_PLAN)))
+                        .weight(7.0));
+        FunctionScore score2 = FunctionScore.of(func -> func
+                .filter(filter -> filter
+                        .term(term -> term
+                                .field("tier").value(PRO_PLAN)))
+                .weight(5.0));
+        List<FunctionScore> functionScores = Arrays.asList(score1, score2);
 
-        SearchHits<JobDocument> searchHits = elasticsearchOperations.search(searchQuery, JobDocument.class);
+        NativeQuery searchQuery2 = NativeQuery.builder()
+                .withQuery(query -> query
+                        .functionScore(functionScore -> functionScore
+                                .query(query2 -> query2.bool(bool -> {
+                                    if (StringUtils.hasText(keyword)) {
+                                        bool.must(must ->
+                                                must.multiMatch(multiMatch ->
+                                                        multiMatch.query(keyword)
+                                                                .fields(List.of("title^3", "companyName^2", "location"))
+                                                                .type(TextQueryType.MostFields)
+                                                )
+                                        );
+                                    }
+
+
+                                    bool.must(must ->
+                                            must.range(range ->
+                                                    range.field("expiryDate").gt(JsonData.of("now"))
+                                                            .format("yyyy-MM-dd")
+                                            )
+                                    );
+                                    bool.must(must -> must.term(term -> term.field("state").value("PENDING")));
+
+
+                                    if (StringUtils.hasText(location)) {
+                                        bool.filter(filter ->
+                                                filter.term(term ->
+                                                        term.field("location.keyword").value(location)
+                                                                .caseInsensitive(true)
+                                                )
+                                        );
+                                    }
+
+                                    if (maxSalary != null) {
+                                        bool.filter(filter ->
+                                                filter.range(range ->
+                                                        range.field("minSalary").lte(JsonData.of(maxSalary))
+                                                )
+                                        );
+                                    }
+
+                                    if (minSalary != null) {
+                                        bool.filter(filter ->
+                                                filter.range(range ->
+                                                        range.field("maxSalary").gte(JsonData.of(minSalary))
+                                                )
+                                        );
+                                    }
+
+                                    if (experience != null && experience > 0) {
+                                        if (experience <= 5) {
+                                            bool.filter(filter ->
+                                                    filter.term(term ->
+                                                            term.field("experience").value(experience)
+                                                    )
+                                            );
+                                        } else {
+                                            bool.filter(filter ->
+                                                    filter.range(range ->
+                                                            range.field("experience").gt(JsonData.of(experience))
+                                                    )
+                                            );
+                                        }
+
+                                    }
+
+                                    return bool;
+                                }))
+                                .functions(functionScores)
+                                .boostMode(FunctionBoostMode.Sum)
+                                .scoreMode(FunctionScoreMode.Sum)
+                        ))
+
+
+                .withSort(sorts ->
+                        sorts.field(builder -> {
+                                    String sortByField = convertToCamelCase(sort);
+                                    SortOrder orderBy = SortOrder.Asc;
+                                    if (order.equalsIgnoreCase("desc")) {
+                                        orderBy = SortOrder.Desc;
+                                    }
+                                    return builder.field(sortByField).order(orderBy);
+                                }
+                        ))
+                .withPageable(pageable)
+                .build();
+
+        log.info("Search Jobs with keyword: {}", Objects.requireNonNull(searchQuery2.getQuery()));
+
+        SearchHits<JobDocument> searchHits = elasticsearchOperations.search(searchQuery2, JobDocument.class);
         SearchPage<JobDocument> searchPage = SearchHitSupport.searchPageFor(searchHits, pageable);
         return (Page<JobDocument>) SearchHitSupport.unwrapSearchHits(searchPage);
     }

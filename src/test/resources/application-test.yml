@@ -1,0 +1,10 @@
+stripe:
+  checkout:
+    plan:
+      ultimate: Ultimate
+      pro: Pro
+      basic:
+        name: Basic
+        limit: 30
+app:
+  monthly-post: 15

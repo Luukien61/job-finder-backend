@@ -8,6 +8,7 @@ import com.kienluu.jobfinderbackend.dto.response.LoginResponse;
 import com.kienluu.jobfinderbackend.elasticsearch.event.CompanyUpdateEvent;
 import com.kienluu.jobfinderbackend.entity.CompanyEntity;
 import com.kienluu.jobfinderbackend.entity.CompanyPlan;
+import com.kienluu.jobfinderbackend.entity.CompanySubscription;
 import com.kienluu.jobfinderbackend.mapper.CustomMapper;
 import com.kienluu.jobfinderbackend.model.*;
 import com.kienluu.jobfinderbackend.repository.CompanyRepository;
@@ -111,8 +112,8 @@ public class CompanyService implements ICompanyService {
         if (plan != null) {
             if (ULTIMATE_PLAN.equals(plan.getName()) || PRO_PLAN.equals(plan.getName())) {
                 return true;
-            }else {
-                limitJob= BASIC_PLAN_LIMIT;
+            } else {
+                limitJob = BASIC_PLAN_LIMIT;
             }
         }
         var now = LocalDate.now();
@@ -179,6 +180,8 @@ public class CompanyService implements ICompanyService {
     private CompanyPlan getCompanyPlan(String companyId) {
         CompanyEntity companyEntity = companyRepository.findCompanyById(companyId.trim())
                 .orElseThrow(() -> new RuntimeException("Company not found"));
-        return companyEntity.getCompanySubscription().getPlan();
+        CompanySubscription companySubscription = companyEntity.getCompanySubscription();
+        if (companySubscription == null) return null;
+        return companySubscription.getPlan();
     }
 }

@@ -3,6 +3,7 @@ package com.kienluu.jobfinderbackend.service.implement;
 import com.kienluu.jobfinderbackend.entity.CompanyEntity;
 import com.kienluu.jobfinderbackend.entity.CompanyPlan;
 import com.kienluu.jobfinderbackend.entity.CompanySubscription;
+import com.kienluu.jobfinderbackend.event.CompanyTierChange;
 import com.kienluu.jobfinderbackend.payment.SubscriptionStatus;
 import com.kienluu.jobfinderbackend.repository.CompanyPlanRepository;
 import com.kienluu.jobfinderbackend.repository.CompanyRepository;
@@ -14,6 +15,7 @@ import com.stripe.param.SubscriptionUpdateParams;
 import com.stripe.param.checkout.SessionCreateParams;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -32,6 +34,7 @@ public class SubscriptionService {
     private final CompanyRepository companyRepository;
     private final CompanyPlanRepository companyPlanRepository;
     private final CompanySubscriptionRepository companySubscriptionRepository;
+    private final ApplicationEventPublisher publisher;
 
     public void saveNewSubscription(String sessionId, String companyId) {
         try {
@@ -75,6 +78,9 @@ public class SubscriptionService {
                     CompanyPlan companyPlan = company.getCompanySubscription().getPlan();
                     List<CompanySubscription> companySubscriptions = companyPlan.getCompanySubscriptions();
                     companySubscriptions.remove(existCompanySubscription);
+                    String existCompanySubscriptionId = existCompanySubscription.getId();
+                    Subscription existSub = Subscription.retrieve(existCompanySubscriptionId);
+                    existSub.cancel();
                     companyPlan.setCompanySubscriptions(companySubscriptions);
                     companyPlanRepository.save(companyPlan);
                     company.setCompanySubscription(null);
@@ -95,6 +101,8 @@ public class SubscriptionService {
         company.setCompanySubscription(userSubscription);
         companyRepository.save(company);
         companyPlanRepository.save(plan);
+
+        publisher.publishEvent(new CompanyTierChange(company.getId(), plan.getName()));
 
         if ("active".equals(subscription.getStatus())) {
             // Người dùng vẫn đang sử dụng dịch vụ
@@ -220,6 +228,6 @@ public class SubscriptionService {
         companyPlanRepository.save(plan);
         companySubscriptionRepository.delete(companySubscription);
         companyRepository.save(company);
-
+        publisher.publishEvent(new CompanyTierChange(company.getId(), null));
     }
 }

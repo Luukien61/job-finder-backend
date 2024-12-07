@@ -15,7 +15,6 @@ import com.kienluu.jobfinderbackend.repository.JobRepository;
 import com.kienluu.jobfinderbackend.service.ICompanyService;
 import com.kienluu.jobfinderbackend.service.IJobService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,8 +32,6 @@ public class JobService implements IJobService {
     private final CompanyRepository companyRepository;
     private final ApplicationEventPublisher eventPublisher;
     private final CustomMapper mapper;
-    @Value("${app.monthly-post}")
-    private int MONTHLY_POST;
     private final ICompanyService companyService;
 
     //eventPublisher.publishEvent(new JobChangedEvent(savedJob, EvenType.CREATED));

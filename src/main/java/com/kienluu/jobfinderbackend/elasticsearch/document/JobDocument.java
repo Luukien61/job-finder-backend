@@ -58,6 +58,9 @@ public class JobDocument {
 
     private String state;
 
+    @Field(type = Keyword)
+    private String tier;
+
 
 //    @MultiField(
 //            mainField = @Field(type = Text, fielddata = true),
