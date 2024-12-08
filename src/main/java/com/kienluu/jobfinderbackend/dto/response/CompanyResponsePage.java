@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 public class CompanyResponsePage {
     private String name;
     private String address;
-    private Long jobCount; // Số lượng công việc
+    private Long jobCount;
     private String logo;
 }
