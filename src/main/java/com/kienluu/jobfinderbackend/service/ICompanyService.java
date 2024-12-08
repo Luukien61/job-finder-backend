@@ -10,6 +10,7 @@ import com.kienluu.jobfinderbackend.model.CompanyJobDetailStatistics;
 import com.kienluu.jobfinderbackend.model.CompanyMonthlyJob;
 import com.kienluu.jobfinderbackend.model.CompanyStatistics;
 import com.kienluu.jobfinderbackend.model.MailTemplate;
+import org.springframework.data.domain.Page;
 
 import javax.mail.MessagingException;
 import java.io.IOException;
@@ -45,4 +46,6 @@ public interface ICompanyService {
     List<CompanyJobDetailStatistics> getJobDetailStatistics(String companyId);
 
     Boolean checkCompanyStatus(String companyId);
+
+    Page<Object[]> getCompanies(int pageNumber, int pageSize, String sortBy, String sortOrder);
 }

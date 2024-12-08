@@ -8,12 +8,13 @@ import com.kienluu.jobfinderbackend.dto.response.CompanyResponse;
 import com.kienluu.jobfinderbackend.dto.response.LoginResponse;
 import com.kienluu.jobfinderbackend.entity.CompanyEntity;
 import com.kienluu.jobfinderbackend.model.CompanyJobDetailStatistics;
-import com.kienluu.jobfinderbackend.model.CompanyMonthlyJob;
 import com.kienluu.jobfinderbackend.model.CompanyStatistics;
 import com.kienluu.jobfinderbackend.model.MailTemplate;
 import com.kienluu.jobfinderbackend.service.ICompanyService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,12 +25,7 @@ import java.util.List;
 @AllArgsConstructor(onConstructor_ = {@Autowired})
 public class CompanyController {
 
-    private ICompanyService companyService;
-
-    @GetMapping("/all")
-    List<CompanyEntity> getCompanies() {
-        return companyService.getCompanies();
-    }
+    private final ICompanyService companyService;
 
 
     @GetMapping("/{companyId}")
@@ -39,6 +35,21 @@ public class CompanyController {
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping()
+    public ResponseEntity<Page<Object[]>> getCompanies(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "9") int size,
+            @RequestParam(defaultValue = "name") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortOrder)
+    {
+        try {
+            Page<Object[]> companies = companyService.getCompanies(page, size, sortBy, sortOrder);
+            return ResponseEntity.ok(companies);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
         }
     }
 

@@ -1,10 +1,14 @@
 package com.kienluu.jobfinderbackend.repository;
 
+import com.kienluu.jobfinderbackend.dto.response.CompanyResponse;
+import com.kienluu.jobfinderbackend.dto.response.CompanyResponsePage;
 import com.kienluu.jobfinderbackend.entity.CompanyEntity;
 import com.kienluu.jobfinderbackend.model.CompanyJobDetailStatistics;
 import com.kienluu.jobfinderbackend.model.CompanyMonthlyJob;
 import com.kienluu.jobfinderbackend.model.CompanyState;
 import com.kienluu.jobfinderbackend.model.JobByCompanyByMonth;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,7 +23,6 @@ public interface CompanyRepository extends JpaRepository<CompanyEntity, String> 
     Optional<CompanyEntity> findCompanyById(String id);
 
     boolean existsByEmail(String email);
-
     Optional<CompanyEntity> findByEmail(String email);
 
     Optional<CompanyEntity> findByName(String name);
@@ -98,5 +101,14 @@ public interface CompanyRepository extends JpaRepository<CompanyEntity, String> 
     List<CompanyJobDetailStatistics> getJobsDetailStatisticByCompanyId(@Param("companyId") String companyId);
     @Query("select company.state from CompanyEntity company where company.id= :companyId")
     CompanyState getCompanyStatus(@Param("companyId") String companyId);
+
+    @Query("SELECT new com.kienluu.jobfinderbackend.dto.response.CompanyResponsePage(c.name, c.address, COUNT(j.jobId), c.logo) " +
+            "FROM CompanyEntity c " +
+            "LEFT JOIN JobEntity j ON c.id = j.company.id " +
+            "GROUP BY c.id, c.name, c.address, c.logo " +
+            "ORDER BY COUNT(j.jobId) DESC")  // Sắp xếp theo jobCount giảm dần
+    Page<Object[]> findAllByPage(Pageable pageable);
+
+
 
 }

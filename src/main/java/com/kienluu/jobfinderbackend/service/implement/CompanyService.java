@@ -18,6 +18,10 @@ import com.kienluu.jobfinderbackend.service.ICompanyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
@@ -26,6 +30,7 @@ import java.security.GeneralSecurityException;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,6 +58,7 @@ public class CompanyService implements ICompanyService {
 
     @Override
     public List<CompanyEntity> getCompanies() {
+
         return companyRepository.findAll();
     }
 
@@ -97,6 +103,38 @@ public class CompanyService implements ICompanyService {
     public String sendVerificationCode(MailTemplate mailTemplate) throws MessagingException, GeneralSecurityException, IOException {
         return mailService.send(mailTemplate);
     }
+
+    @Override
+    public Page<Object[]> getCompanies(int page, int size, String sortBy, String sortOrder) {
+        // Xác nhận các tham số sắp xếp hợp lệ
+        List<String> validSortByFields = Arrays.asList("name", "address", "jobCount", "logo");
+        if (!validSortByFields.contains(sortBy)) {
+            throw new IllegalArgumentException("Invalid sortBy parameter: " + sortBy);
+        }
+
+        // Kiểm tra sortOrder hợp lệ
+        if (sortOrder == null || (!sortOrder.equalsIgnoreCase("asc") && !sortOrder.equalsIgnoreCase("desc"))) {
+            throw new IllegalArgumentException("Invalid sortOrder parameter: " + sortOrder);
+        }
+
+        // Tạo đối tượng Sort từ các tham số sắp xếp
+        Sort sort;
+        if ("jobCount".equalsIgnoreCase(sortBy)) {
+            // Nếu muốn sắp xếp theo jobCount, bạn cần sửa trực tiếp trong câu truy vấn
+            // Không thể sử dụng Pageable với jobCount vì đó là trường tính toán
+            sort = Sort.by(Sort.Direction.fromString(sortOrder), "jobCount");
+        } else {
+            sort = Sort.by(Sort.Direction.fromString(sortOrder), sortBy);
+        }
+
+        // Tạo Pageable từ các tham số phân trang
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        // Trả về kết quả phân trang từ repository
+        return companyRepository.findAllByPage(pageable);
+    }
+
+
 
     @Override
     public LoginResponse login(String email, String password) {
