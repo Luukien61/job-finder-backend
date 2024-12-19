@@ -2,12 +2,11 @@ package com.kienluu.jobfinderbackend.controller;
 
 import com.kienluu.jobfinderbackend.dto.ReportedJobDto;
 import com.kienluu.jobfinderbackend.dto.request.CompanyBanRequest;
+import com.kienluu.jobfinderbackend.dto.request.LoginRequest;
 import com.kienluu.jobfinderbackend.entity.JobEntity;
 import com.kienluu.jobfinderbackend.model.*;
 import com.kienluu.jobfinderbackend.service.IAdminService;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,10 +15,19 @@ import java.util.List;
 @RestController
 @RequestMapping("/admin")
 @AllArgsConstructor
-@Getter
-@Setter
 public class AdminController {
     private final IAdminService adminService;
+
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+        try{
+            adminService.login(loginRequest);
+            return ResponseEntity.ok().build();
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
     //tinh tong so luong ung vien da tham gia
     @GetMapping("/user/total")

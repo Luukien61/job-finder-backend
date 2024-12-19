@@ -39,12 +39,12 @@ public class StripeConfig {
             CompanyPlan ultimatePlan = new CompanyPlan();
             ultimatePlan.setName(ULTIMATE_PLAN);
             ultimatePlan.setDescription(ULTIMATE_PLAN);
-            ultimatePlan.setPrice(5000000L);
+            ultimatePlan.setPrice(4000000L);
             ultimatePlan.setPriority(20);
             ultimatePlan.setPeriod("year");
-            ultimatePlan.setId("price_1QSgUeFMfEC9tDRAwdNEkANG");
-            ultimatePlan.setPriceId("price_1QSgUeFMfEC9tDRAwdNEkANG");
-            ultimatePlan.setProductId("prod_RLNFfMLbTol7FK");
+            ultimatePlan.setId("price_1QXe4uFMfEC9tDRAzFpTtdN9");
+            ultimatePlan.setPriceId("price_1QXe4uFMfEC9tDRAzFpTtdN9");
+            ultimatePlan.setProductId("prod_RQV5VTL6sh2mQ6");
 
             CompanyPlan proPlan = CompanyPlan.builder()
                     .id("price_1QSgTaFMfEC9tDRADZGlzGlM")

@@ -146,15 +146,20 @@ public class CompanyService implements ICompanyService {
     @Override
     public boolean canPostJob(String companyId) {
         int limitJob = MONTHLY_POST;
-        CompanyPlan plan = getCompanyPlan(companyId);
-        if (plan != null) {
-            if (ULTIMATE_PLAN.equals(plan.getName()) || PRO_PLAN.equals(plan.getName())) {
-                return true;
+        CompanySubscription subscription = getCompanySubscription(companyId);
+        var now = LocalDate.now();
+        if (subscription != null) {
+            String planName = subscription.getPlan().getName();
+            if (ULTIMATE_PLAN.equals(planName) || PRO_PLAN.equals(planName)) {
+                if(subscription.getEndDate().isAfter(now)) {
+                    return true;
+                }
             } else {
-                limitJob = BASIC_PLAN_LIMIT;
+               if(subscription.getEndDate().isAfter(now)) {
+                   limitJob = BASIC_PLAN_LIMIT;
+               }
             }
         }
-        var now = LocalDate.now();
         int month = now.getMonthValue();
         int year = now.getYear();
         return jobRepository.countJobsByCompanyId(companyId, month, year) < limitJob;
@@ -221,5 +226,11 @@ public class CompanyService implements ICompanyService {
         CompanySubscription companySubscription = companyEntity.getCompanySubscription();
         if (companySubscription == null) return null;
         return companySubscription.getPlan();
+    }
+
+    private CompanySubscription getCompanySubscription(String companyId) {
+        CompanyEntity companyEntity = companyRepository.findCompanyById(companyId.trim())
+                .orElseThrow(() -> new RuntimeException("Company not found"));
+        return companyEntity.getCompanySubscription();
     }
 }

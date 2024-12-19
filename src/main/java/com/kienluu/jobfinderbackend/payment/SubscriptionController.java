@@ -1,6 +1,6 @@
 package com.kienluu.jobfinderbackend.payment;
 
-import com.kienluu.jobfinderbackend.entity.CompanyPlan;
+import com.kienluu.jobfinderbackend.dto.CompanySubscriptionDto;
 import com.kienluu.jobfinderbackend.service.implement.SubscriptionService;
 import com.stripe.model.Subscription;
 import com.stripe.model.checkout.Session;
@@ -27,7 +27,7 @@ public class SubscriptionController {
     @GetMapping("/{companyId}")
     public ResponseEntity<Object> getSubscription(@PathVariable String companyId) {
         try{
-            CompanyPlan plan = subscriptionService.getCompanyPlan(companyId);
+            CompanySubscriptionDto plan = subscriptionService.getCompanySubscriptionDto(companyId);
             return new ResponseEntity<>(plan, HttpStatus.OK);
         }catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);

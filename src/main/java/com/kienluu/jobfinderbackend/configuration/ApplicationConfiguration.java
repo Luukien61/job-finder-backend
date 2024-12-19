@@ -1,5 +1,10 @@
 package com.kienluu.jobfinderbackend.configuration;
 
+import com.kienluu.jobfinderbackend.entity.AdminUserEntity;
+import com.kienluu.jobfinderbackend.model.UserRole;
+import com.kienluu.jobfinderbackend.repository.AdminUserEntityRepository;
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,8 +22,10 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 
 import java.util.List;
+import java.util.UUID;
 
 @Configuration
+@RequiredArgsConstructor
 public class ApplicationConfiguration {
     @Value("${app.cors.allowOrigins}")
     private List<String> frontEndUrl;
@@ -28,7 +35,7 @@ public class ApplicationConfiguration {
 
     @Value("${aws.secret-key}")
     private String secretKey;
-
+    private final AdminUserEntityRepository adminUserEntityRepository;
 
     @Bean
     @Primary
@@ -65,5 +72,18 @@ public class ApplicationConfiguration {
                         AwsBasicCredentials.create(accessKey, secretKey)
                 ))
                 .build();
+    }
+    @PostConstruct
+    public void initAdminAccount() {
+        long all = adminUserEntityRepository.count();
+        if(all==0) {
+            AdminUserEntity adminUserEntity = new AdminUserEntity();
+            adminUserEntity.setUsername("admin");
+            adminUserEntity.setPassword("12345678");
+            adminUserEntity.setEmail("admin@admin.com");
+            adminUserEntity.setId(UUID.randomUUID().toString());
+            adminUserEntity.setRole(UserRole.ADMIN);
+            adminUserEntityRepository.save(adminUserEntity);
+        }
     }
 }

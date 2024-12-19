@@ -1,10 +1,11 @@
 package com.kienluu.jobfinderbackend.service.implement;
 
+import com.kienluu.jobfinderbackend.dto.CompanySubscriptionDto;
 import com.kienluu.jobfinderbackend.entity.CompanyEntity;
 import com.kienluu.jobfinderbackend.entity.CompanyPlan;
 import com.kienluu.jobfinderbackend.entity.CompanySubscription;
 import com.kienluu.jobfinderbackend.event.CompanyTierChange;
-import com.kienluu.jobfinderbackend.payment.SubscriptionStatus;
+import com.kienluu.jobfinderbackend.mapper.CustomMapper;
 import com.kienluu.jobfinderbackend.repository.CompanyPlanRepository;
 import com.kienluu.jobfinderbackend.repository.CompanyRepository;
 import com.kienluu.jobfinderbackend.repository.CompanySubscriptionRepository;
@@ -35,6 +36,7 @@ public class SubscriptionService {
     private final CompanyPlanRepository companyPlanRepository;
     private final CompanySubscriptionRepository companySubscriptionRepository;
     private final ApplicationEventPublisher publisher;
+    private final CustomMapper customMapper;
 
     public void saveNewSubscription(String sessionId, String companyId) {
         try {
@@ -126,6 +128,16 @@ public class SubscriptionService {
         return subscription.getPlan();
     }
 
+    public CompanySubscriptionDto getCompanySubscriptionDto(String companyId) {
+        CompanyEntity company = companyRepository.findCompanyById(companyId)
+                .orElseThrow(() -> new RuntimeException("Company not found"));
+        CompanySubscription subscription = company.getCompanySubscription();
+        if (subscription == null) {
+            return null;
+        }
+        return customMapper.toCompanySubscriptionDto(subscription);
+    }
+
     public Map<String, Integer> getPlanPriority() {
         List<CompanyPlan> allPlan = companyPlanRepository.findAll();
         Map<String, Integer> planPriority = new HashMap<>();
@@ -214,20 +226,12 @@ public class SubscriptionService {
         CompanySubscription companySubscription = company.getCompanySubscription();
         String subscriptionId = companySubscription.getId();
         Subscription subscription = Subscription.retrieve(subscriptionId);
-//        SubscriptionUpdateParams params = SubscriptionUpdateParams.builder()
-//                .setCancelAtPeriodEnd(true)
-//                .build();
-//        subscription.update(params);
-        subscription.cancel();
-        //companySubscription.setStatus(SubscriptionStatus.CANCELLED.getStatus());
-        company.setCompanySubscription(null);
-
-        List<CompanySubscription> subscriptions = plan.getCompanySubscriptions();
-        subscriptions.remove(companySubscription);
-        plan.setCompanySubscriptions(subscriptions);
-        companyPlanRepository.save(plan);
-        companySubscriptionRepository.delete(companySubscription);
-        companyRepository.save(company);
+        SubscriptionUpdateParams params = SubscriptionUpdateParams.builder()
+                .setCancelAtPeriodEnd(true)
+                .build();
+        subscription.update(params);
+//        subscription.cancel();
+        companySubscriptionRepository.cancelCompanySubscription(subscriptionId);
         publisher.publishEvent(new CompanyTierChange(company.getId(), null));
     }
 }

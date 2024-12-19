@@ -2,7 +2,9 @@ package com.kienluu.jobfinderbackend.service.implement;
 
 import com.kienluu.jobfinderbackend.dto.ReportedJobDto;
 import com.kienluu.jobfinderbackend.dto.request.CompanyBanRequest;
+import com.kienluu.jobfinderbackend.dto.request.LoginRequest;
 import com.kienluu.jobfinderbackend.elasticsearch.event.BanJobByCompanyEvent;
+import com.kienluu.jobfinderbackend.entity.AdminUserEntity;
 import com.kienluu.jobfinderbackend.entity.CompanyEntity;
 import com.kienluu.jobfinderbackend.entity.JobEntity;
 import com.kienluu.jobfinderbackend.entity.ReportEntity;
@@ -10,11 +12,11 @@ import com.kienluu.jobfinderbackend.entity.notification.BanNotification;
 import com.kienluu.jobfinderbackend.model.*;
 import com.kienluu.jobfinderbackend.repository.*;
 import com.kienluu.jobfinderbackend.service.IAdminService;
-import com.kienluu.jobfinderbackend.websocket.event.BanEvent;
 import com.kienluu.jobfinderbackend.websocket.service.NotificationService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -37,6 +39,16 @@ public class AdminService implements IAdminService {
     private final ApplicationEventPublisher publisher;
     private final BanNotificationRepository banNotificationRepository;
     private final NotificationService notificationService;
+    private final AdminUserEntityRepository adminUserEntityRepository;
+
+    @Override
+    public void login(LoginRequest request) {
+        AdminUserEntity adminUser = adminUserEntityRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new UsernameNotFoundException("Username or password is incorrect"));
+        if (!adminUser.getPassword().equals(request.getPassword())){
+            throw new RuntimeException("Incorrect password");
+        }
+    }
 
     @Override
     @Transactional

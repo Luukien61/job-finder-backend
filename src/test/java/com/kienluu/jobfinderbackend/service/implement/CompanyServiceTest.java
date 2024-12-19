@@ -19,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -55,6 +56,8 @@ class CompanyServiceTest {
                     .name(tier)
                     .build();
             CompanySubscription subscription = CompanySubscription.builder()
+                    .endDate(LocalDate.of(2024,12,18))
+                    .status("cancelled")
                     .plan(plan)
                     .build();
             return CompanyEntity.builder()
@@ -140,4 +143,13 @@ class CompanyServiceTest {
         );
     }
 
+    @Test
+    void canPostJob() {
+        when(companyRepository.findCompanyById("company_123"))
+                .thenReturn(Optional.of(setupCompany("Basic")));
+        when(jobRepository.countJobsByCompanyId("company_123", 12, 2024))
+                .thenReturn(15L);
+        boolean canPostJob = companyService.canPostJob("company_123");
+        assertFalse(canPostJob);
+    }
 }

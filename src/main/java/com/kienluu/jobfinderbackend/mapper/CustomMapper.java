@@ -10,7 +10,6 @@ import org.mapstruct.*;
 
 @Mapper(uses = MapperHelper.class)
 public interface CustomMapper {
-    ;
 
     @Mapping(source = "role", target = "role", qualifiedByName = "userDtoRoleToEntity")
     @Mapping(target = "savedJobs", ignore = true)
@@ -31,9 +30,9 @@ public interface CustomMapper {
     @Mapping(target = "company", ignore = true)
     JobEntity toJobEntity(JobCreateRequest request);
 
-    @Mapping(target = "company",ignore = true)
-    @Mapping(target = "applications",ignore = true)
-    @Mapping(target = "reports",ignore = true)
+    @Mapping(target = "company", ignore = true)
+    @Mapping(target = "applications", ignore = true)
+    @Mapping(target = "reports", ignore = true)
     JobEntity toJobEntity(JobDto dto);
 
     @Mapping(target = "companyName", expression = "java(job.getCompany().getName())")
@@ -74,6 +73,22 @@ public interface CustomMapper {
     @Mapping(target = "job", ignore = true)
     JobApplicationEntity toJobApplicationEntity(JobApplicationDto app);
 
-    @Mapping(target = "jobId",expression = "java(reportEntity.getJob().getJobId())")
+    @Mapping(target = "jobId", expression = "java(reportEntity.getJob().getJobId())")
     ReportDTO toReportResponse(ReportEntity reportEntity);
+
+
+    @Mapping(source = "planPriority", target = "plan.priority")
+    @Mapping(source = "planPriceId", target = "plan.priceId")
+    @Mapping(source = "planName", target = "plan.name")
+    @Mapping(source = "planId", target = "plan.id")
+    @Mapping(source = "companyId", target = "company.id")
+    CompanySubscription toEntity(CompanySubscriptionDto companySubscriptionDto);
+
+    @InheritInverseConfiguration(name = "toEntity")
+    CompanySubscriptionDto toCompanySubscriptionDto(CompanySubscription companySubscription);
+
+    @InheritConfiguration(name = "toEntity")
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+
+    CompanySubscription partialUpdate(@MappingTarget CompanySubscription companySubscription, CompanySubscriptionDto companySubscriptionDto);
 }
