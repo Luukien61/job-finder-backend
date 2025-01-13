@@ -1,5 +1,6 @@
 package com.kienluu.jobfinderbackend.websocket.controller;
 
+import com.kienluu.jobfinderbackend.service.implement.S3Service;
 import com.kienluu.jobfinderbackend.websocket.dto.ChatMessageDto;
 import com.kienluu.jobfinderbackend.websocket.dto.ConversationDto;
 import com.kienluu.jobfinderbackend.websocket.entity.ChatMessage;
@@ -12,12 +13,14 @@ import com.kienluu.jobfinderbackend.websocket.service.ConversationService;
 import com.kienluu.jobfinderbackend.websocket.service.ParticipantService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,6 +33,7 @@ public class ChatController {
     private ChatMessageRepository chatMessageRepository;
     private ConversationService conversationService;
     private ParticipantService participantService;
+    private S3Service s3Service;
 
     @MessageMapping("/sendMessage")
     @SendTo("/topic/public")
@@ -103,5 +107,27 @@ public class ChatController {
                 "/webrtc",
                 signal
         );
+    }
+    @PostMapping(value = "/voice", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> uploadAudio(@RequestParam("audio") MultipartFile audioFile) {
+        try {
+            String uploadedFile = s3Service.uploadFile(audioFile);
+            return ResponseEntity.ok(uploadedFile);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/message")
+    public ResponseEntity<Object> updateMessage(@RequestBody ChatMessage chatMessage) {
+        try{
+            ChatMessage message = chatMessageRepository.findById(chatMessage.getId())
+                    .orElseThrow(() -> new RuntimeException("The message id does not exist"));
+            message.setCaption(chatMessage.getCaption());
+            ChatMessage saved = chatMessageRepository.save(message);
+            return ResponseEntity.ok(saved);
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

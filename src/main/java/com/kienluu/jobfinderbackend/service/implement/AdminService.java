@@ -42,12 +42,13 @@ public class AdminService implements IAdminService {
     private final AdminUserEntityRepository adminUserEntityRepository;
 
     @Override
-    public void login(LoginRequest request) {
+    public String login(LoginRequest request) {
         AdminUserEntity adminUser = adminUserEntityRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("Username or password is incorrect"));
         if (!adminUser.getPassword().equals(request.getPassword())){
             throw new RuntimeException("Incorrect password");
         }
+        return adminUser.getId();
     }
 
     @Override

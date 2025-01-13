@@ -63,10 +63,10 @@ public interface CompanyRepository extends JpaRepository<CompanyEntity, String> 
 
 
     @Query("select count(applicant) from CompanyEntity com join JobEntity job " +
-           "on com.id = job.company.id join JobApplicationEntity  applicant on job.jobId = applicant.job.jobId " +
+           "on com.id = job.company.id join JobApplicationEntity applicant on job.jobId = applicant.job.jobId " +
            "where applicant.state= 'PENDING' and com.id= :companyId " +
-           "and EXTRACT(YEAR FROM job.createdAt) = :year " +
-           "and EXTRACT(MONTH FROM job.createdAt) = :month")
+           "and EXTRACT(YEAR FROM applicant.createdDate) = :year " +
+           "and EXTRACT(MONTH FROM applicant.createdDate) = :month")
     Long countNewApplicantsInMonthByCompany(@Param("companyId") String companyId,
                                             @Param("month") int month,
                                             @Param("year") int year);

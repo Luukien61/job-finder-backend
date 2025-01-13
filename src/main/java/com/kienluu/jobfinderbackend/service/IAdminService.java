@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface IAdminService {
 
-    void login(LoginRequest request);
+    String login(LoginRequest request);
 
     void deActivateCompany(String companyId, CompanyBanRequest request);
 

@@ -77,7 +77,8 @@ public class JobService implements IJobService {
         jobEntity.setField(job.getField());
         jobEntity.setExpireDate(job.getExpireDate());
         jobEntity.setUpdateAt(job.getUpdateAt());
-        jobRepository.save(jobEntity);
+        jobEntity=jobRepository.save(jobEntity);
+        eventPublisher.publishEvent(new JobChangedEvent(jobEntity, EvenType.UPDATED));
 
     }
 

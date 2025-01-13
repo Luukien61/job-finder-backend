@@ -21,10 +21,10 @@ public class AdminController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        try{
-            adminService.login(loginRequest);
-            return ResponseEntity.ok().build();
-        }catch (Exception e){
+        try {
+            String id = adminService.login(loginRequest);
+            return ResponseEntity.ok(id);
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

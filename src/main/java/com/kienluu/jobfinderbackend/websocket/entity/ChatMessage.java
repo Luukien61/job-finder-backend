@@ -22,5 +22,7 @@ public class ChatMessage {
     private String content;
     private Date timestamp;
     private String type;
+    @Column(columnDefinition = "TEXT")
+    private String caption;
 
 }

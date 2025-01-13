@@ -15,7 +15,7 @@ public class ParticipantService {
     private final CompanyRepository companyRepository;
 
     public Participant findParticipantById(String id) {
-        if(id.trim().startsWith("u_")) {
+        if(id.trim().startsWith("u_") || id.trim().startsWith("google_")) {
             return findUserById(id);
         }else return findCompanyById(id);
     }
