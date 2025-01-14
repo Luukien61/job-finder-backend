@@ -17,16 +17,16 @@ spring:
         event:
           merge:
             entity_copy_observer: allow
-
-  jackson:
-    date-format: yyyy-MM-dd
-    time-zone: Asia/Ho_Chi_Minh
+#  jackson:
+#    date-format: yyyy-MM-dd
+#    time-zone: Asia/Ho_Chi_Minh
 server:
   port: 8088
 
 app:
   cors:
     allowOrigins: ${FRONT_END_URL}
+  monthly-post: ${MONTHLY_POST}
 secret:
   secretPath: ${SECRET_PATH}
   accessTokenExpireTime: ${ACCESS_TOKEN_EXPIRE_TIME}
@@ -36,4 +36,46 @@ cloudinary:
   cloud-name: ${CLOUDINARY_CLOUD_NAME}
   api-key: ${CLOUDINARY_API_KEY}
   api-secret: ${CLOUDINARY_API_SECRET}
+
+google:
+  mail:
+    port: ${MAIL_PORT}
+    username: ${USERMAIL}
+  credential-path: ${CREDENTIAL_PATH}
+  tokenPath: ${TOKEN_PATH}
+  hostIP: ${HOST_IP}
+
+default-avatar: https://media.istockphoto.com/id/1300845620/vector/user-icon-flat-isolated-on-white-background-user-symbol-vector-illustration.jpg?s=612x612&w=0&k=20&c=yBeyba0hUkh14_jgv1OKqIH0CCSWU_4ckRkAoy2p73o=
+
+oauth:
+  google:
+    client-id: ${CLIENT_ID}
+    client-secret: ${CLIENT_SECRET}
+    token-uri: https://oauth2.googleapis.com/token
+    grantType: authorization_code
+    redirect-uri: http://localhost:5173/login/oauth2/code/google
+
+aws:
+  access-key: ${AWS_ACCESS_KEY}
+  secret-key: ${AWS_SECRET_KEY}
+  bucket-name: ${BUCKET_NAME}
+  region: ${AWS_REGION}
+
+stripe:
+  api:
+    key: sk_test_51QSgLlFMfEC9tDRAxnWcGeOwUHWfpeBMbQlUXbbTxqUvTFKve4GcPj6ieXAynGjfDrnp8eLweci6cf5h9eTFfrwy00JYWwL0yP
+  checkout:
+    register:
+      successUrl: http://localhost:5173/payment/success?session_id={CHECKOUT_SESSION_ID}
+      cancelUrl : http://localhost:5173/employer/profile
+    upgrade:
+      successUrl: http://localhost:5173/employer/upgrade/success?session_id={CHECKOUT_SESSION_ID}
+      cancelUrl : http://localhost:5173/employer
+    un-subscribe: http://localhost:5173/employer
+    plan:
+      ultimate: Ultimate
+      pro: Pro
+      basic:
+        name: Basic
+        limit: 30
 

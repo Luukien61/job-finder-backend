@@ -1,7 +1,6 @@
-package com.kienluu.jobfinderbackend.websocket.entity;
+package com.kienluu.jobfinderbackend.websocket.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import com.kienluu.jobfinderbackend.model.UserRole;
 import lombok.*;
 
 @Getter
@@ -9,10 +8,10 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Entity
 public class Participant {
-    @Id
     private String id;
     private String name;
     private String avatar;
+    private String email;
+    private UserRole role;
 }

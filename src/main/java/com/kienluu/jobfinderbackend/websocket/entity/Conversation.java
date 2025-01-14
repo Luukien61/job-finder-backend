@@ -1,4 +1,7 @@
 package com.kienluu.jobfinderbackend.websocket.entity;
+
+import com.kienluu.jobfinderbackend.entity.CompanyEntity;
+import com.kienluu.jobfinderbackend.entity.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,17 +16,21 @@ import java.time.LocalDateTime;
 @Table(name = "conversations")
 public class Conversation {
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Column(name = "user1_id")
-    private String user1Id;
+    @ManyToOne(fetch = FetchType.EAGER)
+    private CompanyEntity sender;
 
-    @Column(name = "user2_id")
-    private String user2Id;
+    @ManyToOne(fetch = FetchType.EAGER)
+    private UserEntity receiver;
 
     private String lastMessage;
 
-    @Column(name = "modifief_at")
+    @Column(columnDefinition = "varchar(10)")
+    private String type;
+
+    @Column(name = "created_at")
     private LocalDateTime modifiedAt = LocalDateTime.now();
 
 }
