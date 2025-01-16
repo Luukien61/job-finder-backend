@@ -23,11 +23,20 @@ public class NotificationController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+    @PostMapping("/{id}/user/status/update/{status}")
+    public ResponseEntity<Object> updateUserNotificationStatus(@PathVariable Long id, @PathVariable String status) {
+        try{
+            notificationService.updateAcceptNotificationStatus(id,status);
+            return ResponseEntity.ok().build();
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
     @GetMapping("/{userId}/all")
     public ResponseEntity<Object> getAllNotifications(@PathVariable String userId) {
         try{
-            List<BanNotification> notifications = notificationService.getAllNotificationsByUserId(userId);
+            List<?> notifications = notificationService.getAllNotificationsByUserId(userId);
             return ResponseEntity.ok().body(notifications);
         }catch (Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());

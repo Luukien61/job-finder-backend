@@ -31,7 +31,7 @@ public class StripeWebhookController {
 
     @PostMapping("/stripe")
     public ResponseEntity<?> handleStripeWebhook(@RequestBody String payload, @RequestHeader("Stripe-Signature") String sigHeader) {
-        String endpointSecret = "whsec_your_webhook_secret";
+        String endpointSecret = "whsec_webhook_secret";
 
         try {
             Event event = Webhook.constructEvent(payload, sigHeader, endpointSecret);
@@ -41,8 +41,6 @@ public class StripeWebhookController {
                 String email = session.getCustomerDetails().getEmail();
                 String subscriptionId = session.getSubscription();
 
-
-                // Lưu trạng thái thanh toán trong database
                 log.info("Email: " + email);
                 log.info("Subscription: " + subscriptionId);
             }

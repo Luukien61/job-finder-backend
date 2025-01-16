@@ -102,7 +102,7 @@ public interface CompanyRepository extends JpaRepository<CompanyEntity, String> 
     @Query("select company.state from CompanyEntity company where company.id= :companyId")
     CompanyState getCompanyStatus(@Param("companyId") String companyId);
 
-    @Query("SELECT new com.kienluu.jobfinderbackend.dto.response.CompanyResponsePage(c.name, c.address, COUNT(j.jobId), c.logo) " +
+    @Query("SELECT new com.kienluu.jobfinderbackend.dto.response.CompanyResponsePage(c.name, c.address, COUNT(j.jobId), c.logo, c.id) " +
             "FROM CompanyEntity c " +
             "LEFT JOIN JobEntity j ON c.id = j.company.id " +
             "GROUP BY c.id, c.name, c.address, c.logo " +

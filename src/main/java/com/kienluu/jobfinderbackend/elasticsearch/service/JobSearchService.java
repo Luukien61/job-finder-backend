@@ -94,10 +94,20 @@ public class JobSearchService {
 
     public void syncAllJobsToElasticsearch() {
         jobRepository.findAll().forEach(job -> {
-            JobDocument jobDocument = new JobDocument();
-            jobDocument.setId(job.getJobId().toString());
-            jobDocument.setTitle(job.getTitle());
-            jobDocument.setLocation(job.getLocation());
+            JobDocument jobDocument = JobDocument.builder()
+                    .title(job.getTitle())
+                    .id(job.getJobId().toString())
+                    .location(job.getProvince())
+                    .companyId(job.getCompany().getId())
+                    .companyName(job.getCompany().getName())
+                    .logo(job.getCompany().getLogo())
+                    .experience(job.getExperience())
+                    .createDate(job.getCreatedAt())
+                    .expiryDate(job.getExpireDate())
+                    .minSalary(job.getMinSalary())
+                    .maxSalary(job.getMaxSalary())
+                    .state(job.getState().toString())
+                    .build();
             jobSearchRepository.save(jobDocument);
         });
     }
@@ -392,7 +402,7 @@ public class JobSearchService {
                 .withPageable(pageable)
                 .build();
 
-        log.info("Search Jobs with keyword: {}", Objects.requireNonNull(searchQuery2.getQuery()));
+
 
         SearchHits<JobDocument> searchHits = elasticsearchOperations.search(searchQuery2, JobDocument.class);
         SearchPage<JobDocument> searchPage = SearchHitSupport.searchPageFor(searchHits, pageable);
@@ -417,4 +427,5 @@ public class JobSearchService {
 
         return result.toString();
     }
+
 }

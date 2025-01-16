@@ -14,4 +14,5 @@ public class CompanyResponsePage {
     private String address;
     private Long jobCount;
     private String logo;
+    private String id;
 }
