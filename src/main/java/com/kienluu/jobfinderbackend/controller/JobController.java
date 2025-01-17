@@ -154,5 +154,13 @@ public class JobController {
         return new ResponseEntity<>("received" ,HttpStatus.OK);
     }
 
-
+    @GetMapping("/elastic/sync")
+    public ResponseEntity<Object> syncElastic() {
+        try{
+            jobSearchService.syncAllJobsToElasticsearch();
+            return new ResponseEntity<>(HttpStatus.OK);
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }
