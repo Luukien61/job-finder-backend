@@ -99,8 +99,8 @@ public class JobController {
             @RequestParam(required = false) Integer experience,
             @RequestParam(defaultValue = "0", required = false) Integer page,
             @RequestParam(required = false, defaultValue = "10") Integer size,
-            @RequestParam(required = false, defaultValue = "expiry-date") String sort,
-            @RequestParam(required = false,defaultValue = "desc") String order,
+            @RequestParam(required = false) String sort,
+            @RequestParam(required = false) String order,
             @RequestHeader(value = "X-custom-userId",required = false) String userId) {
         try {
             Page<JobDocument> documents = jobSearchService.searchJobs(keyword, location, minSalary, maxSalary, experience, page, size, sort,order,userId);

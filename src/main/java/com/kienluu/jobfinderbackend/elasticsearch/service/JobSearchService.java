@@ -225,84 +225,6 @@ public class JobSearchService {
             eventPublisher.publishEvent(new UserSearchEvent(userId, keyword));
         }
         Pageable pageable = PageRequest.of(page, size);
-        NativeQuery searchQuery = NativeQuery.builder()
-                .withQuery(query -> query.bool(bool -> {
-                    if (StringUtils.hasText(keyword)) {
-                        bool.must(must ->
-                                must.multiMatch(multiMatch ->
-                                        multiMatch.query(keyword)
-                                                .fields(List.of("title^3", "companyName^2", "location"))
-                                                .type(TextQueryType.MostFields)
-                                )
-                        );
-                    }
-
-
-                    bool.must(must ->
-                            must.range(range ->
-                                    range.field("expiryDate").gt(JsonData.of("now"))
-                                            .format("yyyy-MM-dd")
-                            )
-                    );
-                    bool.must(must -> must.term(term -> term.field("state").value("PENDING")));
-
-
-                    if (StringUtils.hasText(location)) {
-                        bool.filter(filter ->
-                                filter.term(term ->
-                                        term.field("location.keyword").value(location)
-                                                .caseInsensitive(true)
-                                )
-                        );
-                    }
-
-                    if (maxSalary != null) {
-                        bool.filter(filter ->
-                                filter.range(range ->
-                                        range.field("minSalary").lte(JsonData.of(maxSalary))
-                                )
-                        );
-                    }
-
-                    if (minSalary != null) {
-                        bool.filter(filter ->
-                                filter.range(range ->
-                                        range.field("maxSalary").gte(JsonData.of(minSalary))
-                                )
-                        );
-                    }
-
-                    if (experience != null && experience > 0) {
-                        if (experience <= 5) {
-                            bool.filter(filter ->
-                                    filter.term(term ->
-                                            term.field("experience").value(experience)
-                                    )
-                            );
-                        } else {
-                            bool.filter(filter ->
-                                    filter.range(range ->
-                                            range.field("experience").gt(JsonData.of(experience))
-                                    )
-                            );
-                        }
-
-                    }
-
-                    return bool;
-                }))
-                .withSort(sorts ->
-                        sorts.field(builder -> {
-                                    String sortByField = convertToCamelCase(sort);
-                                    SortOrder orderBy = SortOrder.Asc;
-                                    if (order.equalsIgnoreCase("desc")) {
-                                        orderBy = SortOrder.Desc;
-                                    }
-                                    return builder.field(sortByField).order(orderBy);
-                                }
-                        ))
-                .withPageable(pageable)
-                .build();
         FunctionScore score1 = FunctionScore.of(func ->
                 func.filter(filter -> filter
                                 .term(term -> term
@@ -387,23 +309,24 @@ public class JobSearchService {
                                 .boostMode(FunctionBoostMode.Sum)
                                 .scoreMode(FunctionScoreMode.Sum)
                         ))
-
-
-                .withSort(sorts ->
-                        sorts.field(builder -> {
-                                    String sortByField = convertToCamelCase(sort);
-                                    SortOrder orderBy = SortOrder.Asc;
-                                    if (order.equalsIgnoreCase("desc")) {
-                                        orderBy = SortOrder.Desc;
-                                    }
-                                    return builder.field(sortByField).order(orderBy);
-                                }
-                        ))
+                .withTrackScores(true)
+                .withExplain(true)
+                .withSort(sorts -> {
+                    sorts.score(builder -> builder.order(SortOrder.Desc));
+                    if (sort != null && !sort.isEmpty()) {
+                        return sorts.field(builder -> {
+                            String sortByField = convertToCamelCase(sort);
+                            SortOrder orderBy = SortOrder.Asc;
+                            if (order.equalsIgnoreCase("desc")) {
+                                orderBy = SortOrder.Desc;
+                            }
+                            return builder.field(sortByField).order(orderBy);
+                        });
+                    }
+                    return sorts;
+                })
                 .withPageable(pageable)
                 .build();
-
-
-
         SearchHits<JobDocument> searchHits = elasticsearchOperations.search(searchQuery2, JobDocument.class);
         SearchPage<JobDocument> searchPage = SearchHitSupport.searchPageFor(searchHits, pageable);
         return (Page<JobDocument>) SearchHitSupport.unwrapSearchHits(searchPage);

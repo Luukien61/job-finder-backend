@@ -28,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.mail.MessagingException;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -104,6 +105,7 @@ public class UserService implements IUserService {
                 .email(userInfo.getEmail())
                 .name(userInfo.getName())
                 .avatar(userInfo.getPicture())
+                .createdAt(LocalDate.now())
                 .role(UserRole.EMPLOYEE)
                 .id("google_" + AppUtil.generateCustomUserId())
                 .address(userInfo.getLocale())
