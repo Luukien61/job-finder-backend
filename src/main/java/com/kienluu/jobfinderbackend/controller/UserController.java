@@ -1,5 +1,9 @@
 package com.kienluu.jobfinderbackend.controller;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
 import com.kienluu.jobfinderbackend.dto.UserDTO;
 import com.kienluu.jobfinderbackend.dto.request.LoginRequest;
 import com.kienluu.jobfinderbackend.dto.request.UserAccountUpdateRequest;
@@ -12,21 +16,29 @@ import com.kienluu.jobfinderbackend.model.StringElement;
 import com.kienluu.jobfinderbackend.service.IUserService;
 import com.kienluu.jobfinderbackend.service.implement.MailService;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.Collections;
 import java.util.List;
 
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RestController
 @RequestMapping()
 public class UserController {
 
-    private IUserService userService;
-    private MailService mailService;
+    private final IUserService userService;
+    private final MailService mailService;
 
+    @Value("${oauth.google.client-id}")
+    private String googleClientId;
 
     @PostMapping("/user/signup")
     public ResponseEntity<Object> registerUser(@RequestBody UserCreationRequest request) {
@@ -233,5 +245,64 @@ public class UserController {
         }
     }
 
+
+    @PostMapping("/google/mobile/signin")
+    public ResponseEntity<?> verifyGoogleToken(@RequestBody String idTokenString) {
+        try {
+            // Cấu hình verifier để kiểm tra ID token
+            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
+                    .setAudience(Collections.singletonList(googleClientId))
+                    .build();
+
+            // Xác minh ID token
+            GoogleIdToken idToken = verifier.verify(idTokenString);
+            if (idToken != null) {
+                GoogleIdToken.Payload payload = idToken.getPayload();
+                String userId = payload.getSubject(); // Subject ID duy nhất của người dùng
+                String email = payload.getEmail();
+                String name = (String) payload.get("name");
+
+                // Logic xử lý người dùng (ví dụ: kiểm tra hoặc tạo user trong database)
+                // Ở đây chỉ trả về thông tin xác thực thành công
+                return ResponseEntity.ok(new AuthResponse("Authenticated", userId, email, name));
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(new AuthResponse("Invalid ID token", null, null, null));
+            }
+        } catch (GeneralSecurityException | IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new AuthResponse("Error verifying token: " + e.getMessage(), null, null, null));
+        }
+    }
+
+    @PostMapping("/google/mobile/signup")
+    public ResponseEntity<?> signupGoogle(@RequestBody String idTokenString) {
+        try {
+            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
+                    .setAudience(Collections.singletonList(googleClientId))
+                    .build();
+            GoogleIdToken idToken = verifier.verify(idTokenString);
+            if (idToken != null) {
+                GoogleIdToken.Payload payload = idToken.getPayload();
+                String userId = payload.getSubject();
+                // Kiểm tra user trong database
+//                if (userId.isEmpty()) {
+//                    return ResponseEntity.ok(new AuthResponse("Signed up and signed in", userId, payload.getEmail(), (String) payload.get("name")));
+//                } else {
+//                    return ResponseEntity.status(HttpStatus.CONFLICT)
+//                            .body(new AuthResponse("User already exists", userId, payload.getEmail(), (String) payload.get("name")));
+//                }
+                return ResponseEntity.ok(new AuthResponse("Signed up and signed in", userId, payload.getEmail(), (String) payload.get("name")));
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(new AuthResponse("Invalid ID token", null, null, null));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new AuthResponse("Error: " + e.getMessage(), null, null, null));
+        }
+    }
+
 }
+record AuthResponse(String message, String userId, String email, String name) {}
 
