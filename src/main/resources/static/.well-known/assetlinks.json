@@ -1,0 +1,15 @@
+[
+  {
+    "relation" : [
+      "delegate_permission/common.handle_all_urls",
+      "delegate_permission/common.get_login_creds"
+    ],
+    "target" : {
+      "namespace" : "android_app",
+      "package_name" : "com.example.jobfinding",
+      "sha256_cert_fingerprints" : [
+        "B6:62:54:7B:B1:A7:28:3C:90:A9:5B:15:E1:D4:7A:E6:12:03:39:F0:8E:38:F7:74:FE:35:86:C8:00:CF:53:D5"
+      ]
+    }
+  }
+]

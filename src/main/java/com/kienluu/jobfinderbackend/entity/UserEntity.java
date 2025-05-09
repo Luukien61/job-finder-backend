@@ -68,6 +68,9 @@ public class UserEntity extends BaseUserEntity{
     @JsonManagedReference
     private List<Conversation> conversations;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<WebAuthnCredential> credentials;
+
     @PrePersist
     public void generateUniqueId() {
         if (this.getId() == null) {

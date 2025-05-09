@@ -1,5 +1,9 @@
 package com.kienluu.jobfinderbackend.service.implement;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
 import com.kienluu.jobfinderbackend.dto.JobDto;
 import com.kienluu.jobfinderbackend.dto.UserDTO;
 import com.kienluu.jobfinderbackend.dto.request.LoginRequest;
@@ -20,6 +24,7 @@ import com.kienluu.jobfinderbackend.service.IUserService;
 import com.kienluu.jobfinderbackend.util.AppUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +48,8 @@ public class UserService implements IUserService {
     private final MailService mailService;
     private final S3Service s3Service;
     private final JobRepository jobRepository;
+    @Value("${oauth.google.client-id}")
+    private String googleClientId;
 
 
     @Override
@@ -97,7 +104,23 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public UserResponse sigUpWithGoogle(CodeExchange codeExchange) {
+    public UserResponse loginWithGoogleMobile(String idToken) {
+        try {
+            GoogleIdToken.Payload payload = getGooglePayload(idToken);
+            String email = payload.getEmail();
+            UserEntity userEntity = userRepository.findByEmail(email.trim())
+                    .orElseThrow(() ->
+                            new IllegalArgumentException("This email has not been registered! Please sign up first!"));
+            return mapper.toUserResponse(userEntity);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException(e.getMessage());
+        } catch (Exception e) {
+            throw new RuntimeException("Invalid token!");
+        }
+    }
+
+    @Override
+    public UserResponse signUpWithGoogle(CodeExchange codeExchange) {
         GoogleUserInfo userInfo = googleCodeExchange.exchange(codeExchange.getCode());
         Optional<UserEntity> userEntity = userRepository.findByEmail(userInfo.getEmail().trim());
         if (userEntity.isPresent()) throw new RuntimeException("This email has already been registered!");
@@ -107,11 +130,37 @@ public class UserService implements IUserService {
                 .avatar(userInfo.getPicture())
                 .createdAt(LocalDate.now())
                 .role(UserRole.EMPLOYEE)
-                .id("google_" + AppUtil.generateCustomUserId())
+                .id("google_" + userInfo.getId())
                 .address(userInfo.getLocale())
                 .build();
         user = userRepository.save(user);
         return mapper.toUserResponse(user);
+    }
+
+    @Override
+    public UserResponse signUpWithGoogleMobile(String idToken) {
+        try {
+            GoogleIdToken.Payload payload = getGooglePayload(idToken);
+            String email = payload.getEmail();
+            String id = payload.getSubject();
+            Optional<UserEntity> userEntity = userRepository.findByEmail(email.trim());
+            if (userEntity.isPresent()) throw new IllegalArgumentException("This email has already been registered!");
+            UserEntity user = UserEntity.builder()
+                    .email(email)
+                    .name((String) payload.get("name"))
+                    .avatar((String) payload.get("picture"))
+                    .createdAt(LocalDate.now())
+                    .role(UserRole.EMPLOYEE)
+                    .id("google_" + id)
+                    .address((String) payload.get("locale"))
+                    .build();
+            user = userRepository.save(user);
+            return mapper.toUserResponse(user);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException(e.getMessage());
+        } catch (Exception e) {
+            throw new RuntimeException("Error while verifying token!");
+        }
     }
 
     public boolean isGoogleAccount(String email) {
@@ -281,7 +330,7 @@ public class UserService implements IUserService {
 
     @EventListener(UserSearchEvent.class)
     public void onUserSearch(UserSearchEvent event) {
-        try{
+        try {
             UserEntity user = userRepository.findUserById(event.getUserId())
                     .orElseThrow(() -> new RuntimeException("Invalid user id!"));
             List<String> searchHistory = user.getSearchHistory();
@@ -290,12 +339,25 @@ public class UserService implements IUserService {
                 searchHistory.remove(0);
             }
             searchHistory.add(event.getData());
-            searchHistory = new ArrayList<>(new LinkedHashSet<>(searchHistory));;
+            searchHistory = new ArrayList<>(new LinkedHashSet<>(searchHistory));
+            ;
             user.setSearchHistory(searchHistory);
             userRepository.save(user);
             userRepository.flush();
-        }catch (Exception e) {
+        } catch (Exception e) {
             log.error(e.getMessage());
+        }
+    }
+
+    private GoogleIdToken.Payload getGooglePayload(String idToken) throws GeneralSecurityException, IOException {
+        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
+                .setAudience(Collections.singletonList(googleClientId))
+                .build();
+        GoogleIdToken googleIdToken = verifier.verify(idToken);
+        if (googleIdToken != null) {
+            return googleIdToken.getPayload();
+        } else {
+            throw new RuntimeException("Invalid token!");
         }
     }
 }

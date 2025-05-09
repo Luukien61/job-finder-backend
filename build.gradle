@@ -47,6 +47,10 @@ dependencies {
 
     implementation 'com.stripe:stripe-java:28.0.0'
 
+    implementation("com.webauthn4j:webauthn4j-core:0.29.0.RELEASE")
+    // https://mvnrepository.com/artifact/com.yubico/webauthn-server-core
+    runtimeOnly("com.yubico:webauthn-server-core:2.6.0")
+
 }
 
 tasks.named('test') {
