@@ -39,4 +39,9 @@ public interface IUserService {
     boolean unsaveJob(String userId, Long jobId);
     boolean isJobSaved(String userId, Long jobId);
     UserDTO getUserBasicInfo(String userId);
+
+    List<String> getUserCv(String userId);
+
+    void saveUserFcm(String userId, String fcmToken);
+    String getUserFcm(String userId);
 }

@@ -51,6 +51,9 @@ dependencies {
     // https://mvnrepository.com/artifact/com.yubico/webauthn-server-core
     runtimeOnly("com.yubico:webauthn-server-core:2.6.0")
 
+    // https://mvnrepository.com/artifact/com.google.firebase/firebase-admin
+    implementation("com.google.firebase:firebase-admin:9.4.3")
+
 }
 
 tasks.named('test') {

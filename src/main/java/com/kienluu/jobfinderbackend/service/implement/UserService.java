@@ -24,6 +24,7 @@ import com.kienluu.jobfinderbackend.service.IUserService;
 import com.kienluu.jobfinderbackend.util.AppUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
@@ -359,5 +360,28 @@ public class UserService implements IUserService {
         } else {
             throw new RuntimeException("Invalid token!");
         }
+    }
+
+    @Override
+    public List<String> getUserCv(String userId) {
+        UserEntity user = userRepository.findById(userId.trim())
+                .orElseThrow(() -> new RuntimeException("Invalid user id!"));
+        return user.getCv();
+    }
+
+
+    @Override
+    public void saveUserFcm(String userId, String fcmToken) {
+        UserEntity user = userRepository.findById(userId.trim())
+                .orElseThrow(() -> new RuntimeException("Invalid user id!"));
+        user.setFcmToken(fcmToken);
+        userRepository.save(user);
+    }
+
+    @Override
+    public String getUserFcm(String userId) {
+        UserEntity user = userRepository.findById(userId.trim())
+                .orElseThrow(() -> new RuntimeException("Invalid user id!"));
+        return user.getFcmToken();
     }
 }

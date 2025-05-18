@@ -5,6 +5,8 @@ import com.kienluu.jobfinderbackend.entity.notification.BanNotification;
 import com.kienluu.jobfinderbackend.model.NotificationStatus;
 import com.kienluu.jobfinderbackend.repository.AcceptNotificationRepository;
 import com.kienluu.jobfinderbackend.repository.BanNotificationRepository;
+import com.kienluu.jobfinderbackend.service.FirebaseNotificationService;
+import com.kienluu.jobfinderbackend.service.IReportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -18,6 +20,8 @@ public class NotificationService {
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final BanNotificationRepository banNotificationRepository;
     private final AcceptNotificationRepository acceptNotificationRepository;
+    private final FirebaseNotificationService firebaseNotificationService;
+    private final IReportService iReportService;
 
     @EventListener(classes = BanNotification.class)
     public void onBan(BanNotification banEvent) {
@@ -53,6 +57,7 @@ public class NotificationService {
     @EventListener(classes = AcceptNotification.class)
     public void onAccept(AcceptNotification event) {
         simpMessagingTemplate.convertAndSendToUser(event.getUserId(),"/notifications", event);
+        firebaseNotificationService.sendNotification(event.getUserId(), event.title, event.getMessage(),"profile");
     }
 
 

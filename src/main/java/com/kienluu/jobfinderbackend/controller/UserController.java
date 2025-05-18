@@ -4,6 +4,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
+import com.google.firebase.internal.FirebaseService;
 import com.kienluu.jobfinderbackend.dto.UserDTO;
 import com.kienluu.jobfinderbackend.dto.request.LoginRequest;
 import com.kienluu.jobfinderbackend.dto.request.UserAccountUpdateRequest;
@@ -14,6 +15,7 @@ import com.kienluu.jobfinderbackend.model.CodeExchange;
 import com.kienluu.jobfinderbackend.model.GoogleIdTokenMobile;
 import com.kienluu.jobfinderbackend.model.MailTemplate;
 import com.kienluu.jobfinderbackend.model.StringElement;
+import com.kienluu.jobfinderbackend.service.FirebaseNotificationService;
 import com.kienluu.jobfinderbackend.service.IUserService;
 import com.kienluu.jobfinderbackend.service.implement.MailService;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,7 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 
 @Slf4j
@@ -38,6 +41,7 @@ public class UserController {
 
     private final IUserService userService;
     private final MailService mailService;
+    private final FirebaseNotificationService firebaseNotificationService;
 
     @Value("${oauth.google.client-id}")
     private String googleClientId;
@@ -268,9 +272,40 @@ public class UserController {
         }
     }
 
+    @GetMapping("/user/{userId}/cv")
+    public ResponseEntity<Object> getUserCv(@PathVariable String userId) {
+        try {
+            List<String> cv = userService.getUserCv(userId);
+            return ResponseEntity.ok(cv);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
 
-}
+    @PostMapping("/user/{userId}/fcm")
+    public ResponseEntity<Object> saveUserFcm(@PathVariable String userId, @RequestBody Map<String,String> item) {
+        try{
+            userService.saveUserFcm(userId, item.get("token"));
+            return ResponseEntity.ok("Saved");
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
 
-record AuthResponse(String message, String userId, String email, String name) {
+
+    @PostMapping("/user/{userId}/notification")
+    public ResponseEntity<Object> sendUserNotification(@PathVariable String userId, @RequestBody Map<String,String> item) {
+        try{
+            String title = item.get("title");
+            String body = item.get("body");
+            String screen = item.get("screen");
+            firebaseNotificationService.sendNotification(userId, title, body, screen);
+            return ResponseEntity.ok("Notification sent");
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+
 }
 
