@@ -6,34 +6,40 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import com.kienluu.jobfinderbackend.dto.JobDto;
 import com.kienluu.jobfinderbackend.dto.UserDTO;
-import com.kienluu.jobfinderbackend.dto.request.LoginRequest;
-import com.kienluu.jobfinderbackend.dto.request.UserAccountUpdateRequest;
-import com.kienluu.jobfinderbackend.dto.request.UserCreationRequest;
+import com.kienluu.jobfinderbackend.dto.request.*;
+import com.kienluu.jobfinderbackend.dto.response.RegisterBiometricResponse;
+import com.kienluu.jobfinderbackend.dto.response.TokenResponse;
 import com.kienluu.jobfinderbackend.dto.response.UserResponse;
 import com.kienluu.jobfinderbackend.entity.JobEntity;
 import com.kienluu.jobfinderbackend.entity.UserEntity;
 import com.kienluu.jobfinderbackend.event.UserSearchEvent;
 import com.kienluu.jobfinderbackend.mapper.CustomMapper;
-import com.kienluu.jobfinderbackend.model.CodeExchange;
-import com.kienluu.jobfinderbackend.model.GoogleUserInfo;
-import com.kienluu.jobfinderbackend.model.MailTemplate;
-import com.kienluu.jobfinderbackend.model.UserRole;
+import com.kienluu.jobfinderbackend.model.*;
 import com.kienluu.jobfinderbackend.repository.JobRepository;
 import com.kienluu.jobfinderbackend.repository.UserRepository;
+import com.kienluu.jobfinderbackend.security.jwt.provider.IJWTProvider;
 import com.kienluu.jobfinderbackend.service.IUserService;
 import com.kienluu.jobfinderbackend.util.AppUtil;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.MessagingException;
 import java.io.IOException;
-import java.security.GeneralSecurityException;
+import java.security.*;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.X509EncodedKeySpec;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -41,8 +47,10 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class UserService implements IUserService {
+public class UserService implements IUserService, UserDetailsService {
 
+    public static final String SHA_256_WITH_RSA = "SHA256withRSA";
+    private static final long CHALLENGE_VALIDITY_SECONDS = 60; // 60 seconds validity
     private final GoogleCodeExchange googleCodeExchange;
     private final UserRepository userRepository;
     private final CustomMapper mapper;
@@ -51,6 +59,7 @@ public class UserService implements IUserService {
     private final JobRepository jobRepository;
     @Value("${oauth.google.client-id}")
     private String googleClientId;
+    private final IJWTProvider jwtProvider;
 
 
     @Override
@@ -76,7 +85,7 @@ public class UserService implements IUserService {
         user.setId("u_" + AppUtil.generateCustomUserId());
         user.setRole(UserRole.EMPLOYEE);
         user = userRepository.save(user);
-        return mapper.toUserResponse(user);
+        return createLoginResponse(user);
     }
 
     @Override
@@ -84,7 +93,7 @@ public class UserService implements IUserService {
         if (isGoogleAccount(request.getEmail())) throw new RuntimeException("This email use google log in!");
         UserEntity user = userRepository.findByEmailAndPassword(request.getEmail(), request.getPassword())
                 .orElseThrow(() -> new RuntimeException("Invalid email or password!"));
-        return mapper.toUserResponse(user);
+        return createLoginResponse(user);
     }
 
     @Override
@@ -112,7 +121,7 @@ public class UserService implements IUserService {
             UserEntity userEntity = userRepository.findByEmail(email.trim())
                     .orElseThrow(() ->
                             new IllegalArgumentException("This email has not been registered! Please sign up first!"));
-            return mapper.toUserResponse(userEntity);
+            return createLoginResponse(userEntity);
         } catch (IllegalArgumentException e) {
             throw new RuntimeException(e.getMessage());
         } catch (Exception e) {
@@ -156,7 +165,7 @@ public class UserService implements IUserService {
                     .address((String) payload.get("locale"))
                     .build();
             user = userRepository.save(user);
-            return mapper.toUserResponse(user);
+            return createLoginResponse(user);
         } catch (IllegalArgumentException e) {
             throw new RuntimeException(e.getMessage());
         } catch (Exception e) {
@@ -191,7 +200,7 @@ public class UserService implements IUserService {
     @Override
     public UserResponse userCompleted(UserDTO userDTO) {
         UserEntity user = updateInfo(userDTO);
-        return mapper.toUserResponse(user);
+        return createLoginResponse(user);
     }
 
     @Override
@@ -383,5 +392,116 @@ public class UserService implements IUserService {
         UserEntity user = userRepository.findById(userId.trim())
                 .orElseThrow(() -> new RuntimeException("Invalid user id!"));
         return user.getFcmToken();
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        val user = userRepository.findByEmail(username)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid user id!"));
+        return UserPrincipal.create(user);
+    }
+
+    @Override
+    public TokenResponse refreshToken(String refreshToken) {
+        var userEmail = jwtProvider.exactUserName(refreshToken);
+        var userEntity = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid user id!"));
+        var userDetail = UserPrincipal.create(userEntity);
+        var isValid = jwtProvider.isTokenValid(refreshToken, userDetail);
+        if (!isValid) throw new RuntimeException("The refresh token is invalid");
+        return jwtProvider.generateTokenResponse(userDetail, refreshToken);
+    }
+
+    private UserResponse createLoginResponse(UserEntity existUser) {
+        var userPrincipal = UserPrincipal.create(existUser);
+        var tokenResponse = jwtProvider.generateTokenResponse(userPrincipal);
+        var userResponse = mapper.toUserResponse(existUser);
+        userResponse.setTokenResponse(tokenResponse);
+        return userResponse;
+    }
+
+    @Override
+    public RegisterBiometricResponse registerPublicKey(PublicKeyRequest request) {
+        var user = userRepository.findUserById(request.getUserId().trim())
+                .orElseThrow(() -> new RuntimeException("Invalid user id!"));
+        user.setPublicBiometricKey(request.getPublicKey());
+        userRepository.save(user);
+        return new RegisterBiometricResponse(true);
+    }
+
+    public UserResponse verifyClientChallenge(VerifyChallengeRequest request) {
+        UserEntity user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new RuntimeException("Invalid user id: " + request.getUserId()));
+        try {
+            // Parse and validate challenge
+            String[] challengeParts = request.getChallenge().split(":");
+            if (challengeParts.length != 2) {
+                log.error("Invalid challenge format for user: {}. Expected <timestamp>:<uuid>", request.getUserId());
+                throw new RuntimeException("Invalid challenge format");
+            }
+
+            long timestamp;
+            try {
+                timestamp = Long.parseLong(challengeParts[0]);
+            } catch (NumberFormatException e) {
+                log.error("Invalid timestamp in challenge for user: {}: {}", request.getUserId(), challengeParts[0]);
+                throw new RuntimeException("Invalid timestamp in challenge");
+            }
+
+            // Verify timestamp
+            long currentTime = System.currentTimeMillis();
+            long timeDiffSeconds = Math.abs(currentTime - timestamp) / 1000;
+            if (timeDiffSeconds > CHALLENGE_VALIDITY_SECONDS) {
+                log.error("Challenge expired for user: {}. Timestamp: {}, Current: {}, Diff: {}s",
+                        request.getUserId(), timestamp, currentTime, timeDiffSeconds);
+                throw new RuntimeException("Challenge expired");
+            }
+
+            // Sanitize and decode public key
+            String publicKeyStr = user.getPublicBiometricKey().replaceAll("\\s+", "");
+            if (!isValidBase64(publicKeyStr)) {
+                log.error("Invalid Base64 format for public key: {}", publicKeyStr);
+                throw new RuntimeException("Invalid Base64 format for public key");
+            }
+            byte[] publicKeyBytes = Base64.getDecoder().decode(publicKeyStr);
+            X509EncodedKeySpec keySpec = new X509EncodedKeySpec(publicKeyBytes); // X509EncodedKeySpec (chuẩn encoding của RSA public key)
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA"); // tạo factory RSA
+
+
+            PublicKey publicKey = keyFactory.generatePublic(keySpec); //Dùng KeyFactory để tạo một PublicKey object có thể sử dụng được trong Java.
+
+            // Sanitize and decode signature
+            String signatureStr = request.getSignature().replaceAll("\\s+", "");
+            if (!isValidBase64(signatureStr)) {
+                log.error("Invalid Base64 format for signature: {}", signatureStr);
+                throw new RuntimeException("Invalid Base64 format for signature");
+            }
+            byte[] signatureBytes = Base64.getDecoder().decode(signatureStr);
+
+            // Verify signature
+            Signature verifier = Signature.getInstance(SHA_256_WITH_RSA);
+            verifier.initVerify(publicKey);
+            verifier.update(request.getChallenge().getBytes()); // Use full challenge string
+            boolean isValid = verifier.verify(signatureBytes);
+
+            if (isValid) {
+                return createLoginResponse(user);
+            } else {
+                log.error("Signature verification failed for user: {}", request.getUserId());
+                throw new RuntimeException("Invalid signature!");
+            }
+        } catch (Exception e) {
+            log.error("Error verifying challenge for user {}: {}", request.getUserId(), e.getMessage(), e);
+            throw new RuntimeException("Error verifying challenge: " + e.getMessage());
+        }
+    }
+
+    private boolean isValidBase64(String str) {
+        try {
+            Base64.getDecoder().decode(str);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
     }
 }

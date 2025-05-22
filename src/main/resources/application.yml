@@ -28,7 +28,7 @@ app:
     allowOrigins: ${FRONT_END_URL}
   monthly-post: ${MONTHLY_POST}
 secret:
-  secretPath: ${SECRET_PATH}
+  key: ${SECRET}
   accessTokenExpireTime: ${ACCESS_TOKEN_EXPIRE_TIME}
   refreshTokenExpireTime: ${REFRESH_TOKEN_EXPIRE_TIME}
 

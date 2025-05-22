@@ -9,8 +9,11 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.sql.ast.tree.expression.Collation;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -57,6 +60,8 @@ public class UserEntity extends BaseUserEntity{
 
     @Column(columnDefinition = "varchar(255)")
     private String fcmToken;
+    @Column(columnDefinition = "TEXT")
+    private String publicBiometricKey;
 
 
     @ElementCollection(targetClass = String.class, fetch = FetchType.LAZY)
@@ -80,6 +85,10 @@ public class UserEntity extends BaseUserEntity{
             this.setId("u_" + AppUtil.generateCustomUserId());
         }
 
+    }
+
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_"+this.role.getRole()));
     }
 
 }

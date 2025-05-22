@@ -17,6 +17,7 @@ public interface CustomMapper {
     UserEntity userDtoToUserEntity(UserDTO userDTO);
 
     @Mapping(source = "role", target = "role", qualifiedByName = "userEntityRoleToDto")
+    @Mapping(target = "tokenResponse", ignore = true)
     UserResponse toUserResponse(UserEntity user);
 
     UserEntity toUserEntity(UserCreationRequest request);

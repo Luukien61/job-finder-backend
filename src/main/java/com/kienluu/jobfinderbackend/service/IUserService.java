@@ -1,10 +1,10 @@
 package com.kienluu.jobfinderbackend.service;
 
 import com.kienluu.jobfinderbackend.dto.UserDTO;
-import com.kienluu.jobfinderbackend.dto.request.LoginRequest;
-import com.kienluu.jobfinderbackend.dto.request.UserAccountUpdateRequest;
-import com.kienluu.jobfinderbackend.dto.request.UserCreationRequest;
+import com.kienluu.jobfinderbackend.dto.request.*;
 import com.kienluu.jobfinderbackend.dto.JobDto;
+import com.kienluu.jobfinderbackend.dto.response.RegisterBiometricResponse;
+import com.kienluu.jobfinderbackend.dto.response.TokenResponse;
 import com.kienluu.jobfinderbackend.dto.response.UserResponse;
 import com.kienluu.jobfinderbackend.model.CodeExchange;
 import com.kienluu.jobfinderbackend.model.MailTemplate;
@@ -13,6 +13,9 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.mail.MessagingException;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.List;
 
 
@@ -44,4 +47,8 @@ public interface IUserService {
 
     void saveUserFcm(String userId, String fcmToken);
     String getUserFcm(String userId);
+    TokenResponse refreshToken(String refreshToken);
+    RegisterBiometricResponse registerPublicKey(PublicKeyRequest request);
+
+    UserResponse verifyClientChallenge(VerifyChallengeRequest request) throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException;
 }

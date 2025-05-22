@@ -15,4 +15,5 @@ public class UserResponse {
     private String avatar;
     private String email;
     private String role;
+    private TokenResponse tokenResponse;
 }

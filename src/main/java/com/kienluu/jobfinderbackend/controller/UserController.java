@@ -6,9 +6,7 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.firebase.internal.FirebaseService;
 import com.kienluu.jobfinderbackend.dto.UserDTO;
-import com.kienluu.jobfinderbackend.dto.request.LoginRequest;
-import com.kienluu.jobfinderbackend.dto.request.UserAccountUpdateRequest;
-import com.kienluu.jobfinderbackend.dto.request.UserCreationRequest;
+import com.kienluu.jobfinderbackend.dto.request.*;
 import com.kienluu.jobfinderbackend.dto.JobDto;
 import com.kienluu.jobfinderbackend.dto.response.UserResponse;
 import com.kienluu.jobfinderbackend.model.CodeExchange;
@@ -18,6 +16,7 @@ import com.kienluu.jobfinderbackend.model.StringElement;
 import com.kienluu.jobfinderbackend.service.FirebaseNotificationService;
 import com.kienluu.jobfinderbackend.service.IUserService;
 import com.kienluu.jobfinderbackend.service.implement.MailService;
+import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -283,29 +282,59 @@ public class UserController {
     }
 
     @PostMapping("/user/{userId}/fcm")
-    public ResponseEntity<Object> saveUserFcm(@PathVariable String userId, @RequestBody Map<String,String> item) {
-        try{
+    public ResponseEntity<Object> saveUserFcm(@PathVariable String userId, @RequestBody Map<String, String> item) {
+        try {
             userService.saveUserFcm(userId, item.get("token"));
             return ResponseEntity.ok("Saved");
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
 
     @PostMapping("/user/{userId}/notification")
-    public ResponseEntity<Object> sendUserNotification(@PathVariable String userId, @RequestBody Map<String,String> item) {
-        try{
+    public ResponseEntity<Object> sendUserNotification(@PathVariable String userId, @RequestBody Map<String, String> item) {
+        try {
             String title = item.get("title");
             String body = item.get("body");
             String screen = item.get("screen");
             firebaseNotificationService.sendNotification(userId, title, body, screen);
             return ResponseEntity.ok("Notification sent");
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
 
-}
+    @PostMapping("/refresh-token")
+    public ResponseEntity<?> refreshToken(@RequestBody Map<String, String> request) {
+        try {
+            var tokenResponse = userService.refreshToken(request.get("token"));
+            return ResponseEntity.ok(tokenResponse);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN.value()).body(e.getMessage());
+        }
+    }
 
+    @PostMapping("/register-public-key")
+    public ResponseEntity<?> registerPublicKey(@RequestBody PublicKeyRequest request) {
+        try {
+            var response = userService.registerPublicKey(request);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+
+    @PostMapping("/verify-client-challenge")
+    public ResponseEntity<?> verifyClientChallenge(@RequestBody VerifyChallengeRequest request) {
+        try{
+            UserResponse userResponse = userService.verifyClientChallenge(request);
+            return ResponseEntity.ok(userResponse);
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+}
