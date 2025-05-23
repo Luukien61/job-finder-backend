@@ -1,13 +1,8 @@
 package com.kienluu.jobfinderbackend.controller;
 
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.gson.GsonFactory;
-import com.google.firebase.internal.FirebaseService;
+import com.kienluu.jobfinderbackend.dto.JobDto;
 import com.kienluu.jobfinderbackend.dto.UserDTO;
 import com.kienluu.jobfinderbackend.dto.request.*;
-import com.kienluu.jobfinderbackend.dto.JobDto;
 import com.kienluu.jobfinderbackend.dto.response.UserResponse;
 import com.kienluu.jobfinderbackend.model.CodeExchange;
 import com.kienluu.jobfinderbackend.model.GoogleIdTokenMobile;
@@ -16,7 +11,6 @@ import com.kienluu.jobfinderbackend.model.StringElement;
 import com.kienluu.jobfinderbackend.service.FirebaseNotificationService;
 import com.kienluu.jobfinderbackend.service.IUserService;
 import com.kienluu.jobfinderbackend.service.implement.MailService;
-import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,9 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -305,36 +296,5 @@ public class UserController {
         }
     }
 
-
-    @PostMapping("/refresh-token")
-    public ResponseEntity<?> refreshToken(@RequestBody Map<String, String> request) {
-        try {
-            var tokenResponse = userService.refreshToken(request.get("token"));
-            return ResponseEntity.ok(tokenResponse);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN.value()).body(e.getMessage());
-        }
-    }
-
-    @PostMapping("/register-public-key")
-    public ResponseEntity<?> registerPublicKey(@RequestBody PublicKeyRequest request) {
-        try {
-            var response = userService.registerPublicKey(request);
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
-
-    @PostMapping("/verify-client-challenge")
-    public ResponseEntity<?> verifyClientChallenge(@RequestBody VerifyChallengeRequest request) {
-        try{
-            UserResponse userResponse = userService.verifyClientChallenge(request);
-            return ResponseEntity.ok(userResponse);
-        }catch (Exception e){
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
 
 }
