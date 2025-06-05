@@ -38,4 +38,6 @@ public class JobDto implements Serializable {
     String gender;
     String type;
     String field;
+    Double latitude;
+    Double longitude;
 }

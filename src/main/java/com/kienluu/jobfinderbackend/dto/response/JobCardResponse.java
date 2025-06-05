@@ -36,4 +36,7 @@ public class JobCardResponse {
 
     private String state;
 
+    private Double latitude;
+    private Double longitude;
+
 }

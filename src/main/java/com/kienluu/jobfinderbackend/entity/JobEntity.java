@@ -57,5 +57,12 @@ public class JobEntity {
     List<ReportEntity> reports;
 
 
+    @Column(name = "latitude")
+    private Double latitude;
+
+    @Column(name = "longitude")
+    private Double longitude;
+
+
 
 }

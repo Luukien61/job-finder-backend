@@ -1,5 +1,6 @@
 package com.kienluu.jobfinderbackend.repository;
 
+import com.kienluu.jobfinderbackend.dto.response.JobWithDistanceProjection;
 import com.kienluu.jobfinderbackend.entity.JobEntity;
 import com.kienluu.jobfinderbackend.model.JobByField;
 import com.kienluu.jobfinderbackend.model.JobState;
@@ -126,4 +127,31 @@ public interface JobRepository extends JpaRepository<JobEntity, Long> {
 
 
     JobEntity findJobEntitiesByJobIdAndStateAndExpireDateGreaterThanEqual(Long jobId, JobState state, LocalDate date);
+
+
+
+    @Query(value = """
+            SELECT j.job_id, j.title, j.province, comp.name as company_name, j.company_id as company_id, comp.logo,
+                   j.experience, j.min_salary, j.max_salary, j.expire_date, j.created_at, j.state, j.latitude, j.longitude,
+            6371 * acos(
+                cos(radians(?1)) * cos(radians(j.latitude)) * 
+                cos(radians(j.longitude) - radians(?2)) + 
+                sin(radians(?1)) * sin(radians(j.latitude))
+            ) AS distance 
+            FROM job j, company comp
+            WHERE j.latitude IS NOT NULL AND j.longitude IS NOT NULL
+            AND 6371 * acos(
+                cos(radians(?1)) * cos(radians(j.latitude)) * 
+                cos(radians(j.longitude) - radians(?2)) + 
+                sin(radians(?1)) * sin(radians(j.latitude))
+            ) <= ?3
+            AND j.company_id = comp.id
+            ORDER BY distance
+            """, nativeQuery = true)
+    List<JobWithDistanceProjection> findJobsWithinRadiusWithDistance(double latitude, double longitude, double radius);
+
+
+    List<JobEntity> findJobByLatitudeIsNull();
 }
+
+

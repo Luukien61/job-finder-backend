@@ -43,3 +43,4 @@ src/main/resources/application-prod.yml
 /src/main/resources/static/app/
 /src/main/resources/static/elasticsearch/
 /src/main/resources/key/
+/request.ts

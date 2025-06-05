@@ -432,6 +432,16 @@ public class UserService implements IUserService, UserDetailsService {
     public UserResponse verifyClientChallenge(VerifyChallengeRequest request) {
         UserEntity user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new RuntimeException("Invalid user id: " + request.getUserId()));
+        boolean isValid = isSignatureValid(request, user);
+        if (isValid) {
+            return createLoginResponse(user);
+        } else {
+            log.error("Signature verification failed for user: {}", request.getUserId());
+            throw new RuntimeException("Invalid signature!");
+        }
+    }
+
+    private boolean isSignatureValid(VerifyChallengeRequest request, UserEntity user) {
         try {
             // Parse and validate challenge
             String[] challengeParts = request.getChallenge().split(":");
@@ -481,18 +491,10 @@ public class UserService implements IUserService, UserDetailsService {
             // Verify signature
             Signature verifier = Signature.getInstance(SHA_256_WITH_RSA);
             verifier.initVerify(publicKey);
-            verifier.update(request.getChallenge().getBytes()); // Use full challenge string
-            boolean isValid = verifier.verify(signatureBytes);
-
-            if (isValid) {
-                return createLoginResponse(user);
-            } else {
-                log.error("Signature verification failed for user: {}", request.getUserId());
-                throw new RuntimeException("Invalid signature!");
-            }
+            verifier.update(request.getChallenge().getBytes());
+            return verifier.verify(signatureBytes);
         } catch (Exception e) {
-            log.error("Error verifying challenge for user {}: {}", request.getUserId(), e.getMessage(), e);
-            throw new RuntimeException("Error verifying challenge: " + e.getMessage());
+            throw new RuntimeException(e);
         }
     }
 
@@ -500,8 +502,22 @@ public class UserService implements IUserService, UserDetailsService {
         try {
             Base64.getDecoder().decode(str);
             return true;
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
             return false;
+        }
+    }
+
+    @Override
+    public Boolean clearBiometricPublicKey(VerifyChallengeRequest request) {
+        UserEntity user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new RuntimeException("Invalid user id: " + request.getUserId()));
+        boolean isValid = isSignatureValid(request, user);
+        if (isValid) {
+            user.setPublicBiometricKey(null);
+            userRepository.save(user);
+            return true;
+        } else {
+            throw new RuntimeException("Invalid signature!");
         }
     }
 }

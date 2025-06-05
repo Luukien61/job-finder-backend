@@ -3,18 +3,22 @@ package com.kienluu.jobfinderbackend.controller;
 import com.kienluu.jobfinderbackend.dto.JobDto;
 import com.kienluu.jobfinderbackend.dto.request.JobCreateRequest;
 import com.kienluu.jobfinderbackend.dto.response.JobCardResponse;
+import com.kienluu.jobfinderbackend.dto.response.JobCardWithDistance;
 import com.kienluu.jobfinderbackend.elasticsearch.document.JobDocument;
 import com.kienluu.jobfinderbackend.elasticsearch.service.JobSearchService;
 import com.kienluu.jobfinderbackend.entity.JobEntity;
 import com.kienluu.jobfinderbackend.service.IJobService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -57,12 +61,12 @@ public class JobController {
 
     @GetMapping("/{jobId}/valid")
     public ResponseEntity<Object> getJobValid(@PathVariable Long jobId,
-                                              @RequestHeader(value = "X-custom-userId",required = false) String userId) {
-        try{
+                                              @RequestHeader(value = "X-custom-userId", required = false) String userId) {
+        try {
             JobDto job = jobService.getJobByIdNotExpiryAndNotBan(jobId, userId);
             return new ResponseEntity<>(job, HttpStatus.OK);
 
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
 
@@ -89,7 +93,6 @@ public class JobController {
     }
 
 
-
     @GetMapping("/search")
     public ResponseEntity<Object> searchJobWithLocationAndSalary(
             @RequestParam String keyword,
@@ -101,9 +104,9 @@ public class JobController {
             @RequestParam(required = false, defaultValue = "10") Integer size,
             @RequestParam(required = false) String sort,
             @RequestParam(required = false) String order,
-            @RequestHeader(value = "X-custom-userId",required = false) String userId) {
+            @RequestHeader(value = "X-custom-userId", required = false) String userId) {
         try {
-            Page<JobDocument> documents = jobSearchService.searchJobs(keyword, location, minSalary, maxSalary, experience, page, size, sort,order,userId);
+            Page<JobDocument> documents = jobSearchService.searchJobs(keyword, location, minSalary, maxSalary, experience, page, size, sort, order, userId);
             return new ResponseEntity<>(documents, HttpStatus.OK);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -112,10 +115,10 @@ public class JobController {
 
     @PostMapping("/update")
     public ResponseEntity<Object> updateJob(@RequestBody JobDto job) {
-        try{
+        try {
             jobService.updateJob(job);
             return new ResponseEntity<>(HttpStatus.OK);
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -139,27 +142,44 @@ public class JobController {
             @RequestParam(required = false, defaultValue = "0") Integer page,
             @RequestParam(required = false, defaultValue = "12") Integer size
 
-    ){
-        try{
-            Page<JobDto> newJobs = jobService.getNewJobs(page, size);
+    ) {
+        try {
+            Page<JobCardResponse> newJobs = jobService.getNewJobs(page, size);
             return new ResponseEntity<>(newJobs, HttpStatus.OK);
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     @GetMapping("/customHeaders")
-    public ResponseEntity<Object> fetchCustomHeaders(@RequestHeader(value = "X-custom-userId",required = false) String userId) {
+    public ResponseEntity<Object> fetchCustomHeaders(@RequestHeader(value = "X-custom-userId", required = false) String userId) {
         log.info("UserId: {}", userId);
-        return new ResponseEntity<>("received" ,HttpStatus.OK);
+        return new ResponseEntity<>("received", HttpStatus.OK);
     }
 
     @GetMapping("/elastic/sync")
     public ResponseEntity<Object> syncElastic() {
-        try{
+        try {
             jobSearchService.syncAllJobsToElasticsearch();
             return new ResponseEntity<>(HttpStatus.OK);
-        }catch (Exception e){
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/nearby")
+    public ResponseEntity<Object> getNearbyJobs(
+            @RequestParam double latitude,
+            @RequestParam double longitude,
+            @RequestParam(defaultValue = "10") double radiusKm) {
+        try {
+            List<JobCardWithDistance> nearbyJobs = jobService.findJobsWithinRadius(latitude, longitude, radiusKm);
+            val response = new HashMap<String, Object>();
+            response.put("jobs", nearbyJobs);
+            response.put("status", "ok");
+            response.put("size", nearbyJobs.size());
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

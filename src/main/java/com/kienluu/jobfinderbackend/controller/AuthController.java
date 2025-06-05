@@ -51,4 +51,15 @@ public class AuthController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @PostMapping("/clear-biometric-key")
+    public ResponseEntity<?> clearPublicKey(@RequestBody VerifyChallengeRequest request) {
+        try{
+            Boolean isClear = userService.clearBiometricPublicKey(request);
+            return ResponseEntity.ok(isClear);
+        }catch (Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 }

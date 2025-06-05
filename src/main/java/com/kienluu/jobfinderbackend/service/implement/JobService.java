@@ -3,12 +3,15 @@ package com.kienluu.jobfinderbackend.service.implement;
 import com.kienluu.jobfinderbackend.dto.JobDto;
 import com.kienluu.jobfinderbackend.dto.request.JobCreateRequest;
 import com.kienluu.jobfinderbackend.dto.response.JobCardResponse;
+import com.kienluu.jobfinderbackend.dto.response.JobCardWithDistance;
+import com.kienluu.jobfinderbackend.dto.response.JobWithDistanceProjection;
 import com.kienluu.jobfinderbackend.elasticsearch.event.EvenType;
 import com.kienluu.jobfinderbackend.elasticsearch.event.JobChangedEvent;
 import com.kienluu.jobfinderbackend.entity.CompanyEntity;
 import com.kienluu.jobfinderbackend.entity.JobEntity;
 import com.kienluu.jobfinderbackend.event.UserSearchEvent;
 import com.kienluu.jobfinderbackend.mapper.CustomMapper;
+import com.kienluu.jobfinderbackend.model.Coordinates;
 import com.kienluu.jobfinderbackend.model.JobState;
 import com.kienluu.jobfinderbackend.repository.CompanyRepository;
 import com.kienluu.jobfinderbackend.repository.JobRepository;
@@ -23,6 +26,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +38,7 @@ public class JobService implements IJobService {
     private final ApplicationEventPublisher eventPublisher;
     private final CustomMapper mapper;
     private final ICompanyService companyService;
+    private final GeocodingService geocodingService;
 
     //eventPublisher.publishEvent(new JobChangedEvent(savedJob, EvenType.CREATED));
 
@@ -42,16 +48,21 @@ public class JobService implements IJobService {
         CompanyEntity companyEntity = companyRepository.findCompanyById(job.getCompanyId())
                 .orElseThrow(() -> new RuntimeException("Company not found"));
         boolean canPostJob = companyService.canPostJob(job.getCompanyId());
-        if(canPostJob) {
+        if (canPostJob) {
             JobEntity jobEntity = mapper.toJobEntity(job);
             jobEntity.setCompany(companyEntity);
             jobEntity.setCreatedAt(job.getCreatedAt());
             jobEntity.setUpdateAt(job.getCreatedAt());
             jobEntity.setState(JobState.PENDING);
+            Coordinates coordinates = geocodingService.geocodeAddressGG(job.getLocation() + ", " + job.getProvince());
+            if (coordinates != null) {
+                jobEntity.setLatitude(coordinates.getLatitude());
+                jobEntity.setLongitude(coordinates.getLongitude());
+            }
             jobEntity = jobRepository.save(jobEntity);
             eventPublisher.publishEvent(new JobChangedEvent(jobEntity, EvenType.CREATED));
             return mapper.toJobResponse(jobEntity);
-        }else {
+        } else {
             throw new RuntimeException("Bạn đã vượt quá số bài đăng cho phép, nâng cấp tài khoản để tiếp tục đăng tin.");
         }
     }
@@ -77,7 +88,7 @@ public class JobService implements IJobService {
         jobEntity.setField(job.getField());
         jobEntity.setExpireDate(job.getExpireDate());
         jobEntity.setUpdateAt(job.getUpdateAt());
-        jobEntity=jobRepository.save(jobEntity);
+        jobEntity = jobRepository.save(jobEntity);
         eventPublisher.publishEvent(new JobChangedEvent(jobEntity, EvenType.UPDATED));
 
     }
@@ -114,20 +125,46 @@ public class JobService implements IJobService {
     }
 
     @Override
-    public Page<JobDto> getNewJobs(Integer page, Integer size) {
+    public Page<JobCardResponse> getNewJobs(Integer page, Integer size) {
         Sort sort = Sort.by(Sort.Order.desc("createdAt"));
-        Pageable pageable = PageRequest.of(page, size,sort);
+        Pageable pageable = PageRequest.of(page, size, sort);
         Page<JobEntity> response = jobRepository.getNewJobs(pageable);
-        return response.map(mapper::toJobResponse);
+        return response.map(mapper::toJobCardResponse);
     }
 
     @Override
     public JobDto getJobByIdNotExpiryAndNotBan(Long jobId, String userId) {
         JobEntity job = jobRepository.findJobEntitiesByJobIdAndStateAndExpireDateGreaterThanEqual(jobId, JobState.PENDING, LocalDate.now());
-        if(job==null) throw new RuntimeException("Job not found");
-        if(userId!=null && !userId.isEmpty()){
-            eventPublisher.publishEvent(new UserSearchEvent(userId,job.getTitle()));
+        if (job == null) throw new RuntimeException("Job not found");
+        if (userId != null && !userId.isEmpty()) {
+            eventPublisher.publishEvent(new UserSearchEvent(userId, job.getTitle()));
         }
         return mapper.toJobResponse(job);
+    }
+
+    @Override
+    public List<JobCardWithDistance> findJobsWithinRadius(double latitude, double longitude, double radiusKm) {
+        List<JobWithDistanceProjection> projections = jobRepository.findJobsWithinRadiusWithDistance(latitude, longitude, radiusKm);
+        return projections.stream()
+                .map(p -> {
+                    JobCardResponse job = JobCardResponse.builder()
+                            .jobId(p.getJobId())
+                            .title(p.getTitle())
+                            .logo(p.getLogo())
+                            .companyName(p.getCompanyName())
+                            .state(p.getState())
+                            .experience(p.getExperience())
+                            .maxSalary(p.getMaxSalary())
+                            .minSalary(p.getMinSalary())
+                            .province(p.getProvince())
+                            .latitude(p.getLatitude())
+                            .longitude(p.getLongitude())
+                            .expireDate(p.getExpireDate())
+                            .createdAt(p.getCreatedAt())
+                            .companyId(p.getCompanyId())
+                            .build();
+                    return new JobCardWithDistance(job, p.getDistance());
+                })
+                .collect(Collectors.toList());
     }
 }

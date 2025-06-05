@@ -21,34 +21,60 @@ import java.util.List;
 
 public interface IUserService {
     String sendSignupCode(MailTemplate template) throws MessagingException, GeneralSecurityException, IOException;
+
     UserResponse registerUser(UserCreationRequest request);
+
     UserResponse loginUser(LoginRequest request);
+
     UserResponse updateUser(UserDTO userDTO);
+
     UserResponse loginWithGoogle(CodeExchange codeExchange);
+
     UserResponse loginWithGoogleMobile(String googleIdToken);
+
     UserResponse signUpWithGoogle(CodeExchange codeExchange);
+
     UserResponse signUpWithGoogleMobile(String idToken);
+
     UserDTO getUserById(String id);
+
     UserResponse getUserInfoById(String id);
+
     UserResponse userCompleted(UserDTO userDTO);
+
     void uploadCv(String userId, MultipartFile file);
+
     void deleteCvById(String userId, String cvUrl);
+
     List<JobDto> findAllSavedJobs(String userId);
+
     List<JobDto> findAllAppliedJobs(String userId);
-    UserResponse updateUserAccount(UserAccountUpdateRequest request) ;
+
+    UserResponse updateUserAccount(UserAccountUpdateRequest request);
+
     String sendVerificationEmail(UserAccountUpdateRequest request) throws MessagingException, GeneralSecurityException, IOException;
+
     UserDTO updateProfile(UserDTO userDTO);
+
     boolean saveJob(String userId, Long jobId);
+
     boolean unsaveJob(String userId, Long jobId);
+
     boolean isJobSaved(String userId, Long jobId);
+
     UserDTO getUserBasicInfo(String userId);
 
     List<String> getUserCv(String userId);
 
     void saveUserFcm(String userId, String fcmToken);
+
     String getUserFcm(String userId);
+
     TokenResponse refreshToken(String refreshToken);
+
     RegisterBiometricResponse registerPublicKey(PublicKeyRequest request);
 
     UserResponse verifyClientChallenge(VerifyChallengeRequest request) throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException;
+
+    Boolean clearBiometricPublicKey(VerifyChallengeRequest request);
 }
