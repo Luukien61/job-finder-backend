@@ -77,4 +77,8 @@ public interface IUserService {
     UserResponse verifyClientChallenge(VerifyChallengeRequest request) throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException;
 
     Boolean clearBiometricPublicKey(VerifyChallengeRequest request);
+
+    Boolean updateUserCv(String userId, String cvUrl);
+
+    void deleteUserCv(String userId, String cvUrl);
 }

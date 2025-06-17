@@ -56,6 +56,7 @@ public class JobDocument {
     @Field(type = FieldType.Date, format = DateFormat.date)
     private LocalDate createDate;
 
+    @Field(type = Keyword)
     private String state;
 
     @Field(type = Keyword)

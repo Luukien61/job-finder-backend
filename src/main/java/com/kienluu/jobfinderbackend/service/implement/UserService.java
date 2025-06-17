@@ -520,4 +520,32 @@ public class UserService implements IUserService, UserDetailsService {
             throw new RuntimeException("Invalid signature!");
         }
     }
+
+    @Override
+    public Boolean updateUserCv(String userId, String cvUrl) {
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Invalid user id: " + userId));
+        List<String> cvs = user.getCv();
+        if(cvs == null){
+            cvs = new ArrayList<>();
+        }
+        if(!cvs.contains(cvUrl)){
+            cvs.add(cvUrl);
+            user.setCv(cvs);
+            userRepository.save(user);
+        }
+        return true;
+    }
+
+    @Override
+    public void deleteUserCv(String userId, String cvUrl) {
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Invalid user id: " + userId));
+        List<String> cvs = user.getCv();
+        if(cvs.contains(cvUrl)){
+            cvs.remove(cvUrl);
+            user.setCv(cvs);
+            userRepository.save(user);
+        }
+    }
 }

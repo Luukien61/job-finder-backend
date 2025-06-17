@@ -31,10 +31,7 @@ public class JobApplicationController {
             @RequestParam("userId") String userId
     ) {
         boolean applied = jobApplicationService.isApplied(jobId, userId);
-        if (applied) {
-            return ResponseEntity.ok().body(applied);
-        }
-        return ResponseEntity.ok(applied);
+        return ResponseEntity.ok().body(applied);
     }
 
     @GetMapping("/job/{jobId}")

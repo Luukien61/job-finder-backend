@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -291,6 +292,30 @@ public class UserController {
             String screen = item.get("screen");
             firebaseNotificationService.sendNotification(userId, title, body, screen);
             return ResponseEntity.ok("Notification sent");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/user/{userId}/cv")
+    public ResponseEntity<Object> updateUserCv(@PathVariable String userId, @RequestBody Map<String, String> items) {
+        try {
+            userService.updateUserCv(userId, items.get("url"));
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Updated successfully");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/user/{userId}/cv")
+    public ResponseEntity<Object> deleteUserCv(@PathVariable String userId, @RequestBody Map<String, String> items) {
+        try {
+            userService.deleteUserCv(userId, items.get("url"));
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Deleted successfully");
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
