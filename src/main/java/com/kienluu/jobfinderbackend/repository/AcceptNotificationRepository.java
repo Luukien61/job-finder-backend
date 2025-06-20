@@ -11,7 +11,7 @@ import java.util.List;
 
 @Repository
 public interface AcceptNotificationRepository extends JpaRepository<AcceptNotification, Long> {
-    List<AcceptNotification> findAllByUserId(String userId);
+    List<AcceptNotification> findAllByUserIdOrderByCreatedAtDesc(String userId);
 
     @Query("select count(n) from AcceptNotification n where n.userId= :user_id and n.status= :status or n.status = 'SENT'")
     Long countAllNotificationsByUserIdAndStatus(@Param("user_id") String userId, @Param("status") NotificationStatus status);

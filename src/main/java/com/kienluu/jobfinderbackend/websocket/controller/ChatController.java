@@ -13,6 +13,10 @@ import com.kienluu.jobfinderbackend.websocket.service.ConversationService;
 import com.kienluu.jobfinderbackend.websocket.service.ParticipantService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -43,20 +47,21 @@ public class ChatController {
 
     @MessageMapping("/private-message")
     public ChatMessageDto recMessage(@Payload ChatMessageDto message) {
+        assert message.getRecipientId() != null;
         simpMessagingTemplate.convertAndSendToUser(message.getRecipientId(), "/private", message);
-        try{
+        try {
             return conversationService.sendMessage(message);
-        }catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
     }
 
     @GetMapping("/chat/all/{userId}")
     public ResponseEntity<List<ConversationDto>> getAllConversationByUserId(@PathVariable String userId) {
-        try{
+        try {
             List<ConversationDto> response = conversationService.findAllConversationsByUserId(userId);
             return ResponseEntity.ok(response);
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
     }
@@ -74,6 +79,18 @@ public class ChatController {
     @GetMapping("/message/{conversationId}")
     public ResponseEntity<List<ChatMessage>> getMessage(@PathVariable Long conversationId) {
         var messages = chatMessageRepository.findChatMessageByConversationIdOrderByTimestampDesc(conversationId);
+        return ResponseEntity.ok(messages);
+    }
+
+    @GetMapping("/message/pageable/{conversationId}")
+    public ResponseEntity<Page<ChatMessage>> getMessagePageable(
+            @PathVariable Long conversationId,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "20", required = false) int size
+    ) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "timestamp");
+        Pageable pageable = PageRequest.of(page, size, sort);
+        var messages = chatMessageRepository.findChatMessageByConversationId(conversationId, pageable);
         return ResponseEntity.ok(messages);
     }
 
@@ -101,13 +118,14 @@ public class ChatController {
 
     @MessageMapping("/webrtc-signal")
     public void handleWebRTCSignal(RTCSignal signal) {
-        log.info("Receiving a video call to... {}, {}",signal.getTargetUserId(), signal.getType());
+        log.info("Receiving a video call to... {}, {}", signal.getTargetUserId(), signal.getType());
         simpMessagingTemplate.convertAndSendToUser(
                 signal.getTargetUserId(),
                 "/webrtc",
                 signal
         );
     }
+
     @PostMapping(value = "/voice", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadAudio(@RequestParam("audio") MultipartFile audioFile) {
         try {
@@ -120,13 +138,13 @@ public class ChatController {
 
     @PutMapping("/message")
     public ResponseEntity<Object> updateMessage(@RequestBody ChatMessage chatMessage) {
-        try{
+        try {
             ChatMessage message = chatMessageRepository.findById(chatMessage.getId())
                     .orElseThrow(() -> new RuntimeException("The message id does not exist"));
             message.setCaption(chatMessage.getCaption());
             ChatMessage saved = chatMessageRepository.save(message);
             return ResponseEntity.ok(saved);
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

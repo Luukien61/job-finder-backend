@@ -2,7 +2,7 @@ package com.kienluu.jobfinderbackend.service;
 
 import com.kienluu.jobfinderbackend.dto.UserDTO;
 import com.kienluu.jobfinderbackend.dto.request.*;
-import com.kienluu.jobfinderbackend.dto.JobDto;
+import com.kienluu.jobfinderbackend.dto.response.JobCardResponse;
 import com.kienluu.jobfinderbackend.dto.response.RegisterBiometricResponse;
 import com.kienluu.jobfinderbackend.dto.response.TokenResponse;
 import com.kienluu.jobfinderbackend.dto.response.UserResponse;
@@ -46,9 +46,10 @@ public interface IUserService {
 
     void deleteCvById(String userId, String cvUrl);
 
-    List<JobDto> findAllSavedJobs(String userId);
+    List<JobCardResponse> findAllSavedJobs(String userId);
+    List<Long> findAllSavedJobIds(String userId);
 
-    List<JobDto> findAllAppliedJobs(String userId);
+    List<JobCardResponse> findAllAppliedJobs(String userId);
 
     UserResponse updateUserAccount(UserAccountUpdateRequest request);
 

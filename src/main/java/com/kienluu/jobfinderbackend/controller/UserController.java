@@ -1,8 +1,10 @@
 package com.kienluu.jobfinderbackend.controller;
 
-import com.kienluu.jobfinderbackend.dto.JobDto;
 import com.kienluu.jobfinderbackend.dto.UserDTO;
-import com.kienluu.jobfinderbackend.dto.request.*;
+import com.kienluu.jobfinderbackend.dto.request.LoginRequest;
+import com.kienluu.jobfinderbackend.dto.request.UserAccountUpdateRequest;
+import com.kienluu.jobfinderbackend.dto.request.UserCreationRequest;
+import com.kienluu.jobfinderbackend.dto.response.JobCardResponse;
 import com.kienluu.jobfinderbackend.dto.response.UserResponse;
 import com.kienluu.jobfinderbackend.model.CodeExchange;
 import com.kienluu.jobfinderbackend.model.GoogleIdTokenMobile;
@@ -163,7 +165,17 @@ public class UserController {
     @GetMapping("/user/{id}/saved")
     public ResponseEntity<Object> getSavedJobs(@PathVariable String id) {
         try {
-            List<JobDto> allSavedJobs = userService.findAllSavedJobs(id);
+            List<JobCardResponse> allSavedJobs = userService.findAllSavedJobs(id);
+            return ResponseEntity.ok(allSavedJobs);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/user/{id}/saved/id")
+    public ResponseEntity<Object> getSavedJobIds(@PathVariable String id) {
+        try {
+            List<Long> allSavedJobs = userService.findAllSavedJobIds(id);
             return ResponseEntity.ok(allSavedJobs);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -173,7 +185,7 @@ public class UserController {
     @GetMapping("/user/{id}/applied")
     public ResponseEntity<Object> getAppliedJobs(@PathVariable String id) {
         try {
-            List<JobDto> allSavedJobs = userService.findAllAppliedJobs(id);
+            List<JobCardResponse> allSavedJobs = userService.findAllAppliedJobs(id);
             return ResponseEntity.ok(allSavedJobs);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -222,7 +234,7 @@ public class UserController {
     }
 
     @GetMapping("/user/{userId}/save")
-    public ResponseEntity<Object> getJob(@PathVariable String userId, @RequestParam("jobId") Long jobId) {
+    public ResponseEntity<Object> isJobSavedByUser(@PathVariable String userId, @RequestParam("jobId") Long jobId) {
         try {
             boolean isSaved = userService.isJobSaved(userId, jobId);
             return ResponseEntity.ok(isSaved);

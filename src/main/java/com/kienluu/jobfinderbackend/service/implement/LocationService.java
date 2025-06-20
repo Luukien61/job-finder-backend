@@ -32,7 +32,7 @@ public class LocationService {
         return R * c;
     }
 
-//    @PostConstruct
+    //@PostConstruct
     public void init() {
         var jobs = jobRepository.findJobByLatitudeIsNull();
         log.info("Jobs found: {}", jobs.size());

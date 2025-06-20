@@ -100,7 +100,6 @@ public class GeocodingService {
                     log.error("Geocoding failed with status: {}, message: {}", status, errorMessage);
                 }
 
-                // Prepare for retry by stripping address
                 if (retry < maxRetries) {
                     int commaIndex = currentAddress.indexOf(",");
                     if (commaIndex != -1) {

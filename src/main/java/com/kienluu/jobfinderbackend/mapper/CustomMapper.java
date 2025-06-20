@@ -8,7 +8,7 @@ import com.kienluu.jobfinderbackend.dto.response.*;
 import com.kienluu.jobfinderbackend.entity.*;
 import org.mapstruct.*;
 
-@Mapper(uses = MapperHelper.class)
+@Mapper(uses = MapperHelper.class, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface CustomMapper {
 
     @Mapping(source = "role", target = "role", qualifiedByName = "userDtoRoleToEntity")
@@ -90,6 +90,9 @@ public interface CustomMapper {
 
     @InheritConfiguration(name = "toEntity")
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-
     CompanySubscription partialUpdate(@MappingTarget CompanySubscription companySubscription, CompanySubscriptionDto companySubscriptionDto);
+
+    //@BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    //void updateUserFromDto(UserDTO dto, @MappingTarget UserEntity user);
+
 }

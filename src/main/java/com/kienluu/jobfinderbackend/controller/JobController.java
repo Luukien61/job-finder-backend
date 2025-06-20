@@ -171,7 +171,8 @@ public class JobController {
     public ResponseEntity<Object> getNearbyJobs(
             @RequestParam double latitude,
             @RequestParam double longitude,
-            @RequestParam(defaultValue = "10") double radiusKm) {
+            @RequestParam(defaultValue = "10") double radiusKm
+    ) {
         try {
             List<JobCardWithDistance> nearbyJobs = jobService.findJobsWithinRadius(latitude, longitude, radiusKm);
             val response = new HashMap<String, Object>();

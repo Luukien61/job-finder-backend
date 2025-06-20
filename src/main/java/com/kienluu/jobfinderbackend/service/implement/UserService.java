@@ -4,9 +4,9 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
-import com.kienluu.jobfinderbackend.dto.JobDto;
 import com.kienluu.jobfinderbackend.dto.UserDTO;
 import com.kienluu.jobfinderbackend.dto.request.*;
+import com.kienluu.jobfinderbackend.dto.response.JobCardResponse;
 import com.kienluu.jobfinderbackend.dto.response.RegisterBiometricResponse;
 import com.kienluu.jobfinderbackend.dto.response.TokenResponse;
 import com.kienluu.jobfinderbackend.dto.response.UserResponse;
@@ -20,14 +20,11 @@ import com.kienluu.jobfinderbackend.repository.UserRepository;
 import com.kienluu.jobfinderbackend.security.jwt.provider.IJWTProvider;
 import com.kienluu.jobfinderbackend.service.IUserService;
 import com.kienluu.jobfinderbackend.util.AppUtil;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -37,17 +34,19 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.MessagingException;
 import java.io.IOException;
-import java.security.*;
-import java.security.spec.InvalidKeySpecException;
+import java.security.GeneralSecurityException;
+import java.security.KeyFactory;
+import java.security.PublicKey;
+import java.security.Signature;
 import java.security.spec.X509EncodedKeySpec;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService implements IUserService, UserDetailsService {
+    private final CustomMapper customMapper;
 
     public static final String SHA_256_WITH_RSA = "SHA256withRSA";
     private static final long CHALLENGE_VALIDITY_SECONDS = 60; // 60 seconds validity
@@ -229,29 +228,46 @@ public class UserService implements IUserService, UserDetailsService {
 
     @Override
     @Transactional
-    public List<JobDto> findAllSavedJobs(String userId) {
+    public List<JobCardResponse> findAllSavedJobs(String userId) {
         UserEntity user = userRepository.findById(userId.trim())
                 .orElseThrow(() -> new RuntimeException("Invalid user id!"));
         Set<JobEntity> savedJobs = user.getSavedJobs();
-        return savedJobs.stream().map(mapper::toJobResponse).toList();
+        return savedJobs.stream().map(customMapper::toJobCardResponse).toList();
     }
 
     @Override
-    public List<JobDto> findAllAppliedJobs(String userId) {
+    public List<Long> findAllSavedJobIds(String userId) {
+        UserEntity user = userRepository.findById(userId.trim())
+                .orElseThrow(() -> new RuntimeException("Invalid user id!"));
+        Set<JobEntity> savedJobs = user.getSavedJobs();
+        return savedJobs.stream().map(JobEntity::getJobId).toList();
+    }
+
+    @Override
+    public List<JobCardResponse> findAllAppliedJobs(String userId) {
         UserEntity user = userRepository.findById(userId.trim())
                 .orElseThrow(() -> new RuntimeException("Invalid user id!"));
         Set<JobEntity> savedJobs = user.getAppliedJobs();
-        return savedJobs.stream().map(mapper::toJobResponse).toList();
+        return savedJobs.stream().map(customMapper::toJobCardResponse).toList();
     }
 
     @Override
     public UserResponse updateUserAccount(UserAccountUpdateRequest request) {
         UserEntity user = userRepository.findById(request.getId().trim())
                 .orElseThrow(() -> new RuntimeException("Invalid user id!"));
-        user.setEmail(request.getEmail().trim());
-        user.setPassword(request.getNewPassword());
-        UserEntity saved = userRepository.save(user);
-        return mapper.toUserResponse(saved);
+        try{
+            var isPasswordValid = user.getPassword().equals(request.getOldPassword());
+            if(!isPasswordValid) throw new RuntimeException("Old password does not match!");
+            Optional.ofNullable(request.getEmail())
+                    .filter(email -> !email.isBlank()).ifPresent(user::setEmail);
+            Optional.ofNullable(request.getNewPassword())
+                    .filter(password -> !password.isBlank()).ifPresent(user::setPassword);
+            UserEntity saved = userRepository.save(user);
+            return mapper.toUserResponse(saved);
+        }catch (NullPointerException e){
+            throw new RuntimeException("This account does not support changing password!");
+        }
+
     }
 
     @Override
@@ -283,16 +299,15 @@ public class UserService implements IUserService, UserDetailsService {
     private UserEntity updateInfo(UserDTO userDTO) {
         UserEntity user = userRepository.findById(userDTO.getId())
                 .orElseThrow(() -> new RuntimeException("Invalid user id!"));
-        user.setEmail(userDTO.getEmail());
-        user.setName(userDTO.getName());
-        user.setPhone(userDTO.getPhone());
-        user.setAvatar(userDTO.getAvatar());
-        user.setAddress(userDTO.getAddress());
-        user.setUniversity(userDTO.getUniversity());
-        user.setDateOfBirth(userDTO.getDateOfBirth());
-        user.setEducationLevel(userDTO.getEducationLevel());
-        user.setGender(userDTO.getGender());
-        user.setCreatedAt(userDTO.getCreatedAt());
+        Optional.ofNullable(userDTO.getEmail()).filter(s -> !s.isBlank()).ifPresent(user::setEmail);
+        Optional.ofNullable(userDTO.getName()).filter(s -> !s.isBlank()).ifPresent(user::setName);
+        Optional.ofNullable(userDTO.getPhone()).filter(s -> !s.isBlank()).ifPresent(user::setPhone);
+        Optional.ofNullable(userDTO.getAvatar()).filter(s -> !s.isBlank()).ifPresent(user::setAvatar);
+        Optional.ofNullable(userDTO.getAddress()).filter(s -> !s.isBlank()).ifPresent(user::setAddress);
+        Optional.ofNullable(userDTO.getUniversity()).filter(s -> !s.isBlank()).ifPresent(user::setUniversity);
+        Optional.ofNullable(userDTO.getDateOfBirth()).ifPresent(user::setDateOfBirth);
+        Optional.ofNullable(userDTO.getEducationLevel()).filter(s -> !s.isBlank()).ifPresent(user::setEducationLevel);
+        Optional.ofNullable(userDTO.getGender()).ifPresent(user::setGender);
         return userRepository.save(user);
     }
 
@@ -350,7 +365,6 @@ public class UserService implements IUserService, UserDetailsService {
             }
             searchHistory.add(event.getData());
             searchHistory = new ArrayList<>(new LinkedHashSet<>(searchHistory));
-            ;
             user.setSearchHistory(searchHistory);
             userRepository.save(user);
             userRepository.flush();
@@ -526,10 +540,10 @@ public class UserService implements IUserService, UserDetailsService {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Invalid user id: " + userId));
         List<String> cvs = user.getCv();
-        if(cvs == null){
+        if (cvs == null) {
             cvs = new ArrayList<>();
         }
-        if(!cvs.contains(cvUrl)){
+        if (!cvs.contains(cvUrl)) {
             cvs.add(cvUrl);
             user.setCv(cvs);
             userRepository.save(user);
@@ -542,7 +556,7 @@ public class UserService implements IUserService, UserDetailsService {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Invalid user id: " + userId));
         List<String> cvs = user.getCv();
-        if(cvs.contains(cvUrl)){
+        if (cvs.contains(cvUrl)) {
             cvs.remove(cvUrl);
             user.setCv(cvs);
             userRepository.save(user);

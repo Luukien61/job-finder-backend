@@ -33,7 +33,7 @@ public class NotificationService {
         if (userId.startsWith("company_")) {
             return banNotificationRepository.findAllByUserId(userId);
         }else {
-            return acceptNotificationRepository.findAllByUserId(userId);
+            return acceptNotificationRepository.findAllByUserIdOrderByCreatedAtDesc(userId);
         }
 
     }
