@@ -321,7 +321,7 @@ public class UserController {
         }
     }
 
-    @DeleteMapping("/user/{userId}/cv")
+    @PostMapping("/user/{userId}/cv/delete")
     public ResponseEntity<Object> deleteUserCv(@PathVariable String userId, @RequestBody Map<String, String> items) {
         try {
             userService.deleteUserCv(userId, items.get("url"));

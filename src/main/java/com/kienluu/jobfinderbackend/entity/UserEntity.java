@@ -2,6 +2,7 @@ package com.kienluu.jobfinderbackend.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.kienluu.jobfinderbackend.configuration.ApplicationConfiguration;
 import com.kienluu.jobfinderbackend.model.UserRole;
 import com.kienluu.jobfinderbackend.util.AppUtil;
 import com.kienluu.jobfinderbackend.websocket.entity.Conversation;
@@ -9,6 +10,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.sql.ast.tree.expression.Collation;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -30,6 +32,7 @@ public class UserEntity extends BaseUserEntity{
 //    @OneToMany(mappedBy = "user" , cascade = CascadeType.MERGE)
 //    @JsonBackReference
 //    List<ReportEntity> reports;
+
 
     @OneToMany(mappedBy = "user" )
     @JsonBackReference
@@ -79,12 +82,22 @@ public class UserEntity extends BaseUserEntity{
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<WebAuthnCredential> credentials;
 
+
     @PrePersist
-    public void generateUniqueId() {
+    public void setDefaultValues(){
         if (this.getId() == null) {
             this.setId("u_" + AppUtil.generateCustomUserId());
         }
+        if(this.getAvatar() == null || this.getAvatar().isBlank()){
+            this.setAvatar(ApplicationConfiguration.getDefaultAvatar());
+        }
+    }
 
+    @PreUpdate
+    public void setUpdateValues() {
+        if (this.avatar == null || this.avatar.isBlank()) {
+            this.avatar = ApplicationConfiguration.getDefaultAvatar();
+        }
     }
 
     public Collection<? extends GrantedAuthority> getAuthorities() {

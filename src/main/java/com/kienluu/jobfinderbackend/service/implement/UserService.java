@@ -83,6 +83,9 @@ public class UserService implements IUserService, UserDetailsService {
         UserEntity user = mapper.toUserEntity(request);
         user.setId("u_" + AppUtil.generateCustomUserId());
         user.setRole(UserRole.EMPLOYEE);
+        if(request.getCreatedAt()!=null){
+            user.setCreatedAt(request.getCreatedAt());
+        }
         user = userRepository.save(user);
         return createLoginResponse(user);
     }
@@ -488,11 +491,11 @@ public class UserService implements IUserService, UserDetailsService {
                 throw new RuntimeException("Invalid Base64 format for public key");
             }
             byte[] publicKeyBytes = Base64.getDecoder().decode(publicKeyStr);
-            X509EncodedKeySpec keySpec = new X509EncodedKeySpec(publicKeyBytes); // X509EncodedKeySpec (chuẩn encoding của RSA public key)
-            KeyFactory keyFactory = KeyFactory.getInstance("RSA"); // tạo factory RSA
+            X509EncodedKeySpec keySpec = new X509EncodedKeySpec(publicKeyBytes);
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
 
 
-            PublicKey publicKey = keyFactory.generatePublic(keySpec); //Dùng KeyFactory để tạo một PublicKey object có thể sử dụng được trong Java.
+            PublicKey publicKey = keyFactory.generatePublic(keySpec);
 
             // Sanitize and decode signature
             String signatureStr = request.getSignature().replaceAll("\\s+", "");

@@ -4,6 +4,7 @@ import com.kienluu.jobfinderbackend.entity.AdminUserEntity;
 import com.kienluu.jobfinderbackend.model.UserRole;
 import com.kienluu.jobfinderbackend.repository.AdminUserEntityRepository;
 import jakarta.annotation.PostConstruct;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -86,4 +87,14 @@ public class ApplicationConfiguration {
             adminUserEntityRepository.save(adminUserEntity);
         }
     }
+
+
+    @Getter
+    private static String defaultAvatar;
+
+    @Value("${default-avatar}")
+    public void setDefaultAvatar(String defaultAvatar) {
+        ApplicationConfiguration.defaultAvatar = defaultAvatar;
+    }
+
 }
