@@ -1,0 +1,4 @@
+FROM postgres:16
+COPY ./mobile_data.sql /docker-entrypoint-initdb.d/init.sql
+
+#/job-finder-backend$ docker build -t luukien/jobfinder-postgres:1.0 -f ./docker/PG_Dockerfile .

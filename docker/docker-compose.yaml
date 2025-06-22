@@ -1,0 +1,73 @@
+services:
+  postgres:
+    image: luukien/jobfinder-postgres:1.0
+    container_name: jobfinder-database
+    ports:
+      - '5433:5432'
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-Luudinhkien_2003}
+      POSTGRES_USER: postgres
+      POSTGRES_DB: jobfinder
+    volumes:
+#      - ../mobile_data.sql:/docker-entrypoint-initdb.d/init.sql
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - jobfinder
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "postgres", "-d", "jobfinder" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  elasticsearch:
+    image: elasticsearch:7.17.25
+    container_name: elasticsearch
+    environment:
+      - node.name=es-single-node
+      - discovery.type=single-node
+      - cluster.name=es-docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+      - xpack.security.enabled=false
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    networks:
+      - jobfinder
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -s http://localhost:9200/_cluster/health | grep -q '\"status\":\"green\"' || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  backend:
+    image: luukien/jobfinder-backend:1.0
+    ports:
+      - '8088:8088'
+    container_name: jobfinder-backend
+    networks:
+      - jobfinder
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+    #    command: ["--spring.profiles.active=prod"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+
+networks:
+  jobfinder:
+    driver: bridge
+volumes:
+  esdata:
+    driver: local
+  postgres-data:
+    driver: local
