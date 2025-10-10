@@ -11,4 +11,5 @@ public interface IJobApplicationService {
     List<JobApplicationDto> getApplicationsByJobId(Long jobId);
     void acceptApplication(Long applicationId);
     void declineApplication(Long applicationId);
+    void testSend();
 }

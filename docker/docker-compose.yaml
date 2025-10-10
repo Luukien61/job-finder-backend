@@ -42,7 +42,7 @@ services:
     networks:
       - jobfinder
     healthcheck:
-      test: [ "CMD-SHELL", "curl -s http://localhost:9200/_cluster/health | grep -q '\"status\":\"green\"' || exit 1" ]
+      test: [ "CMD-SHELL", "curl -s http://localhost:9200/_cluster/health | grep -q '\"status\":\"\\(green\\|yellow\\)\"' || exit 1" ]
       interval: 10s
       timeout: 5s
       retries: 12

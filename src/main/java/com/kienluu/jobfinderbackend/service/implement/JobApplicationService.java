@@ -112,4 +112,19 @@ public class JobApplicationService implements IJobApplicationService {
         return jobApplicationRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Job not found"));
     }
+
+    public void testSend(){
+        String ACCEPT_MESSAGE = """
+                Đơn ứng tuyển của bạn cho công việc ${title} đã được nhà tuyển dụng chấp nhận!
+                Hãy chú ý email hoặc tin nhắn của bạn nhé!
+                """;
+        AcceptNotification notification = AcceptNotification.builder()
+                .message(ACCEPT_MESSAGE)
+                .title("Job abc")
+                .userId("google_1737087253719")
+                .status(NotificationStatus.SENT)
+                .createdAt(LocalDateTime.now())
+                .build();
+        eventPublisher.publishEvent(notification);
+    }
 }

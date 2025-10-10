@@ -63,4 +63,10 @@ public class JobApplicationController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @GetMapping("/test")
+    public ResponseEntity<Object> testJob() {
+        jobApplicationService.testSend();
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

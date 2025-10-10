@@ -1,6 +1,5 @@
 package com.kienluu.jobfinderbackend.websocket.controller;
 
-import com.kienluu.jobfinderbackend.entity.notification.BanNotification;
 import com.kienluu.jobfinderbackend.websocket.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -78,7 +78,7 @@ public class ConversationService {
             content = content.substring(0, 255);
         }
         conversation.setLastMessage(content);
-        conversation.setModifiedAt(LocalDateTime.now());
+//        conversation.setModifiedAt(LocalDateTime.now());
         conversation.setType(message.getType());
 
         conversationRepository.save(conversation);
