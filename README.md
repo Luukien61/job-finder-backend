@@ -1,11 +1,10 @@
-# job-finder-backend
+### Job finder frontend:
+https://github.com/Luukien61/job-finder-frontend
 
-```shell
-java -jar build/libs/*.jar --spring.profiles.active=dev
+### Job finder android app:
+https://github.com/Luukien61/job-finder-mobile
 
-```
+### Job finder machine learning server:
+https://github.com/Luukien61/job-finder-python
 
-### gen rsa key
-```shell
-ssh-keygen -t rsa -f ~/.ssh/gcp_key -C [USERNAME]
-```
+
