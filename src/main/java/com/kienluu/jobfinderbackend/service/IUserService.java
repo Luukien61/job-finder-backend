@@ -10,7 +10,6 @@ import com.kienluu.jobfinderbackend.model.CodeExchange;
 import com.kienluu.jobfinderbackend.model.MailTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.mail.MessagingException;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
@@ -20,7 +19,7 @@ import java.util.List;
 
 
 public interface IUserService {
-    String sendSignupCode(MailTemplate template) throws MessagingException, GeneralSecurityException, IOException;
+    String sendSignupCode(MailTemplate template) throws GeneralSecurityException, IOException, jakarta.mail.MessagingException;
 
     UserResponse registerUser(UserCreationRequest request);
 
@@ -53,7 +52,7 @@ public interface IUserService {
 
     UserResponse updateUserAccount(UserAccountUpdateRequest request);
 
-    String sendVerificationEmail(UserAccountUpdateRequest request) throws MessagingException, GeneralSecurityException, IOException;
+    String sendVerificationEmail(UserAccountUpdateRequest request) throws  GeneralSecurityException, IOException, jakarta.mail.MessagingException;
 
     UserDTO updateProfile(UserDTO userDTO);
 

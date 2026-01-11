@@ -17,6 +17,21 @@ spring:
         event:
           merge:
             entity_copy_observer: allow
+  mail:
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+    protocol: smtp
+mail:
+  from-name: JobFinder
+  from-email: no-reply@dinhkien.io.vn
 #  jackson:
 #    date-format: yyyy-MM-dd
 #    time-zone: Asia/Ho_Chi_Minh
@@ -83,3 +98,7 @@ stripe:
         name: Basic
         limit: 30
 
+logging:
+  level:
+    org.springframework.mail: DEBUG
+    com.sun.mail: DEBUG

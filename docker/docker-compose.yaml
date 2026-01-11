@@ -1,14 +1,14 @@
 services:
   postgres:
-    image: luukien/jobfinder-postgres:1.0
+    image: postgres:16
     container_name: jobfinder-database
     ports:
       - '5433:5432'
     restart: always
     environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-Luudinhkien_2003}
-      POSTGRES_USER: postgres
-      POSTGRES_DB: jobfinder
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_DB}
     volumes:
 #      - ../mobile_data.sql:/docker-entrypoint-initdb.d/init.sql
       - postgres-data:/var/lib/postgresql/data
@@ -19,6 +19,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    env_file:
+      - .env
 
   elasticsearch:
     image: elasticsearch:7.17.25
@@ -30,6 +32,7 @@ services:
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
       - xpack.security.enabled=false
+#      - ES_JAVA_OPTS=-Xms512m -Xmx512m
     ulimits:
       memlock:
         soft: -1
@@ -48,14 +51,17 @@ services:
       retries: 12
 
   backend:
-    image: luukien/jobfinder-backend:1.0
+    image: luukien/jobfinder-backend:v1.0.2
     ports:
       - '8088:8088'
+      - '8087:8087'
     container_name: jobfinder-backend
     networks:
       - jobfinder
     environment:
       SPRING_PROFILES_ACTIVE: prod
+      OAUTH_GOOGLE_REDIRECT_URI: https://www.dinhkien.io.vn/login/oauth2/code/google
+
     #    command: ["--spring.profiles.active=prod"]
     depends_on:
       postgres:

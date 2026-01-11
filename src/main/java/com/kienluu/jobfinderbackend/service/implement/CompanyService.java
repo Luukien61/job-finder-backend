@@ -24,9 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import javax.mail.MessagingException;
 import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
@@ -40,7 +38,7 @@ public class CompanyService implements ICompanyService {
 
     private final CompanyRepository companyRepository;
     private final CustomMapper mapper;
-    private final MailService mailService;
+    private final ThirdPartyMailService mailService;
     private final JobRepository jobRepository;
     private final JobApplicationRepository applicationRepository;
     private final ApplicationEventPublisher publisher;
@@ -100,7 +98,7 @@ public class CompanyService implements ICompanyService {
     }
 
     @Override
-    public String sendVerificationCode(MailTemplate mailTemplate) throws MessagingException, GeneralSecurityException, IOException {
+    public String sendVerificationCode(MailTemplate mailTemplate) throws IOException, jakarta.mail.MessagingException {
         return mailService.send(mailTemplate);
     }
 

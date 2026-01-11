@@ -12,7 +12,7 @@ import com.kienluu.jobfinderbackend.model.MailTemplate;
 import com.kienluu.jobfinderbackend.model.StringElement;
 import com.kienluu.jobfinderbackend.service.FirebaseNotificationService;
 import com.kienluu.jobfinderbackend.service.IUserService;
-import com.kienluu.jobfinderbackend.service.implement.MailService;
+import com.kienluu.jobfinderbackend.service.implement.ThirdPartyMailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,7 +33,7 @@ import java.util.Map;
 public class UserController {
 
     private final IUserService userService;
-    private final MailService mailService;
+    private final ThirdPartyMailService mailService;
     private final FirebaseNotificationService firebaseNotificationService;
 
     @Value("${oauth.google.client-id}")

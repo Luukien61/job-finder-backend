@@ -12,7 +12,7 @@ import com.kienluu.jobfinderbackend.model.CompanyStatistics;
 import com.kienluu.jobfinderbackend.model.MailTemplate;
 import org.springframework.data.domain.Page;
 
-import javax.mail.MessagingException;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.List;
@@ -29,7 +29,7 @@ public interface ICompanyService {
 
     LoginResponse login(String email, String password);
 
-    String sendVerificationCode(MailTemplate mailTemplate) throws MessagingException, GeneralSecurityException, IOException;
+    String sendVerificationCode(MailTemplate mailTemplate) throws  GeneralSecurityException, IOException, jakarta.mail.MessagingException;
 
     boolean canPostJob(String companyId);
 

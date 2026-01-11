@@ -20,6 +20,7 @@ import com.kienluu.jobfinderbackend.repository.UserRepository;
 import com.kienluu.jobfinderbackend.security.jwt.provider.IJWTProvider;
 import com.kienluu.jobfinderbackend.service.IUserService;
 import com.kienluu.jobfinderbackend.util.AppUtil;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -32,7 +33,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.mail.MessagingException;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
@@ -53,7 +53,7 @@ public class UserService implements IUserService, UserDetailsService {
     private final GoogleCodeExchange googleCodeExchange;
     private final UserRepository userRepository;
     private final CustomMapper mapper;
-    private final MailService mailService;
+    private final ThirdPartyMailService mailService;
     private final S3Service s3Service;
     private final JobRepository jobRepository;
     @Value("${oauth.google.client-id}")
@@ -62,7 +62,7 @@ public class UserService implements IUserService, UserDetailsService {
 
 
     @Override
-    public String sendSignupCode(MailTemplate template) throws MessagingException, GeneralSecurityException, IOException {
+    public String sendSignupCode(MailTemplate template) throws IOException, jakarta.mail.MessagingException {
         userRepository.findByEmail(template.getTo().trim())
                 .ifPresent(user -> {
                     throw new RuntimeException("This email already exists!");
@@ -70,7 +70,7 @@ public class UserService implements IUserService, UserDetailsService {
         return sendEmailCode(template);
     }
 
-    private String sendEmailCode(MailTemplate template) throws MessagingException, GeneralSecurityException, IOException {
+    private String sendEmailCode(MailTemplate template) throws IOException, jakarta.mail.MessagingException {
         return mailService.send(template);
     }
 
@@ -274,7 +274,7 @@ public class UserService implements IUserService, UserDetailsService {
     }
 
     @Override
-    public String sendVerificationEmail(UserAccountUpdateRequest request) throws MessagingException, GeneralSecurityException, IOException {
+    public String sendVerificationEmail(UserAccountUpdateRequest request) throws IOException, MessagingException {
         UserEntity user = userRepository.findById(request.getId().trim())
                 .orElseThrow(() -> new RuntimeException("Invalid user id!"));
         if (!Objects.equals(user.getPassword(), request.getOldPassword())) {
